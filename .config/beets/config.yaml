@@ -1,0 +1,29 @@
+directory: ~/Music/
+library: ~/.config/beets/library.db
+import:
+    copy: no
+    move: no
+    write: yes
+    log: ~/.cache/beets.log
+plugins: scrub zero info
+
+zero:
+    auto: yes
+    fields: comments lyricist composer lyrics label genre encoder grouping
+    comments:  [download, songs, .com, www]
+    lyricist:  [download, songs, .com, www]
+    composer:  [download, songs, .com, www]
+    lyrics:    [download, songs, .com, www]
+    label:     [download, songs, .com, www]
+    genre:     [download, songs, .com, www]
+    encoder:   [download, songs, .com, www]
+    grouping:  [download, songs, .com, www]
+    band:      [download, songs, .com, www]
+    albumartist: [download, songs, .com, www, .name]
+    update_database: true
+
+paths:
+    singleton: $title
+    default: $title
+
+    
