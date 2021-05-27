@@ -1,0 +1,11 @@
+#!/bin/sh
+status=
+case $(mpc status | sed 1d | head -n1 | awk '{ print $1 }') in
+'[playing]')
+status=
+;;
+'[paused]')
+status=
+;;
+esac
+echo ${status} $(mpc current)

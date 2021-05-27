@@ -1,0 +1,31 @@
+{
+	"apps": {
+		"firefox": "firefox",
+        "Chromium": "chrome",
+		"Termite": "terminal",
+		"Alacritty": "terminal",
+        "Steam": "steam",
+		"Atom": "edit",
+		"feh": "image",
+		"mpv": "play",
+        "whatsapp-nativefier-d40211": "whatsapp",
+        "TelegramDesktop": "telegram",
+        "Zathura": "window-maximize"
+	},
+	"icon_replace": {
+		"rtv": "reddit",
+		"tuir": "reddit",
+		"messenger": "facebook-messenger",
+        "ncspot": "spotify",
+        "newsboat": "braille",
+		"ranger": "folder",
+        "vim": "edit",
+        "nvim": "edit",
+        "podboat": "podcast"
+	},
+	"string_replace": {
+		":": "",
+		" - ": " ",
+		" — ": " "
+	}
+}

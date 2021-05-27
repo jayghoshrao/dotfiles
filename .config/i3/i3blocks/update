@@ -1,0 +1,11 @@
+#!/bin/bash
+
+update=$(sudo apt-get update > /dev/null 2>&1 && sudo apt-get install | grep upgraded | awk '{ print $10 }')
+
+echo $update
+echo $update
+
+if [[ $update -gt 0 ]]
+then
+		echo "#e2a800"
+fi

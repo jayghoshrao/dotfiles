@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pomodoro=$(python $HOME/bin/pomodoro-client.py status)
+
+echo $pomodoro
+echo $pomodoro
+exit 0
