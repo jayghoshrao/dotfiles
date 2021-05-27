@@ -1,0 +1,97 @@
+#!/bin/python
+
+## TODO: Graph!!
+## DONE: Vim Integration: Function in vimrc
+## DONE: argument handling for switch between forward/backward
+## TODO: Reuse code between forward/backward
+## TODO: Handle line numbers to allow switching
+## TODO: Handle [[ ]] links
+## TODO: Auto search in parent dir?
+## TODO: Avoid links that start with # (Internal-only), fix regex
+## TODO: Remove duplicates
+## TODO: Find broken links
+
+## FIXME: Arcana Illuminata#Members.md
+## FIXED: Breaks when used forward on filenames with spaces
+
+"""
+Generate a list of markdown links (forward and backward).
+"""
+
+import re
+import sys
+import argparse
+from pathlib import Path
+from ripgrepy import Ripgrepy
+
+taglinkre='\[([\w\s\d./?=-]+)\]\([^#][\w\s\d./?#=-]+\)'
+tagre='\[([\w\s\d./?=-]+)\]'
+linkre='\([\w\s\d./?#=-]+\)'
+
+def getForwardLinks(filename):
+    filepath = Path(filename)
+    # print(filename)
+    # sys.exit(0)
+    rg=Ripgrepy(taglinkre, str(filename).replace(' ', '\ '))
+    data = rg.only_matching().json().run().as_dict
+    for item in data:
+        # print(item['data']['submatches'][0]['match']['text'])
+        taglink   = item['data']['submatches'][0]['match']['text']
+        lineno    = item['data']['line_number']
+        line      = item['data']['lines']['text']
+        link      = re.search(linkre, taglink)
+        link      = link.group(0).strip('()')
+        ## Add md extension because vimlinks avoids it
+        print(str(Path(link)) + '.md' + ':' + str(lineno) + ':' + line.strip('\n') )
+
+def getBackwardLinks(filepath, searchpath):
+    searchpath = searchpath or filepath.parent
+    # print("Filepath:", filepath.resolve())
+    # print("Searchpath:", searchpath.resolve())
+    rg=Ripgrepy(taglinkre, searchpath)
+    data = rg.only_matching().json().run().as_dict
+    for item in data:
+        taglink   = item['data']['submatches'][0]['match']['text']
+        fromfile  = item['data']['path']['text']
+        lineno    = item['data']['line_number']
+        line      = item['data']['lines']['text']
+
+        link      = re.search(linkre, taglink)
+        link      = link.group(0).strip('()')
+
+        fromfile_to_sourcefile = Path(fromfile).parent / Path(link)
+
+        if str(fromfile_to_sourcefile.resolve()) in str(filepath.resolve()):
+            # print(str(Path(fromfile)) + ':' + str(lineno) + ':' + line )
+            print(str(Path(fromfile)) + ':' + str(lineno) + ':' + line.strip('\n') )
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-t")
+    ap.add_argument("args", nargs='*', help="args")
+    ap.add_argument("-f", "--forward", required=False, default=False, action='store_true', help="player command")
+
+    args = vars(ap.parse_args())
+
+    sourcefile = Path(args['args'][0])
+    try:
+        searchpath = Path(args['args'][1])
+    except:
+        searchpath = None
+
+    if args['forward']:
+        getForwardLinks(sourcefile)
+    else:
+        getBackwardLinks(sourcefile, searchpath)
+
+## TODO: Python DAG
+# def generateGraph():
+    #for all files in folder
+        # backlinks = getBackwardLinks(currentfile, None)
+        # for bl in backlinks:
+            # fill.in.graph(bl_file, currentfile)
+        # getForwardLinks(currentfile):
+            # fill.in.graph(currentfile, fl_file)
+
+if __name__ == '__main__':
+    main()

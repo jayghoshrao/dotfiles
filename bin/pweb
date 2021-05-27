@@ -1,0 +1,5 @@
+#!/bin/bash
+
+LINK=$(exiftool -t -Subject "$@" | cut -f 2-)
+# echo "$LINK"
+xdg-open "$LINK" >/dev/null 2>&1 & disown

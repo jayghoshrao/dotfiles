@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+init_str="plot "
+
+function str_create() {
+    echo "'$1' w l, "
+}
+
+# str=str_create "test"
+# echo $str
+
+for i in "$@"
+do 
+    init_str=$init_str$(str_create $i)
+done
+
+# echo $init_str
+
+gnuplot -p -e "$init_str"
+

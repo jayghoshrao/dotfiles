@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# declare array for ssh options
+declare -a CLEANED_SSH_OPTS
+declare -a ADD_OPTIONS
+
+# add options to be automatically added to the ssh command here.
+# example
+#ADD_OPTIONS=( '-C' )
+# empty default
+ADD_OPTIONS=( '-Y -X -C'  )
+
+for OPT in "$@"; do 
+  # add list of values to be removed
+  # from sshfs ssh options
+  case $OPT in
+    "-x")
+     # this and these like this will be removed
+    ;;
+    "-a")
+    ;;
+    "-oClearAllForwardings=yes")
+    ;;
+    *)
+      # These are ok.. add
+      NUM=${#CLEANED_SSH_OPTS[@]}
+      CLEANED_SSH_OPTS[$NUM]="$OPT"
+    ;;
+  esac
+done
+
+# Start ssh with CLEANED options
+# echo ${ADD_OPTIONS[@]} ${CLEANED_SSH_OPTS[@]}
+exec ssh ${ADD_OPTIONS[@]} ${CLEANED_SSH_OPTS[@]}
+# replace above exec with the next one if you ssh tunneling to run as your 
+# local user. Like when using automatic mounts from fstab.
+# Please note that this has some extra security issues.
+#exec su YourUserName -c "ssh ${ADD_OPTIONS[@]} ${CLEANED_SSH_OPTS[@]}"

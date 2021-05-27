@@ -1,0 +1,7 @@
+#!/bin/bash
+
+QUERY=$(xclip -o | tr -d '\n' | vipe)
+
+echo "$QUERY"
+
+getdoi -o "$QUERY"

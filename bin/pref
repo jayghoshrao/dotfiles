@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## TODO: Extract referenced dois: http://doi.crossref.org/getResolvedRefs?doi=$DOI [unsure] (possibly create another script)
+
+#TODO: screenshot and OCR
+
+scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mv $f /tmp/screenshot' 
+
+# FILES=$( find /tmp/screenshots/ -print0 | xargs -r -0 ls -1 -t ) 
+
+IMAGEFILE='/tmp/screenshot'
+
+echo "file: $IMAGEFILE"
+
+OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f'| vipe ) 
+
+[ -z "$OUT" ] || echo -e "$OUT" | getdoi -o 
+
+

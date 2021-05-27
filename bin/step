@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# input: text input file that has commands per line.
+# process: allow corrections & eval each line
+
+# scripts are not portable everywhere.. tiny changes in the environment or requirements necessitate annoying changes in them
+# step allows you to make those changes a bit more easily by focusing on things line by line
+# possibly useful for tedious installations of software from source on different machines. Now, just write a rough do-nothing script, and run step.
+
+## DONE: from line?
+## DONE: color
+## TODO: incorporate stepscripts into a cache/config/scripts directory, and use fzf to pick
+## TODO: Script currently requires a $1 to execute. If using fzf, this is not necessary
+
+
+set -euo pipefail
+
+source "$HOME"/bin/bashrgb
+SCRIPTDIR="$HOME/templates"
+input=""
+
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -c|--clipboard-input)
+            input="$(xclip -o -selection clipboard)"
+            # echo "Stepping through: $input"
+            IFS=$'\n'; readarray -t a <<< "$input"
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            input="$SCRIPTDIR/$(ls $SCRIPTDIR | grep .step | fzf -q $1)"
+            # echo "Stepping through: $input"
+            IFS=$'\n'; readarray -t a < "$input"
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# printf '%s\n' ${a[@]}
+# echo ""
+
+# for line in ${a[@]:$begin}; do
+for line in ${a[@]}; do
+    fg 1        # Color
+    fgx 1       # Color
+    read -e -p "exec: " -i "$line" line
+    c 0         # Color End
+    eval "$line"
+done

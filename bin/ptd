@@ -1,0 +1,432 @@
+#!/usr/bin/env bash
+
+## ██████  ████████ ██████     
+## ██   ██    ██    ██   ██    
+## ██████     ██    ██   ██    
+## ██         ██    ██   ██    
+## ██         ██    ██████     
+##   ____ _____ ____  
+##  |  _ \_   _|  _ \ 
+##  | |_) || | | | | |
+##  |  __/ | | | |_| |
+##  |_|    |_| |____/ 
+## 
+## This script takes a pdf file as required input & a doi as optional input
+## If DOI is provided, it fetches the metadata and renames the pdf file accordingly
+## Else, it first tries to parse the DOI from the first two pages of the pdf document
+## The metadata is fetched from crossref.org using the API provided
+
+## DONE: if DOI exists in page but is invalid, cache file is created with 0 size before the query is processed. Due to this, the checkCacheAndFetch call in processQuery returns bullshit and fails. 
+## DONE: Modify ALL fields of pdf metadata
+## DONE: option to select cache location (useful to store databases for long term for offline manipulation of data)
+## DONE: extract and fetch mechanism for PII, Arxiv, Scholar
+
+## FIXME: null-null-null.pdf
+
+## TODO: I should technically also check the status of the message returned from the API to verify things. Maybe in the next python rewrite. 
+## DONE: recursive mode will require file path handling: use bash instead?: See ptdr, wrapper script
+## TODO: include tesseract OCR when DOI not found directly
+## TODO: Auto fix character recognition: fl(unicode) -> f l  in DOI scans
+## TODO: Backup: Cache + PDFs compressed into a tar.gz. Would require me to keep track of file paths along with md5sums
+## TODO: ignore cache mode OR force pull mode
+## FIXME: -f -m -i -fq stops foldermode after one successful rename of file
+## TODO: allow ptd -b bibfile <multiple pdfs>
+
+## TODO: Bibfetch mode or no-query/no-fetch mode, or ONLY-META mode: Use only metadata to fetch bib? --quick-bib? --meta-bib?
+
+CACHEDIR="${HOME}/.cache/ptd"
+mkdir -p "${CACHEDIR}"
+AUTOMODE="OFF"
+MODIFY="OFF"
+FNQUERY="OFF"
+# PRECHECKFOUND=false
+IGNORECACHE="OFF"
+FORCEQUERY="OFF"
+EXIFARGS=""
+
+CONTINUE=true
+
+function preFlightCheck()
+{
+    TOOLS=(exiftool jq xq curl vipe zathura fzf awk)
+
+    exitFlag=0;
+
+    for TOOL in ${TOOLS[@]}; do 
+        if [ -x "$(command -v $TOOL )" ]; then
+            echo -ne "> Found $TOOL!      \r"
+        else 
+            echo "ERR: $TOOL doesn't exist."
+            exitFlag=1;
+        fi
+    done
+
+    if ((exitFlag == 1)); then
+        echo "Please install prerequisites!"
+        exit
+    fi
+}
+
+function checkCacheAndFetch()
+{
+    FILENAME="$1"
+    HASH=$(md5sum "$FILENAME" | cut -c 1-32)
+    CACHE="$CACHEDIR/$HASH"
+
+    # EXPIRY=$(( 7*86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
+    # VALID=[ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] 
+    
+    # if [ ! -z "$2" ]; then
+    #     CMD="$2"
+    #     test -f "$CACHE"  || eval "$CMD" > "$CACHE"
+    # fi
+    # cat "$CACHE"
+
+    if [[ -f "$CACHE" ]] && [[ "$IGNORECACHE" == "OFF" ]]; then
+        cat "$CACHE"
+    else
+        # [ ! -z "$2" ] && eval "$2" > "$CACHE" && cat "$CACHE"
+        if [ -n "$2" ]; then 
+            DATA=$(eval "$2")
+            [ -n "$DATA" ] && echo "$DATA" > "$CACHE" && cat "$CACHE"
+        fi
+    fi
+
+
+}
+
+function fetchFromDOI()
+{
+    DOI="$1"
+    FILENAME="$2"
+
+    DATACMD='curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "https://api.crossref.org/works/$DOI" | jq ".message"'
+    checkCacheAndFetch "$FILENAME" "$DATACMD"
+}
+
+function fetchFromArxiv()
+{
+    ARXIV="$1"
+    FILENAME="$2"
+
+    URL='http://export.arxiv.org/api/query?search_query=id:'"$ARXIV"'&start=0&max_results=10'
+    DATACMD='curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "$URL"'
+    checkCacheAndFetch "$FILENAME" "$DATACMD"
+    # DATA=$(checkCache "$FILENAME")
+    # [ -z "$DATA" ] && eval "$DATACMD" | tee "$CACHE" || echo "$DATA"
+}
+
+function fetchFromQuery()
+{
+    QUERY="$1"
+    FILENAME="$2"
+
+    QRESULTS=$(curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "https://api.crossref.org/works?query=$QUERY")
+    NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+    if [ -n "$NUM" ]; then 
+        DATACMD='echo "$QRESULTS" | jq -r ".message.items[$NUM]"'
+    fi
+    checkCacheAndFetch "$FILENAME" "$DATACMD"
+}
+
+function processPages()
+{
+    echo "Processing file pages..."
+    FILENAME="$1"
+    PDFPAGES=$(pdftotext -f 1 -l 3 "$FILENAME" - )
+    # CONTEXT=$(echo "$PDFPAGES" | grep -Pi   '10.\d{4,9}/[A-Z0-9./:;()-]+')
+    DOI=$(echo "$PDFPAGES" | grep -Pio '10.\d{4,9}/[A-Z0-9./:;()-]+' | head -n 1)
+    PII=$(echo "$PDFPAGES" | grep -Pio '[S,B][0-9()-/]*' | head -n 1)
+    ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}v?\d?' | head -n 1)
+
+    if [ -n "$DOI" ]; then
+        echo "== context =="
+        echo "$PDFPAGES" | grep -Pi   '10.\d{4,9}/[A-Z0-9./:;()-]+'
+        [[ "$AUTOMODE" != "ON" ]] && read -p "Continue [Enter] / Fix DOI:" -e -i "$DOI" DOI
+        DATA=$(fetchFromDOI "$DOI" "$FILENAME")
+        processJSON "$DATA"
+    elif [ -n "$ARXIV" ]; then
+        echo "== context =="
+        echo "$PDFPAGES" | grep -Pio '\d{4}.\d{4}v?\d?' | head -n 1
+        [[ "$AUTOMODE" != "ON" ]] && read -p "Continue [Enter] / Fix ARXIV:" -e -i "$ARXIV" ARXIV
+        [ -n "$ARXIV" ] && DATA=$(fetchFromArxiv "$ARXIV" "$FILENAME")
+        processXML "$DATA"
+    # elif [ ! -z "$PII" ]; then
+    #     echo "== context =="
+    #     echo "$PDFPAGES" | grep -Pio '[S,B][0-9()-/]*' | head -n 1
+    #     [[ "$AUTOMODE" != "ON" ]] && read -p "Continue [Enter] / Fix PII:" -e -i "$PII" PII
+    #     # fetchFromPII "$PII"
+    fi
+}
+
+function processMetaData()
+{
+    echo "Processing file metadata..."
+    PDFMETA=$(pdfinfo "$FILENAME")
+    DOI=$(echo "$PDFMETA" | grep -Pio '10.\d{4,9}/[A-Z0-9./:;()-]+' | head -n 1)
+    echo "$PDFMETA" | grep -Pi   '10.\d{4,9}/[A-Z0-9./:;()-]+'
+    # echo "DOI = $DOI"
+    # [[ "$AUTOMODE" != "ON" ]] && read -p "Continue [Enter] / Fix DOI:" -e -i "$DOI" DOI
+    if [ -n "$DOI" ]; then 
+        DATA=$(fetchFromDOI "$DOI" "$FILENAME")
+        # echo "$DATA"
+        processJSON "$DATA"
+    fi
+}
+
+function processQuery()
+{
+    echo "Requesting manual query entry..."
+    FILENAME="$1"
+    zathura "$FILENAME" > /dev/null 2>&1 & PDF_PID="$!"
+    sleep 1
+    PDFPAGES=$(pdftotext -f 1 -l 3 "$FILENAME" - )
+    QTITLE=$(echo "$PDFPAGES" | vipe)
+
+    if [ -n "$QTITLE" ]; then
+        QTITLE=$(tr ' ' '+' <<< $QTITLE)
+        QTITLE=${QTITLE:0:120}
+        DATA=$(fetchFromQuery "$QTITLE" "$FILENAME")
+        processJSON "$DATA"
+    fi
+    kill "$PDF_PID"
+
+}
+
+function processJSON()
+{
+    DATA="$1"
+    
+    [ -z "$DATA" ] && return
+
+    TITLE=$(echo "$DATA" | jq -r '.title[0]')
+    YEAR=$(echo "$DATA" | jq -r '.issued."date-parts"[0][0]')
+    DOI=$(echo "$DATA" | jq -r '.DOI')
+    AUTHOR=$(echo "$DATA" | jq -r '.author[0].family')
+    PUBLISHER=$(echo "$DATA" | jq -r '.publisher')
+    JOURNAL=$(echo "$DATA" | jq -r '."container-title"[0]')
+
+    echo "Year: $YEAR"
+    # TITLE=$(tr -d '/' <<< "$TITLE")
+    TITLE=${TITLE//[$'\n\t\/']}
+    echo "Author: $AUTHOR"
+    echo -e "Title: $TITLE"
+    # sleep 1
+    
+    if [ -n "$TITLE" ]; then
+        if [[ "$MODIFY" == "ON" ]]; then 
+            HASH=$(md5sum "$FILENAME" | cut -c 1-32)
+            echo "Modifying Metadata..."
+            exiftool -P -overwrite_original_in_place -Title="$TITLE" "$FILENAME" -Subject="https://dx.doi.org/$DOI" -Author="$AUTHOR" -Producer="$PUBLISHER - $JOURNAL" "$EXIFARGS"
+            echo "Updating Cache..."
+            NEWHASH=$(md5sum "$FILENAME" | cut -c 1-32)
+            mv "$CACHEDIR/$HASH" "$CACHEDIR/$NEWHASH"
+        fi
+        echo "Renaming... to $YEAR - $AUTHOR - $TITLE.pdf"
+        echo "New Hash: $CACHEDIR/$NEWHASH"
+        mv -n "$FILENAME" "$YEAR - $AUTHOR - $TITLE.pdf"
+        if [ -n "$BIBFILE" ]; then
+            DOI=$(echo "$DATA" | jq -r '.DOI')
+            BIBDATA=$(curl -sLH "Accept: text/bibliography; style=bibtex" http://dx.doi.org/$DOI)
+            echo "$BIBDATA" >> "$BIBFILE"
+        fi
+    fi
+
+    echo -e "DONE!\n"
+
+    CONTINUE=false
+}
+
+function processXML()
+{
+    echo "Processing XML data..."
+
+    DATA="$1"
+
+    [ -z "$DATA" ] && return
+
+    TITLE=$(echo "$DATA" | xq -r '.feed.entry.title')
+    YEAR=$(echo "$DATA" | xq -r '.feed.entry.published' | cut -c 1-4)
+    AUTHOR=$(echo "$DATA" | xq -r '.feed.entry.author[0].name' | awk '{print $NF}')
+
+    echo "Year: $YEAR"
+    echo "Author: $AUTHOR"
+    # TITLE=$(tr -d '/' <<< "$TITLE")
+    TITLE=${TITLE//[$'\n\t\/']}
+    echo "Title: $TITLE"
+    NEWHASH=""
+    # sleep 1
+    
+    # FIXME: fix this
+    if [ -n "$TITLE" ]; then
+        if [[ "$MODIFY" == "ON" ]]; then 
+            HASH=$(md5sum "$FILENAME" | cut -c 1-32)
+            echo "Modifying Metadata..."
+            exiftool -P -overwrite_original_in_place -Title="$TITLE" "$FILENAME" -Subject="http://arxiv.org/abs/$ARXIV" "$EXIFARGS"
+            echo "Updating Cache..."
+            NEWHASH=$(md5sum "$FILENAME" | cut -c 1-32)
+            echo $NEWHASH
+            mv "$CACHEDIR/$HASH" "$CACHEDIR/$NEWHASH"
+        fi
+        echo "Renaming... to $YEAR - $AUTHOR - $TITLE.pdf"
+        echo "New Hash: $CACHEDIR/$NEWHASH"
+        mv -n "$FILENAME" "$YEAR - $AUTHOR - $TITLE.pdf"
+        if [ -n "$BIBFILE" ]; then
+            DOI=$(echo "$DATA" | jq -r '.DOI')
+            BIBDATA=$(curl -sLH "Accept: text/bibliography; style=bibtex" http://dx.doi.org/$DOI)
+            echo "$BIBDATA" >> "$BIBFILE"
+        fi
+    fi
+
+    echo -e "DONE!\n"
+
+    CONTINUE=false
+}
+
+processDATA()
+{
+    DATA="$1"
+    char0="${DATA:0:1}"
+    [ $char0 == '{' ] && processJSON "$DATA" || processXML "$DATA"
+}
+
+function driver()
+{
+    CONTINUE=true
+    echo "Driver online..."
+    FILENAME="$1"
+    echo "Processing File: $1"
+    HASH=$(md5sum "$FILENAME" | cut -c 1-32)
+    echo "Hash: $CACHEDIR/$HASH"
+
+    if [ "$FORCEQUERY" == "OFF" ]; then 
+        echo -e "Prechecking cache...\r"
+        DATA=$(checkCacheAndFetch "$FILENAME" "") 
+        [ -n "$DATA" ] && echo "Found in cache!" && processDATA "$DATA" && return || echo "Not in cache."
+
+        [ $CONTINUE == true ] && processMetaData "$FILENAME"
+        [ $CONTINUE == true ] && processPages "$FILENAME"
+    fi
+    
+    [ $CONTINUE == true ] && [ $AUTOMODE == "OFF" ] && processQuery "$FILENAME"
+
+    # [ -z "$DATA" ] && DATA=$(scanFilenameAndFetch "$FILENAME")
+
+}
+
+function usage()
+{
+    echo "Welcome to ptd (originally short for PdfToDoi) authored by Jayghosh S. Rao."
+    echo "Extract PDF metadata from CrossRef.org and modify local PDFs."
+    echo 
+    echo "Usage: ptd <filename.pdf> [-a -m -f -c -d <doi> -b <bib>]"
+    echo "-a | --auto     : Auto mode. No Prompts for doi."
+    echo "-m | --modify   : Modify pdf metadata."
+    echo "-f | --folder   : Folder mode (non-recursive)."
+    echo "-c | --clean    : Clear cache."
+    echo "-d | --doi <doi>: Enter doi for given filename."
+    echo "-b | --bib <bib>: Fetch bibtex to <bib> file."
+    echo "-fn | --filenamequery : Use filename instead of doi to query"
+
+}
+
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -f|--folder)
+            echo "Folder mode enabled..."
+            FOLDERMODE="ON"
+            shift # past value
+            ;;
+        -m|--modify)
+            echo "File modification enabled..."
+            MODIFY="ON"
+            shift # past value
+            ;;
+        -c|--cache)
+            CACHEDIR="$2"
+            echo "Cache directory: $CACHEDIR"
+            mkdir -p "${CACHEDIR}"
+            shift # past value
+            shift
+            ;;
+        -co|--cache-open)
+            echo "Opening Cache..."
+            HASH=$(md5sum "$2" | cut -c 1-32)
+            CACHE="$CACHEDIR/$HASH"
+            "$EDITOR" "$CACHE"
+            shift # past value
+            shift
+            ;;
+        -cc|--clean-cache)
+            echo "Cleaning cache..."
+            rm -f $CACHEDIR/*
+            shift # past value
+            ;;
+        -a|--auto)
+            echo "Auto mode enabled..."
+            AUTOMODE="ON"
+            shift # past value
+            ;;
+        -h|--help)
+            usage
+            exit
+            ;;
+        -i|--ignore-cache)
+            echo "Ignoring cache..."
+            IGNORECACHE="ON"
+            shift # past value
+            ;;
+        -fn|--filenamequery)
+            echo "Filename Query enabled..."
+            FNQUERY="ON"
+            shift # past value
+            ;;
+        -fq|--force-query)
+            echo "Force query mode on..."
+            FORCEQUERY="ON"
+            shift # past value
+            ;;
+        -d|--doi)
+            DOI="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -e|--exif-args)
+            EXIFARGS="$2"
+            echo "exifargs= $EXIFARGS"
+            shift # past argument
+            shift # past value
+            ;;
+        -b|--bib)
+            BIBFILE="$2"
+            shift
+            shift
+            ;;
+        --default)
+            DEFAULT=YES
+            shift # past argument
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# [[ "$FOLDERMODE" != "ON" ]] && [[ -z "$1" ]] && usage
+
+preFlightCheck
+
+if [[ "$FOLDERMODE" == "ON" ]] && [[ "$AUTOMODE" == "ON" ]]; then
+    for file in *.pdf; do driver "$file" & done
+elif [[ "$FOLDERMODE" == "ON" ]]; then
+    for file in *.pdf; do driver "$file" ; done
+else
+    [ -n "$1" ] && driver "$1" 
+fi

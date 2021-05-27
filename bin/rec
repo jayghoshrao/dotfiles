@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# TODO: extract the fzf portion of the script into its own. 
+# TODO: fix fzf preview script: use own separate cleaner all purpose script. Or ranger's scope.sh
+
+# Usage: 
+# -c config directory
+# -a ALL WORDS
+# -o ANY WORD
+
+
+
+# FILE=$(recoll -t -q $@ | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fzf --preview="scope.sh {q} {}" --preview-window up:75% -1 -0 --bind=ctrl-l:kill-line --bind enter:execute(nohup xdg-open {} > /dev/null 2>&1)) 
+# xdg-open "$FILE"
+
+# v1
+# recoll -t -q $@ | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fzf --preview="scope.sh {q} {}" --preview-window up:75% -1 -0 --bind=ctrl-l:kill-line --bind "enter:execute@nohup xdg-open {} > /dev/null 2>&1@"
+
+# v2
+# recoll -t -q $@ | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | makecache | fuzscope | filer && kill -9 $PPID
+
+
+## v3
+# QUERY=""
+# if [ ! -z "$@" ]; then
+# 	QUERY="$@"
+# fi
+
+# FILE=$( recoll -t -q $@ | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fzf --read0 --reverse -e -d $'\t'  \
+#     --preview-window up:80% --preview 'scope.sh {q} {..-2}' \
+#     -q "$QUERY" \
+#     --bind "ctrl-space:execute@nohup xdg-open {..-2} > /dev/null 2>&1@" \
+#     | cut -z -f 1 -d $'\t' | tr -d '\n')
+
+# nohup "$open" "$FILE" > /dev/null 2>&1 & disown
+# kill -9 $PPID
+
+## v4
+
+recoll -t -q "$@" | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fuzscope --sync --read0 --reverse  | cut -z -f 1 -d $'\t' | filer
+
+# test
+# recoll -t -q "$@" | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fuzscope --read0 --reverse
+
+
+

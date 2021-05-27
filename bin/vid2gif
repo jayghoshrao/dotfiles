@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+mkdir /tmp/gif
+ffmpeg -i $1 -r 10 /tmp/gif/out%04d.gif
+gifsicle --delay=10 --loopcount=forever /tmp/gif/*.gif > $2

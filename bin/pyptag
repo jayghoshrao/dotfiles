@@ -1,0 +1,225 @@
+#!/bin/env python3
+
+##
+## ██████   ██    ██  ██████   ████████   █████    ██████ 
+## ██   ██   ██  ██   ██   ██     ██     ██   ██  ██      
+## ██████     ████    ██████      ██     ███████  ██   ███ 
+## ██          ██     ██          ██     ██   ██  ██    ██ 
+## ██          ██     ██          ██     ██   ██   ██████  
+##
+
+##  _ __  _   _ _ __ | |_ __ _  __ _
+## | '_ \| | | | '_ \| __/ _` |/ _` |
+## | |_) | |_| | |_) | || (_| | (_| |
+## | .__/ \__, | .__/ \__\__,_|\__, |
+## |_|    |___/|_|             |___/
+##
+
+"""
+PYPdfTag: Append, Edit, Delete, and Browse tags for pdfs in the current folder using fzf.
+"""
+
+## TODO: Use FZF to enter keyword: Have a list of existing tags, use --print-query
+
+## DONE: pdfrw to edit metadata
+## DONE: Plan architecture
+## TODO: --select mode to apply append/delete on files with a certain existing tag. What's the frequency of this usecase?
+## TODO: Allow deleting individual tags instead of wholesale: Use fzf
+## DROP: In append mode, use --bind to perform modifications so that position is preserved: Can't input keywords since bash/fzf uses it already
+## DROP: --fetch for getting author-prescribed keywords. How to get keywords?: Stupid idea
+## DROP: use a sh-fzf-wrapper with --bind instead of while loop in append mode: Hard, because apparently, fzf already uses readline, invoking "input" from bash doesn't work.
+## NOTE: Append mode is file browse mode
+
+from pyfzf.pyfzf import FzfPrompt
+import argparse
+from pathlib import Path
+from pdfrw import PdfReader, PdfWriter, PdfDict
+import unicodedata
+import subprocess
+import sys
+from rich.console import Console
+
+fzf = FzfPrompt()
+console = Console()
+
+
+
+ROT = 0
+FILES = []
+FZF_FILE_OPTS =  '--multi --cycle --bind="ctrl-x:execute@xdg-open {}@","ctrl-o:execute@nohup okular {} >/dev/null 2>&1 & disown@" --bind="ctrl-y:execute@echo {} | xclip -i -selection clipboard@"'
+
+def select_files(args, rotation_index=0):
+    selected_files = None
+    if(args['folder']):
+        global FILES
+        FILES = FILES[rotation_index:] + FILES[:rotation_index]
+        try:
+            selected_files = fzf.prompt(FILES, FZF_FILE_OPTS)
+            index = FILES.index(Path(selected_files[0]))
+        except:
+            selected_files = None
+            index = 0
+    else:
+        selected_files = args['FILES']
+        index = 0
+    return selected_files, index
+
+def get_tags_files(args):
+    tags_files = {}
+
+    if(args['folder']):
+        folder = Path('.')
+        selected_files = sorted(folder.glob('**/*.pdf'), reverse=args['reverse'])
+    else:
+        selected_files = args['FILES']
+
+    for current_file in selected_files:
+        if Path(current_file).suffix == '.pdf':
+            pdf_file = PdfReader(current_file)
+            # print("pdfInfo Keywords:", pdf_file.Info.Keywords)
+
+            try:
+                tags = [ x.strip() for x in pdf_file.Info.Keywords.strip('()<>').split(',') ]
+                # tags = [ x for x in tags if x != '' ]
+            except:
+                tags = ['']             ## Catch files with no keywords
+
+            for tag in tags:
+                tfiles = []
+                try:
+                    tfiles = tags_files[tag]
+                    tfiles.append(current_file)
+                except:
+                    tfiles = [ current_file ]
+                tags_files.update({tag: tfiles})
+
+    return tags_files
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-a", "--append", action='store_true', default=False, help="append to existing tags")
+    ap.add_argument("-b", "--browse", action='store_true', default=False, help="browse existing tags")
+    ap.add_argument("-d", "--delete", action='store_true', default=False, help="delete existing tags")
+    ap.add_argument("-f", "--folder", action='store_true', default=False, help="start in folder mode")
+    ap.add_argument("-p", "--print", action='store_true', default=False, help="print existing tags")
+    ap.add_argument("-c", "--cli-append", nargs='*', help="start in folder mode")
+    ap.add_argument("-r", "--reverse", action='store_true', default=False, help="sort in reverse order")
+    ap.add_argument("FILES", nargs='*', help="files")
+    args = vars(ap.parse_args())
+
+    global FILES
+    FILES = sorted(Path('.').glob('**/*.pdf'), reverse=args['reverse'])
+
+    if args['browse']:
+        tags_files = get_tags_files(args)
+        try:
+            selected_tag = fzf.prompt(sorted(tags_files.keys()))[0]
+        except:
+            selected_tag = None
+        while selected_tag is not None:
+            # selected_file = fzf.prompt(tags_files[selected_tag])[0]
+            try:
+                selected_file = fzf.prompt(tags_files[selected_tag], FZF_FILE_OPTS)[0]
+            except:
+                selected_file = None
+            while selected_file is not None:
+                if selected_file:
+                    cmd = 'nohup xdg-open \'' + selected_file + '\' > /dev/null 2>&1 & disown'
+                    p = subprocess.run( [cmd], shell=True)
+                try:
+                    selected_file = fzf.prompt(tags_files[selected_tag], FZF_FILE_OPTS)[0]
+                except:
+                    selected_file = None
+            try:
+                selected_tag = fzf.prompt(sorted(tags_files.keys()))[0]
+            except:
+                selected_tag = None
+    else:
+        selected_files, index = select_files(args,0)
+        # print(selected_files, '&', index)
+
+        while selected_files is not None:
+            tags_files = {}
+            new_tags = []
+
+            if args['append']:
+                new_tags = [ x.strip() for x in input("Enter Keywords to Append: ").split(',') ]
+                new_tags = [ x for x in new_tags if x != '' ]
+
+
+            if args['cli_append']:
+                new_tags = args['cli_append']
+                print(new_tags)
+
+            for current_file in selected_files:
+                pdf_file = PdfReader(current_file)
+                # print("pdfInfo Keywords:", pdf_file.Info.Keywords)
+                # print("Uni-normed:", unicode_normalize(pdf_file.Info.Keywords.decode()))
+
+                try:
+                    tags = [ x.strip() for x in pdf_file.Info.Keywords.strip('()<>').split(',') ]
+                    # tags = [ x for x in tags if x != '' ]
+                except:
+                    tags = []
+
+                if args['delete']:
+                    tags = [x for x in tags if x != '' ]
+                    selected_tags = fzf.prompt(tags, '--multi')
+                    for tag in selected_tags:
+                        if tag in tags:
+                            tags.remove(tag)
+                    pdf_file.Info.Keywords = ', '.join(tags).strip()
+                    PdfWriter(current_file, trailer=pdf_file).write()
+
+                if args['append'] or args['cli_append']:
+                    tags.extend(new_tags)
+                    tags = [x for x in tags if x != '' ]
+                    tags = list(dict.fromkeys(tags))
+                    pdf_file.Info.Keywords = ', '.join(tags).strip()
+                    PdfWriter(current_file, trailer=pdf_file).write()
+
+                if args['print']:
+                    # print(current_file + ': ', ','.join(tags))
+                    console.print(current_file, style="bold red")
+                    console.print(', '.join(tags) + "\n", style="yellow")
+
+            if args['folder']:
+                selected_files, index = select_files(args, index+1)
+            else:
+                selected_files = None
+                index = 0
+
+                # metadata = PdfDict(Keywords = ', '.join(tags).strip())
+                # pdf_file.Info.update(metadata)
+                # PdfWriter().write(current_file, pdf_file)
+
+                # ## Reading
+                # for tag in tags:
+                #     tfiles = []
+                #     try:
+                #         tfiles = tags_files[tag]
+                #         tfiles.append(current_file)
+                #     except:
+                #         tfiles = [ current_file ]
+                #     tags_files.update({tag: tfiles})
+
+            # print(tags_files)
+
+def get_tags(current_file):
+    pdf_file = PdfReader(current_file)
+    print("pdfInfo Keywords:", pdf_file.Info.Keywords)
+    # print("Uni-normed:", unicode_normalize(pdf_file.Info.Keywords.decode()))
+
+    try:
+        tags = [ x.strip() for x in pdf_file.Info.Keywords.strip('()<>').split(',') ]
+        # tags = [ x for x in tags if x != '' ]
+    except:
+        tags = []
+    return tags
+
+def unicode_normalize(s):
+    return unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
+
+if __name__ == "__main__":
+    main()

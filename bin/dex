@@ -1,0 +1,46 @@
+#!/bin/bash
+
+## dex: [d]ecrypt [e]ncrypt e[x]change
+
+MODE='EXCHANGE' ### or EDIT (-e)
+TMPFILE=/tmp/dex.dump.$RANDOM
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -e|--edit)
+            MODE='EDIT'
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+typestr=$(file $1)
+
+if [[ "$MODE" == "EXCHANGE" ]]; then 
+    if [[ "$typestr" =~ "encrypted" ]]; then 
+        gpg -dq "$1" > /tmp/dex.dump
+        mv /tmp/dex.dump "$1"
+    else
+        gpg -e "$1" 
+        mv "$1".gpg "$1"
+    fi
+elif [[ "$MODE" == "EDIT" ]]; then
+    if [[ "$typestr" =~ "encrypted" ]]; then 
+        gpg -dq "$1" > "$TMPFILE"
+        "$EDITOR" "$TMPFILE"
+        gpg -e "$TMPFILE" 
+        mv "$TMPFILE".gpg "$1"
+        rm "$TMPFILE"
+    else
+        "$EDITOR" "$1"
+    fi
+fi

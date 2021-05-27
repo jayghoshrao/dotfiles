@@ -1,0 +1,9 @@
+#!/usr/bin/env dash
+
+[ "$1" = "-d" ] && [ -n "$2" ] && rm ~/bin/$2 && exit
+[ -n "$2" ] && mv ~/bin/$1 ~/bin/$2 && exit
+
+
+touch ~/bin/$1
+[ -x ~/bin/$1 ] || chmod +x ~/bin/$1
+"$EDITOR" ~/bin/$1

@@ -1,0 +1,81 @@
+#!/bin/bash
+##DONE: forward links: Just needs the file(s)
+##DONE: backward links: Needs a BASE_DIR
+    # in current dir, look for other files with target == current file
+    #TODO: in other dirs, expand all paths and check if target == current file
+##TODO: Graph!!
+## DONE: Make independent of call directory
+## TODO: Vim/VimWiki Integration
+## TODO: argument handling
+## TODO: Reuse code between forward/backward
+## TODO: Handle line numbers to allow switching
+## TODO: Handle [[ ]] links
+
+taglinkre='\[([\w\s\d./?#=-]+)\]\([\w\s\d./?#=-]+\)'
+tagre='\[([\w\s\d./?#=-]+)\]'
+linkre='\([\w\s\d./?#=-]+\)'
+
+getForwardLinks(){
+
+    sourceFile="$1"
+    searchPath="${1:-$(getFullDirPath "$sourceFile")}"
+    filetaglinks=$(rg -So  --no-heading "$taglinkre" "$searchPath")
+
+    readarray -t linkarr <<<"$filetaglinks"
+    for item in "${linkarr[@]}"; do
+        file="${item%%:*}"
+        taglink="${item##*:}"
+        target=$(echo "$taglink" | grep -Pio "$linkre")
+        link=$(echo "$taglink" | grep -Pio "$tagre")
+        echo "$item"
+    done
+}
+
+
+getBackwardLinks(){
+    # Only works for current directory links
+    # sourcePath=$(getFullPath "$1")
+    sourceFile="$1"
+    searchPath="${2:-$(getFullDirPath "$sourceFile")}"
+    sourceFileBasename="${sourceFile##*/}"
+    sourceFileBasename="${sourceFileBasename%.*}"
+    # echo "$searchPath"
+    # exit
+    
+    filetaglinks=$(rg -So --no-heading "$taglinkre" "$searchPath")
+    # echo "$filetaglinks"
+
+    #TODO: For each file, change relative directory and connect link
+    readarray -t linkarr <<<"$filetaglinks"
+    for item in "${linkarr[@]}"; do
+        file="${item%%:*}"
+        taglink="${item##*:}"
+        target=$(echo "$taglink" | grep -Pio "$linkre" | tr -d '()')
+        # tag=$(echo "$taglink" | grep -Pio "$tagre")
+
+        # filedirpath="$(getFullDirPath $file)"
+        # partialTarget="${target%..}"
+
+        # echo "$file $target"
+        #TODO: find sourceFile in relation to file file
+
+        sourceFileFullPath="$(getFullDirPath $sourceFile)/$sourceFile"
+        # targetFileFullPath="$(getFullDirPath $target)/$target"
+        # echo "$sourceFileFullPath $targetFileFullPath"
+        ###TODO: Stricter matching (against similar names, file1 file2 mismatches)
+        if [[ "$sourceFileFullPath" =~ "$partialTarget" ]]; then
+        # if [[ "$target" =~ "$sourceFileBasename" ]]; then
+            echo "$item"
+        fi
+         echo "$file" 
+    done
+
+}
+
+getFullDirPath(){
+    fulldirpath=$(dirname -- "$(readlink -f -- "$1")")
+    echo "$fulldirpath"
+}
+
+getBackwardLinks "$1" "$2"
+# getForwardLinks "$1" 

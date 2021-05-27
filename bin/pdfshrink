@@ -1,0 +1,38 @@
+#!/bin/bash
+
+reso=300
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -r|--resolution)
+            reso="$2"
+            shift # past value
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+
+gs -q -dNOPAUSE -dBATCH -dSAFER        \
+   -sDEVICE=pdfwrite                   \
+   -dCompatibilityLevel=1.4            \
+   -dPDFSETTINGS=/ebook                \
+   -dEmbedAllFonts=true                \
+   -dSubsetFonts=true                  \
+   -dColorImageDownsampleType=/Bicubic \
+   -dColorImageResolution=$reso        \
+   -dGrayImageDownsampleType=/Bicubic  \
+   -dGrayImageResolution=$reso         \
+   -dMonoImageDownsampleType=/Bicubic  \
+   -dMonoImageResolution=$reso         \
+   -sOutputFile="$2"                   \
+   "$1"

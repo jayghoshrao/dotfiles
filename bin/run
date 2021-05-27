@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+# TODO: autodisplay?
+
+launch_conky(){
+    exec > /dev/null 2>&1 
+
+    killall conky
+    sleep 1
+
+    conky -c ~/.config/conky/daycounter.cfg &
+    conky -c ~/.config/conky/khal.cfg & 
+    conky -c ~/.config/conky/quotes.cfg &
+    conky -c ~/.config/conky/weeklendar.cfg & 
+
+    PERCENT=$( $HOME/.config/conky/timescript.sh )
+    echo "$PERCENT"
+    if [[ "$PERCENT" -lt 100 && "$PERCENT" -gt 0  ]]; then
+        conky -c ~/.config/conky/progress.cfg &
+    fi
+}
+
+launch_polybar(){
+
+    killall -q polybar
+
+    # Wait until the processes have been shut down
+    while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+
+    export DISPLAY0=$(xrandr -q | awk '/ connected primary / {print $1}')
+    # export DISPLAY1=$(xrandr -q | grep -w connected | grep -v primary | awk '{print $1}')
+
+    nohup polybar left  >/dev/null 2>&1 & disown
+    # nohup polybar right  >/dev/null 2>&1 & disown
+
+}
+
+
+rename_pulseaudio_sinks(){
+    SINKS=$(pacmd list-sinks | grep -e 'name:')
+    if [[ "$SINKS" =~ 'alsa_output.pci-0000_00_1f.3.analog-stereo' ]]; then
+        pacmd update-sink-proplist alsa_output.pci-0000_00_1f.3.analog-stereo device.description="Speakers" 
+    fi
+
+    if [[ "$SINKS" =~ 'alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.analog-stereo' ]]; then
+        pacmd update-sink-proplist alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.analog-stereo device.description="Dock" 
+    fi
+
+    # pactl load-module module-alsa-sink device=hdmi:0,1 sink_properties=device.description="HDMI"
+}
+
+set_wallpaper(){
+    feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png $HOME/Pictures/wallpapers/current-wall.png
+}
+
+set_keymap(){
+    setxkbmap -option
+    setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
+    xcape -e 'Caps_Lock=Escape;Alt_R=Control_L|space'
+}
+
+launch_dunst(){
+    killall -q dunst; sleep 0.5; nohup dunst & disown; sleep 1; notify-send Initialized Dunst
+}
+
+set_autodisplay(){
+
+    current=$HOME/.cache/current.layout
+    xrandr --prop | grep -A2 EDID > $current
+
+    # ## Turn off everything except laptop monitor
+    xrandr \
+    --output eDP1 --primary --mode 2560x1440 --pos 0x0 --rotate normal \
+    --output VIRTUAL1 --off  \
+    --output DP1 --off  \
+    --output HDMI2 --off  \
+    --output HDMI1 --off  \
+    --output DP1-3 --off  \
+    --output DP1-2 --off  \
+    --output DP1-1 --off  \
+    --output DP2 --off \
+    --output DP2-2 --off \
+    --output DP2-3 --off 
+
+    for prelayout in $HOME/.screenlayout/*.layout; do
+        cmp -s $prelayout $current && echo "Running ${prelayout%%.layout}.sh" && ${prelayout%%.layout}.sh 
+    done
+
+}
+
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -p|--polybar)
+            launch_polybar &
+            ~/bin/i3_workspace_names.py &
+            shift # past value
+            ;;
+        -a|--pulseaudio)
+            rename_pulseaudio_sinks &
+            shift # past value
+            ;;
+        -c|--conky)
+            launch_conky &
+            shift
+            ;;
+        -w|--wallpaper)
+            set_wallpaper &
+            shift
+            ;;
+        -k|--keyboard)
+            set_keymap &
+            shift
+            ;;
+        -n|--notification)
+            launch_dunst &
+            shift
+            ;;
+        --delay)
+            sleep $2
+            shift
+            shift
+            ;;
+        -d|--display)
+            set_autodisplay &
+            shift
+            ;;
+        --all)
+            set_keymap &
+            rename_pulseaudio_sinks &
+            set_wallpaper &
+            launch_polybar &
+            ~/bin/i3_workspace_names.py &
+            launch_conky &
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+##  ____ _____ ____  ____  
+## |  _ \_   _|  _ \|  _ \ 
+## | |_) || | | | | | |_) |
+## |  __/ | | | |_| |  _ < 
+## |_|    |_| |____/|_| \_\
+## 
+## Recursion wrapper for ptd. Can possibly be directly implemented in it after also including filepath handling 
+
+# TODO: modify foldernames also
+
+shopt -s globstar
+CURDIR="${PWD}"
+for folder in **/; do 
+    cd "$folder"
+    echo "Entering folder: $folder"
+    ptd "$@"
+    cd "$CURDIR"
+done
+

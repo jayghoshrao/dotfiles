@@ -1,0 +1,9 @@
+#!/bin/env zsh
+
+# fuzzy ssh mount: sm
+# smconfig file should store information in the following format:
+# jureca:/p/home/jusers/rao2/jureca /home/jayghoshter/remote/jureca
+
+smconfig="$HOME/.cache/smconfig"
+
+sshfs $(cat "$smconfig" | fzf ) -ossh_command='/home/jayghoshter/bin/sshcmd' -ofollow_symlinks

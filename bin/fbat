@@ -1,0 +1,35 @@
+#!/bin/bash
+
+## fuzzy search and edit text file lines. 
+## I use it as a character sheet
+## ctrl-r rolls d20 + mod if mod exists in current line
+
+## TODO: handle weapons and damage
+
+set -euo pipefail
+
+FILE="$1"
+
+while true; do
+    OUT=$(cat "$FILE" | fzf -d ':' -e --expect=ctrl-e,ctrl-o,ctrl-r --bind esc:ignore --preview 'cat {1}')
+
+    key=$(echo "$OUT" | cut -d $'\n' -f 1)
+    line=$(echo "$OUT" | cut -d $'\n' -f 2)
+
+    if [ "$key" == "ctrl-e" ]; then 
+        read -p "Edit:" -e -i "$line" eline
+        sed -i "s/$line/$eline/" "$FILE"
+        continue
+    elif [ "$key" == "ctrl-r" ]; then 
+        rollstring='d20'
+        read -p "Roll:" -e -i "$rollstring" rollstring
+        roll.py "$rollstring"
+        read -p "Okay?" -e -i "${dummy:-}" dummy
+        continue
+    elif [ "$key" == "ctrl-o" ]; then
+        $EDITOR "$FILE"
+        continue
+    fi
+
+    [ -n "$OUT" ] && echo "$OUT" | fold -w 75 -s | less
+done

@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import subprocess
+import tempfile
+
+import newspaper
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('urls', metavar='URL', nargs='+')
+    args = parser.parse_args()
+
+    for url in args.urls:
+        article = newspaper.Article(url)
+        article.download()
+        article.parse()
+        fd, path = tempfile.mkstemp(suffix='.wav')
+        os.close(fd)
+        subprocess.check_call(['pico2wave', '-w', path, '-l', 'en-US', article.text])
+        subprocess.check_call(['mpv', path])
+        os.remove(path)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,27 @@
+#!/bin/env zsh
+
+# If you use pywal, you need to restore the scheme here
+# (cat ~/.cache/wal/sequences &)
+
+export NNN_USE_EDITOR=1
+# export NNN_BMS="D:~/Downloads;v:~/Videos;s:~/Downloads/packages/user-scripts/"
+# export NNN_CONTEXT_COLORS="5236"
+# export NNN_IDLE_TIMEOUT=900
+export NNN_SCRIPT_DIR=/home/jayghoshter/bin
+export NNN_RESTRICT_NAV_OPEN=1
+export NNN_NO_AUTOSELECT=1
+export NNN_OPENER_DETACH=1
+export NNN_RESTRICT_0B=1
+# export NNN_PLAIN_FILTER=1
+export NNN_NOTE=$NOTES_DIR/default.md
+# export NNN_OPS_PROG=1
+export NNN_TMPFILE=/home/jayghoshter/.nnntmp
+
+# Start nnn with your preferred options
+nnn -is "$@"
+
+if [ -f $NNN_TMPFILE ]; then
+    . $NNN_TMPFILE
+    rm $NNN_TMPFILE
+fi
+

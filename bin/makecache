@@ -1,0 +1,28 @@
+#!/bin/bash
+declare -A already
+DIR="${HOME}/.cache/makecache"
+mkdir -p "${DIR}"
+while IFS= read -r FILE; do
+	# global EXPIRY HASH CACHE
+	# echo "$FILE"
+	EXT=${FILE##*.}
+	if [ "$EXT" == "jpg" ] || [ "$EXT" == "png" ] || [ "$EXT" == "jpeg" ]; then
+		continue
+	fi 
+
+	HASH=$(md5sum "$FILE" | cut -c 1-32)
+# Remove duplicates (file that has same hash as already seen file)
+	[ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
+	already[$HASH]=$HASH
+	EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
+	if [ "$EXT" == "pdf" ]
+	then
+		CMD="pdftotext -f 1 -l 1 '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+	else 
+		CMD="cat '$FILE' | tr '\n' '_'"
+	fi
+	# echo $CMD
+	CACHE="$DIR/$HASH"
+	test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
+	echo -e "$FILE\t$(cat ${CACHE})"
+done

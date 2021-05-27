@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# rg --files "$@" $NOTES_DIR
+
+cd "$NOTES_DIR" || exit
+
+OUT=$(ag --nobreak --noheading "$@" --no-heading | fzf -0 -1)
+
+[ -z "$OUT" ] && exit
+
+FILE=$(echo "$OUT" | cut -d ':' -f 1)
+LINE=$(echo "$OUT" | cut -d ':' -f 2)
+
+# echo "$OUT"
+# echo "FILE= $FILE"
+# echo "LINE= $LINE"
+
+"$EDITOR" "$FILE" "+$LINE"

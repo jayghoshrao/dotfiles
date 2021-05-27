@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# xclip -selection c -o | speedread -w 300
+
+# export RQ_RATE=300
+# xclip -selection c -o | rq 
+
+#fltrdr
+xclip -selection c -o | fltrdr --config-base=$HOME/.config/fltrdr

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# TODO: handle everything using mimetype? 
+
+read KEY
+read FILE
+
+[ -z "$FILE" ] && FILE="$KEY"
+
+FILE=$(echo "$FILE" | cut -f1 -d"	")
+FILEBASENAME=${FILE##*/}
+[[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
+FILETYPE="$(file --mime-type "$FILE" | awk '{print $NF}')"
+urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+# echo "ext=$EXT"
+# echo "$FILE"
+# echo "$FILEBASENAME"
+# echo "${FILEBASENAME:0:1}"
+# echo "$FILETYPE"
+# return
+
+if [ -n "$FILE" ]; then
+    if [[ -d "$FILE" ]]; then 
+        builtin cd "$FILE" &> /dev/null
+    elif [[ "$FILE" =~ $urlregex ]] && [[ "$FILE" =~ "youtube" ]]; then
+        nohup mpv "$FILE" > /dev/null 2>&1 & disown
+    elif [[ "$FILE" =~ $urlregex ]] && [[ "$FILE" =~ "xkcd" ]]; then 
+        curl -sSL "$FILE" | hq img attr src | grep comics | sed 's/^/https:/' | xargs feh -Z
+    elif [[ "$FILETYPE" =~ "octet-stream" ]]; then
+        dex -e "$FILE"
+    elif [[ "$KEY" == "ctrl-b" ]]; then
+        termite -e ranger "$PWD/$FILE" 
+    elif [ "$EXT" == "pdf" ]; then
+        if [ "$KEY" == "ctrl-p" ]; then
+            OPENER="polar-bookshelf"
+        elif [ "$KEY" == "ctrl-e" ]; then 
+            OPENER="evince"
+        else
+			OPENER="zathura"
+		fi
+		nohup "$OPENER" "$FILE" </dev/null >/dev/null 2>&1 & disown 
+    elif [[ "$EXT" == "md" ]] && [[ "$KEY" == "ctrl-o" ]]; then
+        xdg-open "$FILE"
+    elif [[ "$EXT" == "csv" ]] || [[ "$KEY" == "ctrl-e" ]]; then
+        "$EDITOR" "$FILE"
+    elif [[ "$FILETYPE" == *"text"* ]] || [[ "$KEY" == "ctrl-e" ]]; then
+		"$EDITOR" "$FILE" 
+    elif [[ "$FILETYPE" == *"application"* ]] || [[ "$KEY" == "ctrl-o" ]]; then
+		xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
+	else
+		xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
+	fi
+fi
+
+
+	# elif [[ "$EXT" == "txt" ]] || [[ "$EXT" == "" ]] || [[ "$EXT" == "md" ]]  || [[ "$EXT" == "in" ]] || [[ "$EXT" == "conf" ]] || [[ "$EXT" == "config" ]] || [[ "$EXT" == "cfg" ]] || [[ "${FILEBASENAME:0:1}" == "." ]] || [[ "$KEY" == "ctrl-e" ]]; then

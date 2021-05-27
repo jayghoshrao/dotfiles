@@ -1,0 +1,47 @@
+#!/bin/env python3
+
+## TODO: Switch to pyfzf
+## TODO: Parallelize
+## For every csv-tag, assign the filename
+##  > browse by tags instead of files in fzf
+
+## Run in a folder
+## Form a hash table of all tags->files
+## Display with fzf
+
+import os
+from iterfzf import iterfzf
+import subprocess
+
+
+pdfs = []
+# data={}
+
+data = {}
+
+for file in os.listdir("."):
+    if file.endswith(".pdf"):
+        cmd = 'pdfinfo \'' + file + '\' | grep -a Keywords | cut -c10-'
+        p = subprocess.run( [cmd], capture_output=True, shell=True)
+        # response = p.stdout.readlines(-1)[0]
+        try:
+            keywords = p.stdout.decode("utf-8").strip()
+        except:
+            keywords = ""
+        # print("File:", file, "Tags:", keywords)
+        for keyword in keywords.split(','):
+            newList = []
+            try:
+                newList = data[keyword.strip()]
+                newList.append(file)
+            except:
+                newList = [file]
+            data.update({keyword.strip(): newList})
+            # print(keyword.strip(), newList)
+
+selected_tag = iterfzf(data)
+selected_file = iterfzf(data[selected_tag])
+
+if selected_file:
+    cmd = 'nohup xdg-open \'' + selected_file + '\' > /dev/null 2>&1 & disown'
+    p = subprocess.run( [cmd], shell=True)

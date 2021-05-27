@@ -1,0 +1,42 @@
+#!/bin/bash
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -a|--all)
+            declare -a POSITIONAL=("jayghoshter" "jayghoshrao" "rwth" "cats" "modsim")
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+function sync()
+{
+    # echo "$1"
+    if [[ "$1" == "modsim" ]] || [[ "$1" == "modsim-fuse" ]]; then
+        # ssh -qTfnN2 -D 8086 ibt014 && tsocks mbsync -q "$1"
+        ssh -qTfnN2 -D 8087 ibt012 && tsocks mbsync -q "$1"
+    else
+        mbsync -q "$1"
+    fi
+}
+
+printf "Syncing mailbox..."
+set +m          # silences job control
+for item in "${POSITIONAL[@]}"
+do
+    sync $item & 
+    pids+=($!)
+done
+
+for pid in $pids; do wait $pid; done 
+set -m          
+printf " done!\n"

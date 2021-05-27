@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# https://github.com/ageitgey/node-unfluff
+# set -euo pipefail
+
+# artify -c (read url from clipboard)
+# artify -b (send output to clipboard)
+# artify -r (send to speedreader)
+
+## TODO: Fix $pager output
+
+pager=""
+clipurl=""
+dump="echo"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -c|--clipboard-input)
+            clipurl="$(xclip -o -selection clipboard)"
+            shift # past value
+            ;;
+        -r|--rsvp)
+            pager="fltrdr --config-base $HOME/.config/fltrdr"
+            shift # past value
+            ;;
+        -b|--clipboard-output)
+            pager='xclip -selection clipboard -i'
+            shift
+            ;;
+        -p|--pager)
+            pager="| $2"
+            shift # past value
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+[ -n "$clipurl" ] && url="$clipurl" || url="$1"
+echo "$url"
+htmltext="$(curl -sL $url )"
+text=$(echo "$htmltext" | unfluff | jq -r .text)
+
+if [ -n "$pager" ]; then
+    echo "$text" | $pager
+else
+    echo "$text"
+fi

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+exec > /dev/null 2>&1
+
+if [ "$1" == "on" ]; then
+
+	killall compton
+	killall conky
+	killall google-keep
+	killall redshift
+	killall dropbox
+	killall owncloud
+
+	setxkbmap -option 
+	sleep 2
+	setxkbmap -option caps:ctrl_modifier
+elif [ "$1" == "off" ]; then
+	nohup compton --config ~/.config/i3/compton.cfg &
+	nohup redshift -l 50.78:6.08 -t 5000:2500 &
+	nohup dropbox &
+	nohup owncloud &
+	~/.conky/run.sh; sleep 2; i3-msg [class=conky_overlay] move scratchpad
+
+	setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
+	xcape -e 'Caps_Lock=Escape'
+fi

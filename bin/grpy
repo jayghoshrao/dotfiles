@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+
+# https://www.goodreads.com/api/oauth_example#python
+
+import requests
+import json
+import xmltodict
+import copy
+import argparse
+from addict import Dict
+from iterfzf import iterfzf
+from rauth.service import OAuth1Service, OAuth1Session
+import os
+from pprint import pprint
+import sys
+import pickle
+
+# DONE: Handle oauth business
+# DONE: add shelf manipulation
+# DONE: prompt opening website?
+# DONE: Add to shelf / Want to Read / Done Reading etc
+
+ACCESS_TOKEN = "READ FROM FILE"
+ACCESS_TOKEN_SECRET = "READ FROM FILE"
+
+SESSIONFILE=os.path.expanduser("~/.cache/grpy.session")
+
+key=os.getenv("GOODREADS_KEY")
+secret=os.getenv("GOODREADS_SECRET")
+user_id=os.getenv("GOODREADS_USER_ID")
+
+base_api_url="https://www.goodreads.com/"
+settings={'key':key}
+base_book_url="https://www.goodreads.com/book/show/"
+
+def build_url(qtype, more_settings):
+    lquery = copy.deepcopy(settings)
+    lquery.update(more_settings)
+    url = base_api_url + qtype + '?'
+    for qkey in lquery:
+        url = url + qkey + '=' + lquery[qkey] + '&'
+    return url
+
+def get_search(query):
+    url=build_url('search.xml', {'q':query})
+    req = requests.get(url)
+    response = Dict(xmltodict.parse(req.content))
+    works = response.GoodreadsResponse.search.results.work
+
+    # print([type(work.best_book.title) for work in works])
+    # print([type(work.best_book.author.name) for work in works])
+    # print([work for work in works if 'dict' in str(type(work.average_rating))][0])
+    # print(works[0])
+
+    data = { work.best_book.title + ' - ' + work.best_book.author.name + ' ('+ work.average_rating +')' :work for work in works if 'dict' not in str(type(work.average_rating))}
+    data.update( {work.best_book.title + ' - ' + work.best_book.author.name + ' ('+ work.average_rating["#text"] +')' :work for work in works if 'dict' in str(type(work.average_rating)) } )
+
+    selection = iterfzf(data)
+    return(data[selection].best_book.id["#text"])
+
+def get_shelves():
+    url=build_url('shelf/list.xml', {'user_id':user_id})
+    req = requests.get(url)
+    response = Dict(xmltodict.parse(req.content))
+    shelves = response.GoodreadsResponse.shelves.user_shelf
+    shelves_names = [ shelf.name for shelf in shelves ]
+    return (shelves_names)
+
+def browse_shelf(shelf, query):
+    query = ' '.join(query)
+    if query.strip() == '' :
+        url= build_url('review/list', {'v':'2', 'id': user_id, 'sort':'shelves', 'per_page':'200', 'shelf':shelf, 'key':key})
+    else:
+        url= build_url('review/list', {'v':'2', 'id': user_id, 'sort':'shelves', 'per_page':'200', 'shelf':shelf, 'key':key, 'search[query]':query})
+    req = requests.get(url)
+    response = Dict(xmltodict.parse(req.content))
+    books = response.GoodreadsResponse.reviews.review
+    data = { item.book.title + ' - ' + item.book.authors.author.name + ' (' + item.book.average_rating + ')': item.book.id['#text'] for item in books}
+    pprint(data)
+
+
+
+def add_to_shelf(book, shelf):
+    ## TODO: Handle OAUTH and SESSIONS properly, save them for reuse etc
+    data = {'name': shelf, 'book_id': book}
+    url=build_url('shelf/add_to_shelf.xml', {})
+    # session = authorize()
+    session = login()
+    response = session.post(url, data)
+
+    ACCESS_TOKEN = session.access_token
+    ACCESS_TOKEN_SECRET = session.access_token_secret
+
+    new_session = OAuth1Session(
+        consumer_key = key,
+        consumer_secret = secret,
+        access_token = ACCESS_TOKEN,
+        access_token_secret = ACCESS_TOKEN_SECRET,
+    )
+
+    # add this to our "to-read" shelf
+    response = new_session.post('https://www.goodreads.com/shelf/add_to_shelf.xml', data)
+
+    if response.status_code != 201:
+        raise StandardError('Cannot create resource: %s' % response.status_code)
+    else:
+        print ('Book added!')
+
+
+def authorize():
+    goodreads = OAuth1Service(
+        consumer_key=key,
+        consumer_secret=secret,
+        name='goodreads',
+        request_token_url='https://www.goodreads.com/oauth/request_token',
+        authorize_url='https://www.goodreads.com/oauth/authorize',
+        access_token_url='https://www.goodreads.com/oauth/access_token',
+        base_url='https://www.goodreads.com/'
+        )
+    # head_auth=True is important here; this doesn't work with oauth2 for some reason
+    request_token, request_token_secret = goodreads.get_request_token(header_auth=True)
+
+    authorize_url = goodreads.get_authorize_url(request_token)
+    print ('Visit this URL in your browser: ' + authorize_url)
+    accepted = 'n'
+    while accepted.lower() == 'n':
+        # you need to access the authorize_link via a browser,
+        # and proceed to manually authorize the consumer
+        accepted = input('Have you authorized me? (y/n) ')
+
+    session = goodreads.get_auth_session(request_token, request_token_secret)
+    return session
+
+def book_handler(bookid):
+    shelves = get_shelves()
+    options = ['open in browser', 'want to read', 'done reading']
+    selected = iterfzf(options)
+
+    if selected == 'open in browser':
+        os.system('xdg-open ' + base_book_url + bookid)
+    elif selected == 'want to read':
+        add_to_shelf(bookid, 'to-read')
+    elif selected == 'done reading':
+        add_to_shelf(bookid, 'read')
+
+
+def saveSessionToCache(session, sessionFile):
+    """
+    save session to a cache file
+    """
+    # always save (to update timeout)
+    with open(sessionFile, "wb") as f:
+        pickle.dump(session, f)
+        print('updated session cache-file %s' % sessionFile)
+
+def readSessionFromCache(sessionFile):
+    with open(sessionFile, "rb") as f:
+        session = pickle.load(f)
+        print('loaded session from cache-file %s' % sessionFile)
+    return session
+
+def login():
+    # Add force-login option
+    if os.path.exists(SESSIONFILE):
+        session = readSessionFromCache(SESSIONFILE)
+    else:
+        session = authorize()
+        saveSessionToCache(session, SESSIONFILE)
+
+    return session
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("query", nargs='*', help="search query")
+    ap.add_argument("-s", "--shelf", required=False, action='store_true', help="List books in shelf")
+    args = vars(ap.parse_args())
+
+    if args['shelf']:
+        shelves = get_shelves()
+        shelf = iterfzf(shelves)
+        browse_shelf(shelf, args['query'])
+    else:
+        query=input("Search: ")
+        bookid = get_search(query)
+        book_handler(bookid)
+        # print(bookid)
+        # os.system('xdg-open ' + base_book_url + bookid)
+
+
+if __name__ == '__main__':
+    main()

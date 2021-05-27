@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Import ICS from mutt using gcalcli
+
+set -euo pipefail
+
+calendar="$(echo -e 'PhD Timetable\nJayghosh Rao'| fzf)"
+gcalcli --calendar "$calendar" import "$1"

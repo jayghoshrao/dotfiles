@@ -1,0 +1,13 @@
+#!/bin/sh
+
+
+if hash jq 2>/dev/null; then 
+    i3-msg -t get_workspaces | jq -r ".[].name"
+else
+    i3-msg -t get_workspaces |  # get the json
+    tr , '\n' |                 # replace commas with newline
+    grep name |                 # "name":"workspace-name"
+    cut -d \" -f 4              #         ^ 4th field, spliting by "
+fi
+
+

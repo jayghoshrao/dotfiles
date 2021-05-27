@@ -1,0 +1,169 @@
+#!/bin/bash
+
+##   ____ ___         ____ ____   ___  ____ ____  ____  _____ _____    ___  _   _ _____ ______   __
+##  / ___/ _ \   _   / ___|  _ \ / _ \/ ___/ ___||  _ \| ____|  ___|  / _ \| | | | ____|  _ \ \ / /
+## | |  | | | | (_) | |   | |_) | | | \___ \___ \| |_) |  _| | |_    | | | | | | |  _| | |_) \ V / 
+## | |__| |_| |  _  | |___|  _ <| |_| |___) |__) |  _ <| |___|  _|   | |_| | |_| | |___|  _ < | |  
+##  \____\__\_\ (_)  \____|_| \_\\___/|____/____/|_| \_\_____|_|      \__\_\\___/|_____|_| \_\|_|  
+##                                                                                                 
+
+## Field query parameter,Description
+## query.container-title,Query container-title aka. publication name
+## query.author,Query author given and family names
+## query.editor,Query editor given and family names
+## query.chair,Query chair given and family names
+## query.translator,Query translator given and family names
+## query.contributor,Query author, editor, chair and translator given and family names
+## query.bibliographic,Query bibliographic information, useful for citation look up. Includes titles, authors, ISSNs and publication years
+## query.affiliation,Query contributor affiliations
+
+
+## TODO: implement fzf multi option. NUM will have to be made an array. for looped run? 
+## TODO: multiple pages of results
+## TODO: Avoid captchas
+## TODO: Add option for auto invoke of ptd -m to the downloaded file
+
+set -euo pipefail
+
+prefix=""
+QTYPE="bibliographic"
+
+function processQuery()
+{
+    FIELD="$1"
+    QUERY="${*:2}"
+
+    if [ -n "$QUERY" ]; then
+
+        QUERY=$(echo "$QUERY" | tr -d '(,\:)')
+        QUERY=$(tr ' ' '+' <<< "$QUERY" )
+        QUERY=${QUERY:0:120}
+        fetchFromQuery "$FIELD" "$QUERY" 
+    fi
+
+}
+
+function shdownload()
+{
+    url="https://sci-hub.tf/$1"
+    echo "$url"
+    $BROWSER $url
+
+    # $prefix curl --connect-timeout 30 --silent "$url" | bat
+
+    # # pdfurl="$($prefix curl --connect-timeout 30 --silent -H "User-Agent: cq (mailto:jayghoshter@gmail.com)" -sX GET "$url" | grep "location.href" | grep -Po 'http[s]?:.*pdf')"
+    # pdfurl="$($prefix curl --silent -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36" $url| grep "location.href" | grep -Po 'http[s]?:.*pdf')"
+    # echo "$pdfurl"
+    # [ -n "$pdfurl" ] && wget --directory-prefix="$HOME/Downloads/pdfs" "$pdfurl" && read -r -p "Press Enter to continue..." 
+    # echo 
+
+    # curl --silent -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36" $url
+}
+
+function fetchFromQuery()
+{
+    FIELD="$1"
+    QUERY="${*:2}"
+
+    # echo "$FIELD"
+    # echo "$QUERY"
+    # echo "https://api.crossref.org/works?query."$FIELD"=$QUERY"
+    # QRESULTS=$(curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "https://api.crossref.org/works?query."$FIELD"=$QUERY")
+    
+    URL="https://api.crossref.org/works?query.$FIELD=$QUERY"
+    [ -n "$ROWS" ] && URL="$URL""&rows=$ROWS" 
+    [ -n "$SORT" ] && URL="$URL""&sort=$SORT"
+    [ -n "$ORDER" ] && URL="$URL""&order=$ORDER"
+    [ -n "$FILTER" ] && URL="$URL""&filter=$FILTER"
+
+    # echo "$URL"
+    # exit
+
+    QRESULTS=$(curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "$URL")
+    NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+    # if [ ! -z "$NUM" ]; then 
+    while [ -n "$NUM" ]; do
+        # DATACMD='echo "$QRESULTS" | jq -r ".message.items[$NUM]"'
+        DATA=$(eval 'echo "$QRESULTS" | jq -r ".message.items[$NUM]"')
+        
+        TITLE=$(echo "$DATA" | jq -r '.title[0]')
+        YEAR=$(echo "$DATA" | jq -r '.issued."date-parts"[0][0]')
+        DOI=$(echo "$DATA" | jq -r '.DOI')
+        AUTHOR=$(echo "$DATA" | jq -r '.author[0].family')
+        LINK="http://dx.doi.org/$DOI"
+        
+        echo "Year: $YEAR"
+        TITLE=${TITLE//[$'\n\t\/']}
+        echo "Author: $AUTHOR"
+        echo -e "Title: $TITLE"
+        echo -e "Link: $LINK"
+
+        PROMPT=""
+        read -r -p "[b]rowse or [d]ownload?: " -e -i "$PROMPT" PROMPT
+        if [[ "$PROMPT" == "b" ]]; then 
+            nohup xdg-open "$LINK" >/dev/null 2>&1 & disown
+        elif [[ "$PROMPT" == "d" ]]; then
+            shdownload "$DOI"
+        fi
+        
+        NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+        
+    done
+}
+
+ORDER=""
+SORT=""
+FILTER=""
+ROWS=""
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -a|--author)
+            QTYPE="author"
+            shift # past value
+            ;;
+        -b|--bibliography)
+            QTYPE="bibliographic"
+            shift # past value
+            ;;
+        -t|--tor-socks)
+            prefix="torsocks"
+            shift # past value
+            ;;
+        -j|--journal-article)
+            FILTER="$FILTER""type:journal-article"
+            shift
+            ;;
+        -f|--filter)
+            FILTER="$FILTER""$2"
+            shift
+            shift
+            ;;
+        -r|--rows)
+            ROWS="$2"
+            shift
+            shift
+            ;;
+        -s|--sort)
+            SORT="$2"
+            shift
+            shift
+            ;;
+        -o|--order)
+            ORDER="$2"
+            shift
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+
+processQuery "$QTYPE" "$@"

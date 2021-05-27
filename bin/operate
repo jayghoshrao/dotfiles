@@ -1,0 +1,30 @@
+#!/usr/bin/env bash 
+
+# cat operate.cache | fzf --preview-window up:80% --preview "cat operate.out" --bind "enter:execute@eval '{q} > operate.out'@"
+
+TMP="/tmp/operate.tmpfile"
+CACHE="/tmp/operate.cachefile"
+
+# it should:
+#   run without <enter>
+#   immediately show output
+
+
+# CMD=$(echo "" | vipe)
+# CMD=$(echo "" | vipe)
+
+# CMD=$(history | cut -c8- | tail -2 | head -1)
+CMD="$(cat ~/.zsh_history | tail -2 | head -1 | cut -c16-)"
+# echo "$CMD"
+# exit
+read -p "cmd: " -e -i "$CMD" CMD
+tmux split-window -h watch -n 1 cat "$TMP"
+tmux select-pane -L
+
+while [ -n "$CMD" ]; do
+    echo "$CMD" >> "$CACHE"
+    eval "$CMD > $TMP 2>&1"
+    # CMD=$(cat "$CACHE" | fzf --preview 'cat /tmp/operate.tmpfile')
+    # CMD=$(echo "$CMD" | vipe)
+    read -p "cmd: " -e -i "$CMD" CMD
+done

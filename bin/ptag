@@ -1,0 +1,70 @@
+#!/bin/bash
+
+## Tag pdf files 
+## Usage: ptag <file>
+
+## 1) Read existing tags
+## 2) Vipe & allow modification/addition of tags
+## 3) Write tags
+
+## DONE: Allow operating on all pdfs in current folder
+## DONE: Use FZF 
+## TODO: Switch to python & pyfzf
+## TODO: use fzf --bind for tag adding tags. To preserve position in folder
+## TODO: ctrl-e/a: edit/append. Enter: view tags
+## TODO: reimplement in python? Will not have fzf --bind. Might use shell commands? 
+## TODO: ptag -e : editor, -b : browser (pkeyb)
+
+
+DELETEMODE=""
+FOLDERMODE=""
+
+
+KEYWORDS=""
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -d|--delete)
+            DELETEMODE="TRUE"
+            shift # past value
+            ;;
+        -f|--folder)
+            FOLDERMODE="TRUE"
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [[ "$FOLDERMODE" == "TRUE" ]]; then
+    FILES=$(find . -type f -iname '*.pdf' -printf '%P\n' | sort | fzf -m --bind "ctrl-space:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@")
+    while [ -n "$FILES" ] 
+    do
+        [ -z "$FILES" ] && continue
+        read -p "Enter Keywords to append: " KEYWORDS
+        echo "$KEYWORDS"
+        while IFS= read -r FILENAME; do
+            echo "Appending $KEYWORDS to file: $FILENAME"
+            [[ "$DELETEMODE" == "TRUE" ]] && OLDKEYWORDS="" || OLDKEYWORDS=$(exiftool "$FILENAME" | grep Keywords | cut -d ':' -f 2-)
+            [ -n "$OLDKEYWORDS" ] && echo "Existing Keywords: $OLDKEYWORDS" && FIELDS=$(echo "-Keywords=$OLDKEYWORDS,$KEYWORDS" | sed 's/\s\+$//') || FIELDS=$(echo "-Keywords=$KEYWORDS" | sed 's/\s\+$//')
+            exiftool -P -overwrite_original_in_place "$FILENAME" "$FIELDS"
+        done <<< "$FILES"
+        FILES=$(find . -type f -iname '*.pdf' -printf '%P\n' | sort | fzf -m --bind "ctrl-space:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@")
+    done
+else
+    FILENAME="$@"
+    read -p "Enter Keywords to append: " KEYWORDS
+    echo "$KEYWORDS"
+    echo "Appending $KEYWORDS to file: $FILENAME"
+    [[ "$DELETEMODE" == "TRUE" ]] && OLDKEYWORDS="" || OLDKEYWORDS=$(exiftool "$FILENAME" | grep Keywords | cut -d ':' -f 2-)
+    [ -n "$OLDKEYWORDS" ] && echo "Existing Keywords: $OLDKEYWORDS" && FIELDS=$(echo "-Keywords=$OLDKEYWORDS,$KEYWORDS" | sed 's/\s\+$//') || FIELDS=$(echo "-Keywords=$KEYWORDS" | sed 's/\s\+$//')
+    exiftool -P -overwrite_original_in_place "$FILENAME" "$FIELDS"
+fi

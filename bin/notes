@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+# TODO: Allow subfolders to be wikis
+# TODO: ENCRYPTION
+
+# fuz	"$@"
+# rg --files | makecache | fuzscope | filer
+# rg --files --sortr accessed | fuzscope "$QUERY" | filer
+
+DIR="$NOTES_DIR"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -d|--directory)
+            DIR="$2"
+            shift # past value
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+cd "$DIR" || exit
+
+# QUERY=""
+if [ -n "$*" ]; then
+	QUERY="-q \"$* \""
+else
+    QUERY=""
+fi
+
+
+# OUT=$(rg --files --sortr modified | fuzscope "$QUERY" )  ### This groups folders together even when only ONE file within is modified recently
+
+OUT=$(find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' | fuzscope "$QUERY" )
+# echo "$OUT"
+
+while [ -n "$OUT" ]; do 
+    echo -e "$OUT" | filer
+    OUT=$(find . -type f -printf "%T+\t%P\n" | sort -r | awk $'\t' '{print $2}' | fuzscope "$QUERY" )
+done

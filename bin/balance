@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+tail -n+6 "$1" | awk -F ';' '{print $1,$3,$4" "$5,$16,$17,$18}' OFS=';' | column -t -o $'\t' -s ';' | nvim -R -

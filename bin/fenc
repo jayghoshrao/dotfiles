@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## DND Combat simulator Mark III
+
+DATA=$(awk -F ',' '!/^#/{printf("%s,",$1); system("~/bin/roll.py -s " $2)}' "$1" | sort -t ',' -k2nr )
+echo "$DATA" > fenc.save
+
+DATA=$(echo -e "$DATA" | awk -F $',' '{print $1}' | sed 's/\s\+$//' )
+
+MONS=$(echo -e "$DATA" | while read line; do [ -f "$line" ] && echo "$line" ; done)
+
+
+select=$(echo "$MONS" | fzf --preview="cat fenc.save | sed 's/,.*//'" --bind "esc:ignore")
+while [ -n "$select" ] 
+do
+    fplay "$select"
+    select=$(echo "$MONS" | fzf --preview="cat fenc.save | sed 's/,.*//'" --bind "esc:ignore")
+done
+
+## DONE: Use preview window
+## TODO: Condition tracking, easy visibility of HP etc.
+## DONE: overwrite input file or write new file so that initiative order is saved for restart
+## DONE: Exit while loop
+## DONE: I don't need PCs to crowd the fzf interface. Use preview for init tracking, and fzf for monsters.

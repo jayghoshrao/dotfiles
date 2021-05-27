@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+
+# TODO: auto-change margin padding in terminal (while loop?)
+# TODO: add favorite
+
+unread="$HOME/.cache/pocket.list"
+archive="$HOME/.cache/pocket.archive"
+listfile="$unread"
+width="100"
+reader="artify"
+# pager='| fold -w 80 | awk -v M=$(tput cols) -f ~/bin/pad.awk | less -s -M +Gg -RF'
+pager='| fold -w '$width' | pr -t -o $(( ( $(tput cols) - '$width' ) / 2 )) | bat -p --pager "less -s -M +Gg -RF"'
+# pager='| bat -p --pager "less -s -M +Gg -RF"'
+dump="cat"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -f|--fetch)
+            echo "Fetching from server..."
+            pockyt get -s unread > "$unread"
+            pockyt get -s archive > "$archive"
+            shift # past value
+            ;;
+        -s|--shuffle)
+            echo "Shuffling..."
+            dump="shuf"
+            shift # past value
+            ;;
+        -r|--reader)
+            reader="$2"
+            shift # past value
+            shift
+            ;;
+        -p|--pager)
+            pager="| $2"
+            shift # past value
+            shift
+            ;;
+        -a|--archive)
+            listfile="$archive"
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# "$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$reader {-1} $pager@,ctrl-b:execute@$BROWSER {-1}@,ctrl-e:execute@elinks {-1}@,ctrl-d:execute@echo -e '{1}' | pockyt mod -d @,ctrl-a:execute@echo -e '{1}' | pockyt mod -a 1@,ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,ctrl-r:execute@artify {-1} | fltrdr@,ctrl-s:execute@artify {-1} > $NOTES_DIR/{2}.md @"
+
+clear
+"$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$reader {-1} $pager@,\
+ctrl-b:execute@$BROWSER {-1}@,\
+ctrl-o:execute@$BROWSER https://app.getpocket.com/read/{1}@,\
+ctrl-e:execute@elinks {-1}@,\
+ctrl-d:execute@echo -e '{1}' | pockyt mod -d @,\
+ctrl-a:execute@echo -e '{1}' | pockyt mod -a 1@,\
+ctrl-f:execute@echo -e '{1}' | pockyt mod -v 1@,\
+ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,\
+ctrl-r:execute@artify {-1} | fltrdr --config-base $HOME/.config/fltrdr@,\
+ctrl-s:execute@artify {-1} > $NOTES_DIR/{2}.md @,\
+ctrl-v:execute@artify {-1} | vipe@,\
+ctrl-h:execute@notify-send -t 0 pocket 'Enter: Artify\nC-b: Browser\nC-d: Delete\nC-a: Archive\nC-f: Favorite\nC-y: Yank link\nC-r: Speedread\nC-s: Save to notes\nC-v: pipe to vipe'@"

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# @script: lit
+# @author: Jayghosh Rao
+# @desc: A little script to quickly pull up and open a pdf in the $LIT_DIR. 
+#     The name and first two pages of the pdf are searched for the given string. 
+#         Results are populated into fzf and pdfs can then be opened. 
+#         - C-space: open in place, without exiting fzf 
+#         - C-o    : open in okular
+#         - C-p    : open in polar-bookshelf
+# @notes: 
+#     - finds only pdfs, no other files are indexed.
+#     - sometimes, the PDF is not opened before the terminal window closes.
+#         Trying another time usually does it right. 
+
+# DONE: Test if it finds image based pdfs by their names. 
+
+# fuz "$@"
+# rg --files | makecache | fuzscope "$@" | filer
+
+cd "$LIT_DIR"
+open=xdg-open   # this will open pdf file withthe default PDF viewer on KDE, xfce, LXDE and perhaps on other desktops.
+
+QUERY=""
+if [ ! -z "$@" ]; then
+	QUERY="-q \"$@\""
+fi
+
+# FILE=$(ag -U -g ".pdf$" \
+FILE=$(find . -type f -iname "*.pdf"  \
+| fast-p \
+| fuzscope --read0 --reverse --no-hscroll\
+| cut -z -f 1 -d $'\t' | tr -d '\n')
+
+if [[ ! -z "${FILE// }" ]]; then
+    nohup "$open" "$FILE" >/dev/null 2>&1 & disown
+fi
+
+# kill -9 $PPID

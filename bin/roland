@@ -1,0 +1,27 @@
+#!/bin/env perl
+# PODNAME: roland
+# ABSTRACT: roll and print results
+use 5.12.0;
+use warnings;
+
+use lib 'lib';
+
+use Getopt::Long::Descriptive;
+use Roland::Hub;
+
+my ($opt, $usage) = describe_options(
+  '%c %o <table>',
+  [ 'manual|m',     'enter die rolls manually' ],
+  [ 'debug|d',      'show all die rolling activity' ],
+  [ 'options|o=s%', 'options to pass to the table' ],
+);
+
+my $hub = Roland::Hub->new({
+  manual => $opt->manual,
+  debug  => $opt->debug,
+});
+
+$usage->die unless $ARGV[0];
+
+say "rolling on $ARGV[0]" if $hub->debug;
+say $hub->load_table_file($ARGV[0])->roll_table($opt->options)->as_block_text;

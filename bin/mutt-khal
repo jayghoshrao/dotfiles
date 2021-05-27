@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Import ICS from mutt using gcalcli
+
+set -euo pipefail
+source "$HOME"/bin/bashrgb
+
+calendar=$(khal printcalendars | fzf)
+khal import --batch -a "$calendar" "$1"
+
+fg 1        # Style Bold
+fgx 3       # Color Yellow
+NAME=$(grep SUMMARY "$1" | cut -f2- -d ':') 
+echo "$NAME added to $calendar!"
+c 0         # Color End
+
+read

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+REMOTEDIR=$(pwd | sed "s/\/mnt\/sshfs\///g" | sed "s/\/home\/jayghoshter\/remote\///g" )/
+# echo "$REMOTEDIR"
+
+# REMOTE=$(grep -ioe "[^\/]*" <<< "$REMOTEDIR" | head -n 1)
+# REMOTE=$(sed 's/\/.*//' <<< "$REMOTEDIR" )
+REMOTE=${REMOTEDIR%%/*}
+# echo "$REMOTE"
+DIR=${REMOTEDIR#*/}
+# echo "$DIR"
+
+ssh -qt "$REMOTE" "cd '$DIR'; exec ~/bin/zsh -l"

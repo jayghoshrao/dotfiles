@@ -1,0 +1,77 @@
+#!/usr/bin/env zsh
+
+#https://github.com/reactual/hacker-news-favorites-api
+
+hn_favURL="https://reactual.api.stdlib.com/hnfavs/?id=bronzecarnage&limit=10"
+hn_commentsURL="https://news.ycombinator.com/item?id="
+
+listfile="$HOME/.cache/hnfav.list"
+width="100"
+reader="artify"
+pager='| fold -w '$width' | pr -t -o $(( ( $(tput cols) - '$width' ) / 2 )) | bat -p --pager "less -s -M +Gg -RF"'
+# pager='| fold -w '$width' | pr -t -o $(( ( $(tput cols) - '$width' ) / 2 )) | less -s -M +Gg -RF'
+dump="cat"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -f|--fetch)
+            echo "Fetching from server..."
+            curl -sL "$hn_favURL" | jq -r '.[] | [.id, .title, .link] | @tsv' > "$listfile"
+            shift # past value
+            ;;
+        -s|--shuffle)
+            echo "Shuffling..."
+            dump="shuf"
+            shift # past value
+            ;;
+        -r|--reader)
+            reader="$2"
+            shift # past value
+            shift
+            ;;
+        -p|--pager)
+            pager="| $2"
+            shift # past value
+            shift
+            ;;
+        -a|--artify)
+            reader="artify"
+            pager='| fold -w 80 | awk -v M=$COLUMNS -f ~/bin/pad.awk | less -s -M +Gg -RF'
+            shift # past value
+            ;;
+        -h|--help)
+            echo "hnfav: shows favorited HN links"
+            echo "usage: hnfav <flags>"
+            echo "  where flags can be:"
+            echo "      -f: fetch from server"
+            echo "      -s: shuffle order"
+            echo "      -r <reader>: change reader. Default reader=artify"
+            echo "      -p <pager>: change pager. Default pager is an unnecessarily complicated command with fold | pr | bat | less"
+            echo "      -a: Deprecated/Redundant."
+            echo ""
+            echo "Press Ctrl-h in viewer to see viewer keybinds."
+
+            exit
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+clear
+"$dump" "$listfile" | fzf -d $'\t' --bind "enter:execute@$reader {-1} $pager@,\
+ctrl-b:execute@$BROWSER {-1}@,\
+ctrl-o:execute@$BROWSER \"https://news.ycombinator.com/item?id=\"{1}@,\
+ctrl-e:execute@elinks {-1}@,\
+ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,\
+ctrl-r:execute@artify {-1} | fltrdr@,\
+ctrl-s:execute@artify {-1} > $NOTES_DIR/{2}.md @,\
+ctrl-h:execute@notify-send -t 0 hnfav 'C-b: article\nC-o: comments\nC-e: elinks\nC-r: fltrdr\nC-s: save to notes\nC-v: vipe'@,\
+ctrl-v:execute@artify {-1} | vipe@"

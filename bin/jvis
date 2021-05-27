@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# juwelsvis or jurecavis
+SERVER=$1
+
+if [ ! -f .jvis.$SERVER ]; then
+
+    echo "Setting up server..."
+    ssh $SERVER "vncserver"  > .jvis.$SERVER 2>&1
+    sleep 2
+
+fi
+
+
+LINE=$(grep "Desktop" .jvis.$SERVER)
+NODE=$(grep -o '[0-9]\+' <<< "$LINE" | sed -n '1{p;q}')
+DISP=$(grep -o '[0-9]\+' <<< "$LINE" | sed -n '2{p;q}')
+let "NDISP = 5900 + $DISP"
+
+echo "Connecting to server..."
+echo "NODE: $NODE"
+echo "DISP: $DISP"
+# CMDSERVER="nohup ssh -N -L $NDISP:$SERVER$NODE:$NDISP rao2@$SERVER$NODE.fz-juelich.de > /dev/null 2>&1 & disown"
+CMDSERVER="nohup ssh -N -L $NDISP:jrlogin01:$NDISP rao2@$SERVER$NODE.fz-juelich.de > /dev/null 2>&1 & disown"
+eval "$CMDSERVER"
+
+
+echo "Opening window..."
+CMDLOCAL="nohup vncviewer localhost:$DISP > /tmp/vncviewer.log 2>&1 & disown"
+eval "$CMDLOCAL"
+
+# sleep 7
+# kill -9 $PPID

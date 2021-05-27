@@ -1,0 +1,5 @@
+#!/bin/dash
+
+# echo '' | fzf --multi --preview='bash -c {q}' --preview-window=up:70 --print-query
+
+echo '' | fzf --multi --preview='bash -c {q}' --preview-window=up:70 --print-query --bind "enter:execute@echo {q} | vipe@,ctrl-x:execute@bash -c {q}@"

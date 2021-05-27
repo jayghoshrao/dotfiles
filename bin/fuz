@@ -1,0 +1,75 @@
+#!/bin/bash
+
+#TODO
+#persist with cmdline arg
+#-e flag for exact match (pass to fzf)
+# fuz should just be the engine to which things can be piped etc and provides fzf based output. All external processing should be done on other tools
+# persistence behavior? Enter? C-space?
+
+# OUT=$(fzf --preview="~/script.sh {q} {}" --preview-window up:75% --expect=ctrl-o,ctrl-e)
+
+main(){
+	# PREV_FILE="$@"
+	# OUT=$(select_file "$PREV_FILE")
+	OUT=$(select_file "$@")
+
+	KEY=$(head -1 <<< "$OUT")
+	FILE=$(head -2 <<< "$OUT" | tail -1)
+	FILE=$(echo "$FILE" | cut -f1 -d"	")
+	EXT=${FILE##*.}
+
+	if [ -n "$FILE" ]
+	then
+		if [ "$EXT" == "pdf" ]
+		then
+			if [ "$KEY" == "ctrl-o" ] 
+			then
+				OPENER="masterpdfeditor5"
+			else
+				OPENER="zathura"
+			fi
+			"$OPENER" "$FILE" </dev/null >/dev/null 2>&1 & disown 
+		# elif [[ "$EXT" == "txt" || "$EXT" == "" || "$EXT" == "md" ]]
+		else
+			"$EDITOR" "$FILE" 
+		# else
+		# 	xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
+		fi
+		# main "$FILE"
+	fi
+
+}
+
+select_file(){
+	# GIVEN="$@"
+	rg --files | {
+	declare -A already
+	DIR="${HOME}/.cache/makecache"
+	mkdir -p "${DIR}"
+	while read -r FILE; do
+		# global EXPIRY HASH CACHE
+		EXT=${FILE##*.}
+		if [ "$EXT" == "jpg" ] || [ "$EXT" == "png" ] || [ "$EXT" == "jpeg" ]; then
+			continue
+		fi 
+		HASH=$(md5sum "$FILE" | cut -c 1-32)
+	# Remove duplicates (file that has same hash as already seen file)
+		[ ${already[$HASH]+abc} ] && continue # see https://stackoverflow.com/a/13221491
+		already[$HASH]=$HASH
+		EXPIRY=$(( 86400 + $RANDOM * 20 )) # 1 day (86400 seconds) plus some random
+		if [ "$EXT" == "pdf" ]
+		then
+			CMD="pdftotext -f 1 -l 1 '$FILE' - 2>/dev/null | tr \"\n\" \"_\" "
+		else 
+			CMD="cat '$FILE' | tr '\n' '_'"
+		fi
+		# echo $CMD
+		CACHE="$DIR/$HASH"
+		test -f "${CACHE}" && [ $(expr $(date +%s) - $(date -r "$CACHE" +%s)) -le $EXPIRY ] || eval "$CMD" > "${CACHE}"
+		echo -e "$FILE\t$(cat ${CACHE})"
+	done } | fzf -d '\t'  --preview="scope.sh {q} {..-2}" --preview-window up:75% -1 --expect=ctrl-o,ctrl-e --query="$@" -0 --bind "ctrl-space:execute@nohup xdg-open {..-2} > /dev/null 2>&1@"
+}
+
+set -e
+# cd "$LIT_DIR"
+main "$@"

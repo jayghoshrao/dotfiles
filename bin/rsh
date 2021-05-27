@@ -1,0 +1,16 @@
+#!/bin/bash
+
+### From a given sshfs mount directory, send a command to a remote server via ssh
+
+
+REMOTEDIR=$(pwd | sed "s/\/mnt\/sshfs\///g" | sed "s/\/home\/jayghoshter\/remote\///g" )/
+# echo "$REMOTEDIR"
+
+# REMOTE=$(grep -ioe "[^\/]*" <<< "$REMOTEDIR" | head -n 1)
+# REMOTE=$(sed 's/\/.*//' <<< "$REMOTEDIR" )
+REMOTE=${REMOTEDIR%%/*}
+# echo "$REMOTE"
+DIR=${REMOTEDIR#*/}
+# echo "$DIR"
+# echo "source src; cd '$DIR'; $@"
+ssh "$REMOTE" "source src; cd '$DIR'; $@" 

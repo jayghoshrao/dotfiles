@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+(( $# > 0 )) || exit
+
+w=$(echo "$1" | grep -Pio '\d+w' | grep -Pio '\d+')
+d=$(echo "$1" | grep -Pio '\d+d' | grep -Pio '\d+')
+h=$(echo "$1" | grep -Pio '\d+h' | grep -Pio '\d+')
+m=$(echo "$1" | grep -Pio '\d+m' | grep -Pio '\d+')
+s=$(echo "$1" | grep -Pio '\d+s' | grep -Pio '\d+')
+
+w=$(( w * 604800 ))
+d=$(( d * 86400 ))
+h=$(( h * 3600 ))
+m=$(( m * 60 ))
+s=$(( s * 1 ))
+
+seconds=$(( w + d + h + m + s ))
+
+# echo "$w weeks $d days $h hours $m minutes $s seconds" 
+echo "$seconds"

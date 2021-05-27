@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+## TODO: print meanings in different contexts
+## TODO: look in <script> window.INITIAL_STATE
+
+import sys
+import requests
+from bs4 import BeautifulSoup
+import re
+from addict import Dict
+import json
+import ast
+
+
+def print_sorted_list(data, rows=0, columns=0, ljust=10):
+    """
+    Prints sorted item of the list data structure formated using
+    the rows and columns parameters
+    """
+
+    if not data:
+        return
+
+    if rows:
+        # column-wise sorting
+        # we must know the number of rows to print on each column
+        # before we print the next column. But since we cannot
+        # move the cursor backwards (unless using ncurses library)
+        # we have to know what each row with look like upfront
+        # so we are basically printing the rows line by line instead
+        # of printing column by column
+        lines = {}
+        for count, item in enumerate(sorted(data)):
+            lines.setdefault(count % rows, []).append(item)
+        for key, value in sorted(lines.items()):
+            for item in value:
+                print (item.ljust(ljust), end="")
+            print()
+    elif columns:
+        # row-wise sorting
+        # we just need to know how many columns should a row have
+        # before we print the next row on the next line.
+        for count, item in enumerate(sorted(data), 1):
+            print (item.ljust(ljust), end="")
+            if count % columns == 0:
+                print()
+    else:
+        print (sorted(data))  # the default print behaviour
+
+
+def main():
+    # Check if arguments were supplied
+    if len(sys.argv) < 2:
+        print('Please include a search term.')
+        exit()
+
+    search_term=sys.argv[1]
+    search_term = search_term.replace(' ', '%20')
+
+    req = requests.get('http://www.thesaurus.com/browse/'+search_term)
+
+    soup = BeautifulSoup(req.content, 'html.parser')
+
+    # print(soup.prettify())
+
+    h2 = soup.find('h2')
+    ul = h2.next.next.next.next.next
+    for li in ul.findAll('li'):
+        print(li.find('a').text)
+
+
+
+    # pattern = re.compile("INITIAL_STATE")
+    # data = pattern.findall(soup.text)
+    # print(data)
+    # sys.exit()
+    # # data = data[0].replace("window.INITIAL_STATE = ", "")
+    # synonyms = re.compile("\"synonyms\":\[[^]]*\]")
+    # data = synonyms.findall(data[0])
+
+    # for synpack in data:
+    #     syn = '{' + synpack.replace("null", '""') + '}'
+    #     syndict = Dict(ast.literal_eval(syn))
+    #     syns = [ item.term for item in syndict.synonyms]
+    #     print_sorted_list(syns, columns=5, ljust=25)
+    #     print()
+    #     print()
+
+if __name__ == '__main__':
+    main()

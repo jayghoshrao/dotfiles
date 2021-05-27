@@ -1,0 +1,6 @@
+#!/bin/sh
+
+curl -sL "http://dynamic.xkcd.com/random/comic/" > /tmp/xkcd.out
+wget $( cat /tmp/xkcd.out | grep "//imgs.xkcd.com/comics/" | awk '{print $5}') -O /tmp/xkcd.png 2> /dev/null
+cat /tmp/xkcd.out | grep 'Title text:'
+feh /tmp/xkcd.png & disown

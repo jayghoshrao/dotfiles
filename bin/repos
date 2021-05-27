@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+
+"""
+Module to display your Github notifications
+"""
+
+import os
+import sys
+from github import Github, GithubException
+from pyfzf.pyfzf import FzfPrompt
+import argparse
+from pathlib import Path
+from subprocess import run
+from random import shuffle
+
+fzf = FzfPrompt()
+
+def write_to_cache(data:dict, sep=' | '):
+    with open(Path("~/.cache/repositories.list").expanduser(), "w") as fd:
+        for item in data.keys():
+            fd.write(sep + item + sep +  data[item] + '\n')
+
+def read_from_cache(sep=' | '):
+    repos = {}
+    with open(Path("~/.cache/repositories.list").expanduser(), "r") as fd:
+        for line in fd:
+            parts = line.strip('\n').split(sep)
+            repos.update({parts[1]: parts[2]})
+    return repos
+
+
+def get_notifications(key):
+    try:
+        return Github(key).get_user().get_notifications().totalCount
+    except GithubException as github_exception:
+        return f"error {github_exception}"
+
+def fetch_starred(key):
+    repos={}
+    # repos.update({x.owner.login + '/' + x.name + ': ' + x.description:x.url for x in Github(key).get_user().get_starred()})
+    repos.update({x.owner.login + '/' + x.name + ': ' + str(x.description):x.html_url for x in Github(key).get_user().get_starred()})
+    write_to_cache(repos)
+    return repos
+
+if __name__ == "__main__":
+    key=os.getenv('GITHUB_NOTIFICATIONS_TOKEN')
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-f", "--fetch", action='store_true')
+    ap.add_argument("-s", "--shuffle", action='store_true')
+    ap.add_argument("-e", "--exact", action='store_true')
+    args = vars(ap.parse_args())
+
+    FZF_FILE_OPTS =  '--cycle -d ":" --prompt="Github Repository > " --bind="ctrl-o:execute@xdg-open https://github.com/{1}@" --bind="ctrl-y:execute@echo https://github.com/{1} | xclip -i -selection clipboard@"'
+    if args['exact']:
+        FZF_FILE_OPTS = "--exact " + FZF_FILE_OPTS
+
+    if args['fetch']:
+        repos = fetch_starred(key)
+    else:
+        repos = read_from_cache()
+
+    if args['shuffle']:
+        l = list(repos.items())
+        shuffle(l)
+        repos = dict(l)
+
+    while True:
+        try:
+            selected_repo = fzf.prompt(repos, FZF_FILE_OPTS)[0]
+        except:
+            break
+
+        actions = {'open in browser':'xdg-open',
+                   'peek': 'git-peek'}
+
+        try:
+            selected_action = fzf.prompt(actions)[0]
+        except:
+            break
+
+        cmd = [ actions[selected_action] , repos[selected_repo] ]
+        # print(cmd)
+        run(cmd)

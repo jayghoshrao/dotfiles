@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+set -eu
+
+t=$1
+
+zmodload zsh/mathfunc
+t=$(( abs(t) ))
+weeks=$(( t / 60 / 60 / 24 / 7 ))
+days=$(( t / 60 / 60 / 24 % 7 ))
+hours=$(( t / 60 / 60 % 24 ))
+minutes=$(( t / 60 % 60 ))
+seconds=$(( t % 60 ))
+(( weeks > 0 )) && echo -n "${weeks}w "
+(( days > 0 )) && echo -n "${days}d "
+(( hours > 0 )) && echo -n "${hours}h "
+(( minutes > 0 )) && echo -n "${minutes}m "
+echo -n "${seconds}s"

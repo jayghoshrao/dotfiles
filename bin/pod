@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+listfile="$HOME/.newsboat/bookmarks.txt"
+dump="cat"
+
+aplayer="mpv --save-position-on-quit --no-video "
+vplayer="mpv --save-position-on-quit "
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -s|--shuffle)
+            echo "Shuffling..."
+            dump="shuf"
+            shift # past value
+            ;;
+        -e|--edit)
+            nvim "$listfile" && exit
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+clear
+"$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$aplayer {-1}@,\
+ctrl-v:execute@$vplayer {-1}@,\
+ctrl-b:execute@$BROWSER {-1}@,\
+ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,\
+ctrl-h:execute@notify-send -t 0 pod 'Enter: Play Audio\nC-v: Play Video\nC-y: Yank Link\nC-b: Browser'@"

@@ -1,0 +1,159 @@
+#!/bin/python
+
+"""
+USAGE: mir <dirs> -t/s <servers>
+-t pushes to target servers, -s pulls from source servers. They take multiple arguments, so ensure that they come AFTER the <dirs> args.
+<dirs> is run from root directory (with mir.ini file)
+If called from a subdirectory, the <dirs> is automatically set to current directory
+root directory on the server must exist before using this tool.
+
+Use .rsync-filter file to exclude files and directories
+BE VERY CAREFUL PULLING THINGS FROM OTHER SERVERS. ESPECIALLY WHEN '.git' IS IN THE EXCLUDE FILTER.
+"""
+
+## TODO: move to pathlib
+## TODO: add prompts, asking confirmation before mirroring
+## DONE: look progressively upwards (depth =1 ) for mir.ini. This should allow any  subdirectory at any depth alone to be synced.
+## TODO: Ensure mkdir -p
+## FIXME: Respect gitignore or transmit only git-files: filter ':' considers files to be remote. Tricky as hell.
+## DONE: Implement Dry Run mode
+## DONE: invocation from subsubdirectory should sync only that directory relative to parent
+## TODO: mir <file> -t remote disregards the file and syncs the entire subdir when called from a subdir
+
+import os
+import sys
+import argparse
+import subprocess
+
+# PRECMD="rsync -avzhP --delete --delete-excluded --exclude '.clean*' --exclude '*.mod' --exclude 'xns*' --exclude *.o --exclude */output/*"
+PRECMD="rsync -avzhP --delete --delete-excluded -F -F"
+PRECMDLIST = PRECMD.split()
+
+# more flags: --progress, --info=progress2, --inplace
+# PRECMD="scp -rC "
+
+# def find(name, path):
+#     if name in os.listdir(path):
+#         root = os.path.abspath(path)
+#         return root
+
+def find(name, path):
+    while path != '/':
+        if name in os.listdir(path):
+            return os.path.abspath(path)
+        path = os.path.abspath(os.path.join(path, '..'))
+
+
+def readINI(filestring, dictionary):
+    arr = []
+    try:
+        with open(filestring, "r") as fp:
+            for line in fp:
+                arr = line.strip().split(' ')
+                dictionary[arr[0]] = arr[1]
+    except:
+        print("Error: mir.ini file not found!")
+
+def pull(DIR, SOURCE, remote, dryrun):
+    try:
+        for server in SOURCE:
+            if server in remote:
+                for src in DIR:
+                    cmdlist = PRECMDLIST[:]
+                    # cmdlist = PRECMD.split()
+                    cmdlist.append(remote[server]+'/'+src)
+                    cmdlist.append(src)
+                    # print(" ".join(cmdlist))
+                    if dryrun:
+                        print(" ".join(cmdlist))
+                    else:
+                        subprocess.run(cmdlist)
+    except:
+        print("Error pulling data!")
+
+def push(DIR, TARGET, remote, dryrun):
+    try:
+        if TARGET == ['all']:
+            TARGET = [item for item in remote]
+        for server in TARGET:
+            if server in remote:
+                for src in DIR:
+                    cmdlist = PRECMDLIST[:]
+                    # cmdlist = PRECMD.split()
+                    cmdlist.append(src)
+                    cmdlist.append(remote[server]+'/'+src)
+                    # print(" ".join(cmdlist))
+                    # subprocess.run(cmdlist)
+                    if dryrun:
+                        print(cmdlist)
+                        print(" ".join(cmdlist))
+                    else:
+                        subprocess.run(cmdlist)
+    except:
+        print("Error pushing data!")
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("dirs", nargs='*',
+            help="directories to sync")
+    ap.add_argument("-t", "--target", nargs='*', required=False,
+            help="target servers")
+    ap.add_argument("-s", "--source", nargs='*', required=False,
+            help="source servers")
+    # ap.add_argument("-ng", "--no-gitignore", required=False, action='store_true', default=False,
+    #         help="Find and use gitignore from parent directories.")
+    ap.add_argument("-d", "--dry-run", required=False, action='store_true', default=False,
+            help="Only show which commands will run")
+    # ap.add_argument("FILES", nargs='*',
+            # help="files..")
+    args = vars(ap.parse_args())
+
+    # if not args['no_gitignore']:
+        # gitignore = os.path.join(find('.gitignore', os.path.realpath('.')), '.gitignore')
+        # gitignore = os.path.relpath(gitignore, os.getcwd())
+        # p = subprocess.run('git ls-files --exclude-standard -oi --directory' , capture_output=True, shell=True)
+        # try:
+        #     files = p.stdout.decode("utf-8").strip()
+        # except:
+        #     files = ""
+
+        # global PRECMDLIST
+        # PRECMDLIST.append(' --filter="' + gitignore + '"')
+        # PRECMDLIST.append(' --exclude-from="' + gitignore + '"')
+        # PRECMD = PRECMD + " --filter=':- " + args['filter'] + "'"
+
+    root = find("mir.ini", os.path.realpath('.'))
+    if root is None:
+        print("No mir.ini found in current or parent directories.")
+        sys.exit()
+    print("found root: ", root)
+    inifile = os.path.join(root, "mir.ini")
+    cwd = os.getcwd()
+
+    if cwd != root:
+        os.chdir(root)
+        args['dirs'] = [os.path.relpath(cwd, root)]
+        print("Synclist:", args['dirs'])
+
+    remote = {}
+    readINI(inifile, remote)
+
+    # NOTE: when sourcing files from remote, touch it first, and for directories, create it.
+    # TODO: Automate this
+
+    args['dirs'] = [ os.path.join(item, '') if os.path.isdir(item) else item if os.path.isfile(item) else '' for item in args['dirs'] ]
+    args['dirs'] = list(filter(None, args['dirs']))
+
+    print("Files:", args['dirs'])
+
+    if args['target'] != None:
+        push(args['dirs'], args['target'], remote, args['dry_run'])
+    elif args['source'] != None:
+        assert len(args['source']) == 1
+        pull(args['dirs'], args['source'], remote, args['dry_run'])
+    else:
+        print("No source/target provided!")
+        sys.exit()
+
+if __name__ == "__main__":
+    main()

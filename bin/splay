@@ -1,0 +1,5 @@
+#!/bin/bash
+
+CMD="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:$1 >/dev/null 2>&1"
+
+eval "$CMD"

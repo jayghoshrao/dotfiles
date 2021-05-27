@@ -1,0 +1,119 @@
+#!/bin/env python3
+
+## TODO: easy credential handling
+## TODO: rofi i3 easy integration
+## TODO: Easier keywords (st,sp,sa,sl) -> t,p,a,l?
+
+import spotipy
+import spotipy.oauth2 as oauth2
+import spotipy.util as util
+import sys
+import os
+import random
+
+import gnupg
+
+# token = util.prompt_for_user_token(
+#         username=jayghoshter,
+#         scope=scope,
+#         client_id=client_id,
+#         client_secret=client_secret,
+#         redirect_uri=redirect_uri)
+# spotify = spotipy.Spotify(auth=token)
+
+
+class Spotify:
+
+    sp = None
+    VALUE = None
+    TAG   = None
+    TYPE = None
+    ID = None
+    URI   = None
+
+
+    def __init__(self):
+        cid, csec = self.getCredentials()
+        self.auth(cid, csec)
+
+        # items = self.sp.categories()['categories']
+        # print(items)
+        # for item in items:
+        #     print(item)
+        # self.argParse()
+        # self.search()
+        # self.play()
+
+    def getCredentials(self):
+        cid = os.getenv("SPOTIFY_CLIENT_ID")
+        csec = os.getenv("SPOTIFY_SECRET")
+
+        if cid is None or csec is None:
+            print("No Client ID or Secret found in ENV!")
+            print("Looking in CREDENTIALS file...")
+            cid, csec = self.getCredFromFile('/home/jayghoshter/.local/share/credentials')
+        return cid, csec
+
+    def getCredFromFile(self, filename):
+        with open(filename) as fp:
+            credDict = { line.split('=')[0].strip(): line.split('=')[1].strip() for line in fp}
+        return credDict['SPOTIFY_CLIENT_ID'], credDict['SPOTIFY_SECRET']
+
+
+
+    def auth(self, cid, csec):
+        credentials = oauth2.SpotifyClientCredentials(
+                client_id=cid,
+                client_secret=csec)
+
+        token = credentials.get_access_token()
+        # token = credentials.get_cached_token()
+        self.sp = spotipy.Spotify(auth=token)
+
+    def argParse(self):
+        if len(sys.argv) > 1:
+            self.VALUE = ' '.join(sys.argv[2:])
+            self.TAG = sys.argv[1]
+
+        else:
+            print("example: sp a Coldplay")
+            print("example: sp t Yellow")
+            print("example: sp p Piano Music")
+            print("example: sp l Mylo Xyloto")
+
+    def search(self):
+        results = self.sp.search(q=self.VALUE, type=self.TYPE)
+        # results = spotify.search(q=VALUE)
+        # print(results)
+        items=results[self.TYPE+'s']['items']
+        if len(items) > 0:
+            self.URI = items[0]['uri']
+            self.ID = items[0]['id']
+
+    def control(self):
+        if (self.TAG[0] == 's'):
+            self.TYPE =  {
+                'a' : 'artist',
+                't' : 'track',
+                'p' : 'playlist',
+                'l' : 'album'
+            }.get(self.TAG[1], 'Invalid TAG keyword')
+            self.search()
+            self.play()
+        elif (self.TAG == 'ra'):
+            self.TYPE = 'artist'
+            self.search()
+            self.URI = random.choice(self.sp.artist_related_artists(self.ID)['artists'])['uri']
+            self.play()
+        # elif (self.TAG == 'tt'):
+        #     self.TYPE = 'artist'
+        #     self.search()
+
+
+    def play(self):
+        cmd="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:"+self.URI + " >/dev/null 2>&1"
+        os.system(cmd)
+
+sp = Spotify()
+sp.argParse()
+sp.control()

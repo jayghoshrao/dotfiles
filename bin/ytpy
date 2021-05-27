@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+import requests
+from bs4 import BeautifulSoup as bs
+import json
+from iterfzf import iterfzf
+import os
+import sys
+import copy
+import argparse
+
+## DONE: directly play playlist
+## TODO: show video length in fzf
+## FIXME: If two things (channels/playlists) have same name, the new one overwrites the old, causing data loss.
+#### That's why Luke Smith wasn't available as a channel
+
+## get youtube api key v3 from environment variable
+key=os.getenv('YOUTUBE_API_KEY')
+
+print(key)
+
+base_api_url="https://www.googleapis.com/youtube/v3/"
+base_watch_url="https://youtube.com/watch?v="
+base_playlist_url="https://youtube.com/playlist?list="
+
+settings={}
+settings.update({'part': 'snippet', 'key':key, 'maxResults':'50'})
+
+def build_url(qtype, more_settings):
+    lquery = copy.deepcopy(settings)
+    lquery.update(more_settings)
+    url = base_api_url + qtype + '?'
+    for qkey in lquery:
+        url = url + qkey + '=' + lquery[qkey] + '&'
+    return url
+
+
+def get_playlistItems(playlistId):
+    url = build_url('playlistItems',{'playlistId': playlistId})
+    req = requests.get(url)
+    # print(url)
+    contents = {}
+    while True:
+        results = req.json()
+        # print(json.dumps(results, indent=4))
+        contents.update({ item['snippet']['title']: item['snippet']['resourceId']['videoId'] for item in results['items']})
+        if 'nextPageToken' in results.keys():
+            page_url = url + '&pageToken=' + results['nextPageToken']
+            req = requests.get(page_url)
+        else:
+            break
+    return contents
+
+
+def get_channel_uploads(channelId):
+    url = build_url('channels',{'id': channelId, 'part':'contentDetails'})
+    req = requests.get(url)
+    results = req.json()
+    # print(json.dumps(results, indent=4))
+    # sys.exit(0)
+    return (results['items'][0]['contentDetails']['relatedPlaylists']['uploads'])
+
+
+def get_search(query, qtype='video' ):
+    ## type = channel | playlist | video
+    url = build_url('search', {'q': query, 'type': qtype})
+    req = requests.get(url)
+    results = req.json()
+    # print(json.dumps(results, indent=4))
+    # sys.exit(0)
+    contents={}
+    contents.update({ item['snippet']['title']: item['id'][qtype +'Id'] for item in results['items'] if qtype in item['id']['kind'] })
+    return contents
+
+
+def play_video(videoId, playcmd):
+        os.system(playcmd + ' ' + base_watch_url + videoId)
+
+def search_and_resolve(query, args, playcmd):
+    search_res = get_search(query, args['type'])
+    selection = iterfzf(search_res, exact=True)
+    while selection is not None:
+        if args['type'] == 'video':
+            play_video(search_res[selection], playcmd)
+        elif args['type'] == 'playlist':
+            if args['full_playlist']:
+                os.system(playcmd + ' ' + base_playlist_url + search_res[selection])
+            else:
+                episodes = get_playlistItems(search_res[selection])
+                selection2 = iterfzf(episodes, exact=True)
+                while selection2 is not None:
+                    play_video(episodes[selection2], playcmd)
+                    selection2 = iterfzf(episodes, exact=True)
+        elif args['type'] == 'channel':
+            uploads = get_channel_uploads(search_res[selection])
+            episodes = get_playlistItems(uploads)
+            selection2 = iterfzf(episodes, exact=True)
+            while selection2 is not None:
+                play_video(episodes[selection2], playcmd)
+                selection2 = iterfzf(episodes, exact=True)
+        selection = iterfzf(search_res, exact=True)
+
+
+def main():
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("query", nargs='*', help="search query")
+    ap.add_argument("-t", "--type", required=False, choices=['playlist', 'channel', 'video'], default='video', help="search type : video|channel|playlist")
+    ap.add_argument("-p", "--player", required=False, default='mpv --save-position-on-quit', help="player command")
+    ap.add_argument("-f", "--full-playlist", required=False, action='store_true', help="player command")
+    ap.add_argument("-a", "--audio", required=False, default=False, action='store_true', help="player command")
+    ap.add_argument("-l", "--loop", required=False, default=False, action='store_true', help="player command")
+    ap.add_argument("-d", "--desktop", required=False, default=False, action='store_true', help="set as desktop background (requires shantz xwinwrap and scripts)")
+    ap.add_argument("-x", "--ytdl-audio", required=False, default=False, action='store_true', help="download audio as mp3 with ytdl")
+
+    args = vars(ap.parse_args())
+
+    playcmd = args['player']
+    if args['audio']:
+        playcmd = playcmd + ' --no-video'
+    if args['loop']:
+        playcmd = playcmd + ' --loop=inf'
+
+    if args['desktop']:
+        playcmd='livebackground.sh'
+    if args['ytdl_audio']:
+        playcmd='youtube-dl -x --ignore-errors --audio-format mp3 --audio-quality 0'
+
+    if len(args['query']) != 0:
+        searchstring = ' '.join(args['query'])
+        search_and_resolve(searchstring, args, playcmd)
+
+    while True:
+        searchstring = input("Search String: ")
+        search_and_resolve(searchstring, args, playcmd)
+
+if __name__ == '__main__':
+    main()
