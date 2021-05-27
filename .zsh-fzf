@@ -1,0 +1,358 @@
+# vim: fdm=marker
+ 
+#                 ██              ████          ████
+#                ░██             ░██░          ░██░
+#  ██████  ██████░██            ██████ ██████ ██████
+# ░░░░██  ██░░░░ ░██████  █████░░░██░ ░░░░██ ░░░██░
+#    ██  ░░█████ ░██░░░██░░░░░   ░██     ██    ░██
+#   ██    ░░░░░██░██  ░██        ░██    ██     ░██
+#  ██████ ██████ ░██  ░██        ░██   ██████  ░██
+# ░░░░░░ ░░░░░░  ░░   ░░         ░░   ░░░░░░   ░░
+# 
+#  ~/.zshrc
+#  ~/.zsh-local
+
+ZSH_CACHE_DIR=~/.cache
+fzf-history-widget-accept() {
+  fzf-history-widget
+  zle accept-line
+}
+zle     -N     fzf-history-widget-accept
+bindkey '^X^R' fzf-history-widget-accept
+# bindkey '^R' fzf-history-widget
+
+if [[ -x "$(command -v rg)" ]]; then 
+    export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" -g "!*.o" 2> /dev/null'
+elif [[ -x "$(command -v fd)" ]]; then 
+    export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git'
+else
+    export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
+fi
+
+# export FZF_CTRL_T_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
+export FZF_CTRL_T_COMMAND='fd -t f'
+export FZF_ALT_C_COMMAND='fd -t d'
+export FZF_ALT_C_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
+export FZF_CTRL_T_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
+export FZF_DEFAULT_OPTS="--bind 'ctrl-v:toggle,ctrl-s:toggle+down,ctrl-n:down,ctrl-p:up,ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@','alt-j:half-page-down','alt-k:half-page-up','ctrl-f:jump' --color='bg+:#5E81AC,prompt:#EBCB8B' --reverse"
+
+if [[ -x "$(command -v fd)" ]]; then 
+    # Use fd (https://github.com/sharkdp/fd) instead of the default find
+    # command for listing path candidates.
+    # - The first argument to the function ($1) is the base path to start traversal
+    # - See the source code (completion.{bash,zsh}) for the details.
+    _fzf_compgen_path() {
+      fd --hidden --follow --exclude ".git" . "$1"
+    }
+
+    # Use fd to generate the list for directory completion
+    _fzf_compgen_dir() {
+      fd --type d --hidden --follow --exclude ".git" . "$1"
+    }
+fi
+
+# vl - fuzzy open with vim from anywhere {{{
+# ex: vf word1 word2 ... (even part of a file name)
+# zsh autoload function
+# vl is easier typed, and l = locate
+autoload vl
+vl() {
+  local files
+
+  files=(${(f)"$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim/' | fzf --read0 -0 -1 -m)"})
+
+  if [[ -n $files ]]
+  then
+     nvim -- $files
+     print -l $files[1]
+  fi
+}
+
+#}}}
+
+# fl - fzf-locate: {{{
+autoload fzf_locate
+function fzf_locate()
+{
+    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+
+    # fd . ~ | fuzscope "$QUERY" | filer
+    # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
+
+    # OUT=$(locate home media | fuzscope "$QUERY" ) 
+    OUT=$(fd . ~ | fuzscope "$QUERY" ) 
+    if [[ ! -z "$OUT" ]]; then 
+        FILE=$(echo -e "$OUT" | tail -1)
+        # echo "$FILE"
+        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | filer 
+    fi
+
+}
+
+alias fl="fzf_locate"
+zle -N fzf_locate
+bindkey '^F' fzf_locate
+# bindkey -M viins '^F' fzf_locate
+# bindkey -M vicmd '^F' fzf_locate
+
+# }}}
+
+#cl - fuzzy cd from anywhere (auto){{{
+#ex: cf word1 word2 ... (even part of a file name)
+autoload cl
+cl() {
+  local file
+
+  file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
+
+  if [[ -n $file ]]
+  then
+     if [[ -d $file ]]
+     then
+        cd -- $file
+     else
+        cd -- ${file:h}
+     fi
+  fi
+}
+
+#}}}
+
+# vg: persistent fuzzy grep-edit via rg/ag/grep {{{
+vg() {
+    # TODO: instead of grepping the line in preview, use line number
+    if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+    if [ -x "$(command -v rg)" ]; then
+        rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' --preview 'rg --ignore-case --pretty --with-filename --context 10 -F '"{3..}"' {1}' --bind "enter:execute: $EDITOR {1} +{2}"
+    elif [ -x "$(command -v ag)"]; then
+        ag -S --nobreak --noheading "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
+    else
+        grep -irE "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
+    fi
+}
+
+#}}}
+
+# fdd - cd to selected directory {{{
+fdd() {
+  local dir
+  dir=$(find ${2:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m -q $1) &&
+  cd "$dir"
+}
+
+#}}}
+
+# fda - including hidden directories {{{
+fda() {
+  local dir
+  dir=$(find ${1:-.} -type d 2> /dev/null | fzf +m) && cd "$dir"
+}
+#}}}
+
+# fdr - cd to selected parent directory {{{
+fdp() {
+  local declare dirs=()
+  get_parent_dirs() {
+    if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
+    if [[ "${1}" == '/' ]]; then
+      for _dir in "${dirs[@]}"; do echo $_dir; done
+    else
+      get_parent_dirs $(dirname "$1")
+    fi
+  }
+  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+  cd "$DIR"
+}
+#}}}
+
+# cdf - cd into the directory of the selected file {{{
+cdf() {
+   local file
+   local dir
+   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+}
+#}}}
+
+# GIT {{{
+#
+# fshow - git commit browser
+
+alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | less '"
+
+fshow() {
+  git log --graph --color=always \
+      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+  fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+        --header "enter to view, alt-y to copy hash" \
+        --bind "alt-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard" \
+      --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
+
+# fshow_preview - git commit browser with previews
+fshow_preview() {
+    glNoGraph |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi --preview="$_viewGitLogLine" \
+                --header "enter to view, alt-y to copy hash" \
+                --bind "enter:execute:$_viewGitLogLine   | less -R" \
+                --bind "alt-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard"
+}
+
+#}}}
+
+# fjrnl: {{{
+fjrnl() {                                                                                                                                                                                               
+    title=$(jrnl --short | fzf --tac --no-sort) && jrnl -on "$(echo $title | cut -c 1-16)" $1
+}
+#}}}
+
+# Autojump: {{{
+j() {
+    if [[ "$#" -ne 0 ]]; then
+        cd $(autojump $@)
+        return
+    fi
+    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --reverse --inline-info)" 
+}
+#}}}
+
+# fzf-locate-ALT+I:{{{
+# ALT-I - Paste the selected entry from locate output into the command line
+fzf-locate-widget() {
+  local selected
+  if selected=$(locate / | fzf -q "$LBUFFER"); then
+    LBUFFER=$selected
+  fi
+  zle redisplay
+}
+zle     -N    fzf-locate-widget
+# bindkey '\ei' fzf-locate-widget
+bindkey '^o' fzf-locate-widget
+
+#}}}
+
+# p: {{{
+p () {
+    open=xdg-open   # this will open pdf file withthe default PDF viewer on KDE, xfce, LXDE and perhaps on other desktops.
+
+    ag -U -g ".pdf$" \
+    | fast-p \
+    | fzf --read0 --reverse -e -d $'\t'  \
+        --preview-window down:80% --preview '
+            v=$(echo {q} | tr " " "|"); 
+            echo -e {1}"\n"{2} | grep -E "^|$v" -i --color=always;
+        ' \
+    | cut -z -f 1 -d $'\t' | tr -d '\n' | xargs -r --null $open > /dev/null 2> /dev/null
+}
+
+#}}}
+
+# FSH / Fuzzy SSH: {{{
+function fsh() {
+  ssh -Y "$(grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf -q "$1" -1)"
+}
+
+function fst() {
+  grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf -m -q "$1" -1 | while read host ; do
+  ssh -O stop "$host"
+done
+}
+
+#}}}
+
+# fsend:{{{
+function fsend() {
+    BAK="$FZF_DEFAULT_COMMAND"
+    export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
+    files=$(fzf -m --reverse -q "$1" | tr '\n' ' ')
+    host=$(grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf)
+    if [[ -n $files && -n $host ]]; then 
+        host=$host":sent"
+        echo "scp -rC $files $host"
+        eval "scp -rC $files $host"
+    fi
+    export FZF_DEFAULT_COMMAND="$BAK"
+}
+
+# }}}
+
+# cd-files: {{{
+function cd() {
+    if [[ "$#" != 0 ]]; then
+        builtin cd "$@";
+        return
+    fi
+    while true; do
+        # local lsd=$(echo ".." && ls -pL | grep '/$' | sed 's;/$;;')
+        # local lsd=$(ls -pLa --group-directories-first | tail -n+2)
+        local lsd=$(echo ".." && ls -pL --group-directories-first --color=never)
+        local sel="$(printf '%s\n' "${lsd[@]}" | fzf --reverse --print-query --expect=ctrl-e --bind="ctrl-y:execute@echo ${PWD}/{} | xclip -i -selection clipboard@" --preview 'scope.sh {q} {}')"
+        [ -z "$sel" ] && return 0
+        query="$(echo -e "$sel" | sed -n 1p)"
+        filerform="$(echo -e "$sel" | sed -n '2,3p')"
+        filerformquery="$(echo -e "$sel" | sed -n -e '1p' -e '3p')"
+        fname="$(echo -e "$sel" | sed -n 3p)"
+        if [[ -f "$fname" ]] && [ -n $(command -v filer) ]; then 
+            echo -e "$filerform" | filer
+        elif [[ -f "$query" ]] && [ -n $(command -v filer) ]; then 
+            echo -e "$filerformquery" | filer
+        elif [[ -d "$fname" ]]; then 
+            builtin cd "$fname" &> /dev/null
+        elif [[ -d "$query" ]]; then
+            builtin cd "$query" &> /dev/null
+        fi
+    done
+}
+# }}}
+
+# fkill: {{{
+function fkill() {
+    pid=$(ps -ef | \
+        sed 1d | \
+        fzf -m --preview="ps -p {2}" --preview-window=down:3 | \
+        awk '{print $2}')
+
+    if [ "x$pid" != "x" ]
+    then
+        kill -"${1:-9}" "$pid"
+    fi
+}
+# }}}
+
+## fuzzy locate config: {{{
+function fzf_locate_config()
+{
+    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+
+    # fd . ~ | fuzscope "$QUERY" | filer
+    # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
+
+    # OUT=$(locate home media | fuzscope "$QUERY" ) 
+    OUT=$(fd . ~/.config/ -L | fuzscope "$QUERY" ) 
+    if [[ ! -z "$OUT" ]]; then 
+        FILE=$(echo -e "$OUT" | tail -1)
+        # echo "$FILE"
+        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | filer 
+    fi
+
+}
+alias flc="fzf_locate_config"
+
+# }}}
+
+# function fuzscope()
+# {
+#     fzf "$@"\
+#         -0 -1 -e -d "\t" \
+#         --preview="scope.sh {q} {1} | bat" \
+#         --preview-window up:75% \
+#         --expect=ctrl-e,ctrl-b \
+#         --bind 'ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@'
+# }
