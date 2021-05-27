@@ -1,0 +1,12 @@
+set selection-clipboard clipboard
+
+set statusbar-home-tilde
+
+set default-bg "#2E3440"
+
+## Start in dark mode by default
+set recolor true
+
+## Nord colors for dark more
+set recolor-darkcolor "#D8DEE9" 
+set recolor-lightcolor "#2E3440"
