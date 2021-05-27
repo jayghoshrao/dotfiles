@@ -1,0 +1,198 @@
+##########################################
+# jayghoshter@gmail.com
+##########################################
+
+IMAPAccount gmail
+# Address to connect to
+Host imap.gmail.com
+User jayghoshter@gmail.com
+PassCmd "pass google-jayghoshter | head -n 1"
+# To store the password in an encrypted file use PassCmd instead of Pass
+# PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
+#
+# Use SSL
+SSLType IMAPS
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+#CertificateFile ~/.cert/imap.gmail.com.pem
+#CertificateFile ~/.cert/Equifax_Secure_CA.pem
+
+IMAPStore jayghoshter-remote
+Account gmail
+
+MaildirStore jayghoshter-local
+SubFolders Verbatim
+# The trailing "/" is important
+Path ~/.local/share/mail/jayghoshter/
+Inbox ~/.local/share/mail/jayghoshter/INBOX
+
+Channel jayghoshter
+Far :jayghoshter-remote:
+Near :jayghoshter-local:
+# Exclude everything under the internal [Gmail] folder, except the interesting folders
+# Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+# Or include everything
+Patterns *
+# Automatically create missing mailboxes, both locally and on the server
+Create Both
+# Save the synchronization state files in the relevant directory
+SyncState *
+
+##########################################
+# jayghoshrao@gmail.com
+##########################################
+
+IMAPAccount gmail
+# Address to connect to
+Host imap.gmail.com
+User jayghoshrao@gmail.com
+PassCmd "pass google-jayghoshrao | head -n 1"
+# To store the password in an encrypted file use PassCmd instead of Pass
+# PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
+#
+# Use SSL
+SSLType IMAPS
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+#CertificateFile ~/.cert/imap.gmail.com.pem
+#CertificateFile ~/.cert/Equifax_Secure_CA.pem
+
+IMAPStore jayghoshrao-remote
+Account gmail
+
+MaildirStore jayghoshrao-local
+SubFolders Verbatim
+# The trailing "/" is important
+Path ~/.local/share/mail/jayghoshrao/
+Inbox ~/.local/share/mail/jayghoshrao/INBOX
+
+Channel jayghoshrao
+Far :jayghoshrao-remote:
+Near :jayghoshrao-local:
+# Exclude everything under the internal [Gmail] folder, except the interesting folders
+Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+# Or include everything
+#Patterns *
+# Automatically create missing mailboxes, both locally and on the server
+Create Both
+# Save the synchronization state files in the relevant directory
+SyncState *
+
+
+##########################################
+# j.rao@fz-juelich.de / rao@ibtwebmail.ibt.w2k....
+##########################################
+
+IMAPStore modsim-remote
+Host ibtwebmail.fz-juelich.de
+User rao
+PassCmd "pass mutt-wizard-modsim | head -n 1"
+SSLType STARTTLS
+AuthMechs PLAIN
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+MaildirStore modsim-local
+SubFolders Verbatim
+Path ~/.local/share/mail/modsim/
+Inbox ~/.local/share/mail/modsim/INBOX
+
+Channel modsim
+Far :modsim-remote:
+Near :modsim-local:
+Patterns *
+Create Both
+SyncState *
+
+##############################################
+## shreyarao68@gmail.com
+##############################################
+
+#IMAPAccount shreyarao68
+## Address to connect to
+#Host imap.gmail.com
+#User shreyarao68@gmail.com
+#PassCmd "pass google-shreyarao68 | head -n 1"
+## To store the password in an encrypted file use PassCmd instead of Pass
+## PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
+##
+## Use SSL
+#SSLType IMAPS
+#AuthMechs PLAIN
+## The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+#CertificateFile /etc/ssl/certs/ca-certificates.crt
+##CertificateFile ~/.cert/imap.gmail.com.pem
+##CertificateFile ~/.cert/Equifax_Secure_CA.pem
+
+#IMAPStore shreyarao68-remote
+#Account shreyarao68
+
+#MaildirStore shreyarao68-local
+#SubFolders Verbatim
+## The trailing "/" is important
+#Path ~/.local/share/mail/shreyarao68/
+#Inbox ~/.local/share/mail/shreyarao68/INBOX
+
+#Channel shreyarao68
+#Far :shreyarao68-remote:
+#Near :shreyarao68-local:
+## Exclude everything under the internal [Gmail] folder, except the interesting folders
+#Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+## Or include everything
+##Patterns *
+## Automatically create missing mailboxes, both locally and on the server
+#Create Both
+## Save the synchronization state files in the relevant directory
+#SyncState *
+
+##############################################
+# CATS
+##############################################
+
+IMAPStore cats-remote
+Host mail.rwth-aachen.de
+User jr198806@cats.rwth-aachen.de
+PassCmd "pass mutt-wizard-cats | head -n 1"
+SSLType IMAPS
+AuthMechs LOGIN
+Port 993
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+MaildirStore cats-local
+SubFolders Verbatim
+Path ~/.local/share/mail/cats/
+Inbox ~/.local/share/mail/cats/INBOX
+
+Channel cats
+Far :cats-remote:
+Near :cats-local:
+Patterns *
+Create Both
+SyncState *
+
+#############################################
+# RWTH Aachen 
+#############################################
+
+IMAPStore rwth-remote
+Host mail.rwth-aachen.de
+User jr198806@rwth-aachen.de
+PassCmd "pass mutt-wizard-rwth | head -n 1"
+SSLType IMAPS
+AuthMechs LOGIN
+Port 993
+# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+MaildirStore rwth-local
+SubFolders Verbatim
+Path ~/.local/share/mail/rwth/
+Inbox ~/.local/share/mail/rwth/INBOX
+
+Channel rwth
+Far :rwth-remote:
+Near :rwth-local:
+Patterns *
+Create Both
+SyncState *
