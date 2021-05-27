@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+. "$(dirname "$0")"/.nnn-plugin-helper
+
+function preFlightCheck()
+{
+    TOOLS=(fuzscope filer)
+
+    exitFlag=0;
+
+    for TOOL in ${TOOLS[@]}; do 
+        if [ -x "$(command -v $TOOL )" ]; then
+            echo -ne "> Found $TOOL!      \r"
+        else 
+            echo "ERR: $TOOL doesn't exist."
+            exitFlag=1;
+        fi
+    done
+
+    if ((exitFlag == 1)); then
+        echo "Please install prerequisites!"
+        exit
+    fi
+}
+
+
+
+if [ "$(cmd_exists fd)" -eq "0" ]; then
+    sel=$(fd . ~ | fuzscope)
+else
+    sel=$(find ~ . | fuzscope)
+fi
+
+if [ -n "$sel" ]; then
+    FILE=$(echo -e "$sel" | tail -1)
+    [ -d "$FILE" ] && nnn_cd "$FILE" "0" || (echo "$sel" | filer)
+fi
