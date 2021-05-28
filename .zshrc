@@ -60,7 +60,7 @@ zpi() { zinit ice lucid                            "${@}"; } # Regular Ice
 zp()  { [ -z $2 ] && zinit light $@ || zinit $@; } # zinit
 
 # Some inspiration from https://github.com/crivotz/dot_files/blob/master/linux/zplugin/zshrc
-autoload -Uz compinit; compinit
+# autoload -Uz compinit; compinit
 
 zinit snippet OMZL::directories.zsh 
 zinit snippet OMZL::termsupport.zsh
@@ -642,7 +642,7 @@ function vimfu()
 
 alias dot="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
 alias dots="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status"
-alias dotc="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit"
+alias dotc="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose"
 alias dota="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add"
 alias dotu="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update"
 alias dotd="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff"

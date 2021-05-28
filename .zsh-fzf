@@ -256,11 +256,11 @@ p () {
 
 # FSH / Fuzzy SSH: {{{
 function fsh() {
-  ssh -Y "$(grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf -q "$1" -1)"
+  ssh -Y "$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -q "$1" -1)"
 }
 
 function fst() {
-  grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf -m -q "$1" -1 | while read host ; do
+  grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -m -q "$1" -1 | while read host ; do
   ssh -O stop "$host"
 done
 }
