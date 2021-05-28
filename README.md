@@ -7,8 +7,9 @@
                             / _` |/ _ \| __|  _| | |/ _ \/ __|
                            | (_| | (_) | |_| | | | |  __/\__ \
                             \__,_|\___/ \__|_| |_|_|\___||___/
-
-                  -----------------------------------------------------
+                             --------------------------------          
+                       Can't work with them, can't work without them
+                       ---------------------------------------------
 
 
 '
@@ -37,6 +38,8 @@ dot checkout master
 # Avoid recursion issues (unsure if it's actually needed)
 echo ".dots" >> $HOME/.gitignore
 ```
+
+Git's `sparse-checkout` might be of value when deploying on servers. 
 
 # The Big Picture
 
