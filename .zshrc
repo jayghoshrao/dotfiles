@@ -567,8 +567,46 @@ fi
 }
 autoload -Uz filer
 # filer:}}}
+# ring: {{{
+ring() {
+    ## Works even if terminal is closed, unlike the other two
+    local dtime=$1; shift
+    local time
+    if [[ $dtime =~ ":" ]]; then
+        time=$dtime
+    else
+        time=$(pdd --add $(toseconds $dtime) | head -n 1)
+    fi
+    # echo $time
+    time=$(echo $time | tr -d ':') 
+    time=$time[1,4] ## Move to 'at' format
+    # echo $time
+    echo "notify-send --urgency=critical 'Reminder' '$@'" | at $time
+}
+# }}}
+# Dotfile management: {{{
+## Functions are better for pipes
+function dot()  {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME "$@"}
+function dots() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status "$@"}
+function dotc() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose "$@"}
+function dota() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add "$@"}
+function dotu() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update "$@"}
+function dotd() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff "$@"}
+function dotr() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm "$@"}
 
-#}}}
+function dotf(){
+    ## setting the env vars helps vim-fugitive know what's going on
+    [ -n "$@" ] && QUERY="-q $@"
+    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME filer
+}
+
+function dotaf(){
+    files=$(/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview='/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --color {}' )
+    [ -n "$files" ] && echo "$files" | xargs dota
+}
+
+# }}}
+# }}}
 
 # Bell Hook: {{{
 ## this may already be in your ~/.zshrc
@@ -592,6 +630,7 @@ add-zsh-hook precmd set_longrunning_alert
 # }}}
 
 ## SSH TMUX REFRESH ENV: {{{
+
 # if [ -n "$TMUX" ]; then
 #   function refresh {
 #     # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
@@ -603,36 +642,8 @@ add-zsh-hook precmd set_longrunning_alert
 # function preexec {
 #     refresh
 # }
+
 ## SSH TMUX REFRESH ENV: }}}
-
-
-# ring() {
-#   local time=$1; shift
-#   sched "$time" "notify-send --urgency=critical 'Reminder' '$@'";
-# }; compdef r=sched
-
-# ringin() {
-#     local dtime=$1; shift
-#     local time=$(pdd --add $(toseconds $dtime) | head -n 1)
-#     # ring "$time" "$@"
-#     echo $time
-# }
-
-ring() {
-    ## Works even if terminal is closed, unlike the other two
-    local dtime=$1; shift
-    local time
-    if [[ $dtime =~ ":" ]]; then
-        time=$dtime
-    else
-        time=$(pdd --add $(toseconds $dtime) | head -n 1)
-    fi
-    # echo $time
-    time=$(echo $time | tr -d ':') 
-    time=$time[1,4] ## Move to 'at' format
-    # echo $time
-    echo "notify-send --urgency=critical 'Reminder' '$@'" | at $time
-}
 
 function vimfu()
 {
@@ -642,22 +653,3 @@ function vimfu()
     fi
 }
 
-## Functions are better for pipes
-function dot()  {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME "$@"}
-function dots() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status "$@"}
-function dotc() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose "$@"}
-function dota() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add "$@"}
-function dotu() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update "$@"}
-function dotd() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff "$@"}
-function dotr() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm "$@"}
-
-function dotf(){
-    ## setting the env vars helps vim-fugitive know what's going on
-    [ -n "$@" ] && QUERY="-q $@"
-    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME filer
-}
-
-function dotaf(){
-    files=$(/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview='/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --color {}' )
-    [ -n "$files" ] && echo "$files" | xargs dota
-}

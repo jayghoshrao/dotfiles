@@ -1229,10 +1229,6 @@ let g:vimtex_log_ignore = [ 'Underfull', 'contains only floats' ]
 let g:vimtex_quickfix_ignore_filters = [ 'Underfull', 'contains only floats']
 
 
-nmap cq gcc
-vmap cq gcc
-
-
 let g:nnn#action = {
     \ '<c-t>': 'tab split',
     \ '<c-x>': 'split',

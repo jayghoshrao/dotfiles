@@ -12,7 +12,6 @@
 
 #exec mpv --fullscreen ~/.config/i3/flash.webm-----------#
 
-# set $SCRIPTS ~/.config/i3/scripts
 set $SCRIPTS ~/bin
 set $CONFIG ~/.config/i3
 
@@ -534,7 +533,6 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 
 # END:{{{
 
 exec $SCRIPTS/run --delay 3 --display 
-exec_always $SCRIPTS/run --notification --conky --wallpaper 
-exec_always $SCRIPTS/run --delay 1 --pulseaudio --polybar 
+exec_always $SCRIPTS/run --notification --keyboard --conky --wallpaper --pulseaudio --polybar 
 
 # }}}
