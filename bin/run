@@ -37,6 +37,22 @@ launch_polybar(){
 
 
 rename_pulseaudio_sinks(){
+
+    start_time=$SECONDS
+    max_duration=60 #in seconds
+
+    while : 
+    do
+        if ps aux  | grep 'pulseaudio --daemonize' | grep -v -q grep ; then
+            echo "Pulseaudio is running!"
+            break
+        elif $(( SECONDS - start_time > max_duration)); then
+            echo "Taking too long, quitting!"
+            return 1
+        fi
+        sleep 2
+    done
+
     SINKS=$(pacmd list-sinks | grep -e 'name:')
     if [[ "$SINKS" =~ 'alsa_output.pci-0000_00_1f.3.analog-stereo' ]]; then
         pacmd update-sink-proplist alsa_output.pci-0000_00_1f.3.analog-stereo device.description="Speakers" 

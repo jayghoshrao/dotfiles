@@ -10,10 +10,14 @@
 #
 #  ~/.zsh-fzf
 #  ~/.zsh-local
+#
+#  Might wanna add `export XDG_CURRENT_DESKTOP=GNOME` to /etc/profile on fresh installs
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
 # # autoload -U +X bashcompinit && bashcompinit
+
+## NOTE: Uncomment in case compaudit complains of insecure directories
 # autoload -U +X compinit && compinit -i
 
 if [ $HOST = "IBT918" ]; then
@@ -636,4 +640,13 @@ function vimfu()
     fi
 }
 
-alias dots="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
+alias dot="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
+alias dots="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status"
+alias dotc="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit"
+alias dota="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add"
+alias dotu="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update"
+alias dotd="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff"
+alias dotr="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm"
+function! dotf(){
+    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | ff
+}
