@@ -313,11 +313,13 @@ command -v nvim >/dev/null && alias vim="nvim" vimdiff="nvim -d" # Use neovim fo
 
 #Alias {{{
 
-alias zc="$EDITOR ~/.zshrc"
+alias i3c="dotf $HOME/.config/i3/config"
+alias zc="dotf $HOME/.zshrc"
+alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
-alias zcf="$EDITOR ~/.zsh-fzf"
-alias nrc="$EDITOR ~/.config/nvim/init.vim"
-alias zsrc="source ~/.zshrc"
+alias nrc="dotf $HOME/.config/nvim/init.vim"
+alias zsrc="source $HOME/.zshrc"
+
 alias nn="note"
 alias nd="notes -d $HOME/Dropbox/DND"
 alias ndn="note -d $HOME/Dropbox/DND"
@@ -325,9 +327,9 @@ alias ns="notesearch"
 alias fns="fnotesearch"
 # alias nd="ls --group-directories-first $NOTES_DIR"
 alias n="notes"
+
 alias t="thesaurus"
 alias gj="git-jump"
-
 alias fu="findup.py"
 
 alias -g ff="fuzscope | filer"
@@ -640,13 +642,22 @@ function vimfu()
     fi
 }
 
-alias dot="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
-alias dots="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status"
-alias dotc="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose"
-alias dota="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add"
-alias dotu="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update"
-alias dotd="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff"
-alias dotr="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm"
-function! dotf(){
-    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | ff
+## Functions are better for pipes
+function dot()  {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME "$@"}
+function dots() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status "$@"}
+function dotc() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose "$@"}
+function dota() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add "$@"}
+function dotu() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update "$@"}
+function dotd() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff "$@"}
+function dotr() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm "$@"}
+
+function dotf(){
+    ## setting the env vars helps vim-fugitive know what's going on
+    [ -n "$@" ] && QUERY="-q $@"
+    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME filer
+}
+
+function dotaf(){
+    files=$(/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview='/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --color {}' )
+    [ -n "$files" ] && echo "$files" | xargs dota
 }
