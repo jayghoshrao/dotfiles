@@ -73,7 +73,7 @@ format-foreground = ${colors.foreground}
 
 [module/vpnstatus]
 type              = custom/script
-exec              = ~/.config/i3/i3blocks/vpnstatus
+exec              = ~/bin/vpnstatus
 interval          = 1
 format = <label>
 label = %output%
@@ -273,7 +273,7 @@ format-foreground = #d3dae6
 
 [module/updates]
 type = custom/script
-exec = ~/.config/i3/i3blocks/updates
+exec = ~/bin/pb-updates
 interval = 30
 format-prefix = " "
 format = <label>
