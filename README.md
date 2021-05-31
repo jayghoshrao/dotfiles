@@ -24,7 +24,7 @@ A brief shout out to [Chezmoi](https://blog.lazkani.io/posts/backup/dotfiles-wit
 ## Usage
 ```
 # Clone bare repo
-git clone --bare git@github.com:jayghoshter/dotfiles.git $HOME/.dots
+git clone --bare https://github.com/jayghoshter/dotfiles.git $HOME/.dots
 
 # Use this alias for brevity
 alias dot="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
@@ -33,13 +33,13 @@ alias dot="/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME"
 dot config --local status.showUntrackedFiles no
 
 # Checkout worktree
-dot checkout master
+dot checkout master <paths>
 
 # Avoid recursion issues (unsure if it's actually needed)
 echo ".dots" >> $HOME/.gitignore
 ```
 
-Git's `sparse-checkout` might be of value when deploying on servers. 
+For quick deployment of the essentials: `curl -fsSL https://git.io/JG49t | bash`
 
 # The Big Picture
 

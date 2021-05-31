@@ -161,7 +161,7 @@ zinit light arcticicestudio/nord-dircolors
 
 # Bindkeys: {{{
 # Allow v to edit the command line
-# bindkey -v                                                       # vim mode in shell 
+bindkey -v                                                       # vim mode in shell 
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
@@ -317,7 +317,8 @@ alias i3c="dotf $HOME/.config/i3/config"
 alias zc="dotf $HOME/.zshrc"
 alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
-alias nrc="dotf $HOME/.config/nvim/init.vim"
+# alias nrc="dotf $HOME/.config/nvim/init.vim"
+alias nrc="$EDITOR $HOME/.config/nvim/init.vim"
 alias zsrc="source $HOME/.zshrc"
 
 alias nn="note"

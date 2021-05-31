@@ -988,6 +988,7 @@ nnoremap <space>b <cmd>Telescope builtin<cr>
 lua require('telescope').load_extension('gh')
 nnoremap <space>gi <cmd>Telescope gh issues<cr>
 nnoremap <space>gp <cmd>Telescope gh pull_request<cr>
+nnoremap <space>gg <cmd>Telescope gh gist<cr>
 
 " }}}
 
