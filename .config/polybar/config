@@ -364,7 +364,7 @@ tray-offset-y = 0%
 tray-offset-x = 0%
 tray-detached = false
 tray-background = ${colors.shade1}
-tray-maxsize = 50
+tray-maxsize = 60
 dpi=-1
 
 [bar/right]

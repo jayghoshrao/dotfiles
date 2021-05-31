@@ -602,7 +602,7 @@ function dotf(){
 
 function dotaf(){
     files=$(/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview='/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --color {}' )
-    [ -n "$files" ] && echo "$files" | xargs dota
+    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add 
 }
 
 # }}}
