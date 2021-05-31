@@ -39,7 +39,7 @@ dot checkout master <paths>
 echo ".dots" >> $HOME/.gitignore
 ```
 
-For quick deployment of the essentials: `curl -fsSL https://git.io/JG49t | bash`
+For quick deployment of the essentials: `curl -fsSL https://git.io/JGBz8 | bash`
 
 # The Big Picture
 
