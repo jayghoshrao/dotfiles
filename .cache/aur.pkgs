@@ -48,6 +48,7 @@ mopidy-podcast
 mpv-mpris
 mutt-ics
 ncspot-git
+neovim-nightly-bin
 nerd-fonts-iosevka
 pam-gnupg
 pandoc-eqnos
@@ -65,6 +66,7 @@ polybar
 pulseaudio-control
 pup-git
 py3status-github-notifications
+pyright
 python-bibtexparser
 python-cmapy
 python-i3-py
