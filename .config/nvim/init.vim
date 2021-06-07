@@ -8,12 +8,13 @@
 
 " Check out https://github.com/gillescastel/latex-snippets
 " Better compatibility with remote servers: Simpler vimrc
-" https://github.com/vim-scripts/argtextobj.vim
-" https://github.com/bkad/CamelCaseMotion
+" TODO:  https://github.com/bkad/CamelCaseMotion or https://github.com/chaoren/vim-wordmotion
 " TODO: Plug 'voldikss/vim-floaterm'
 " TODO: https://github.com/junegunn/vim-peekaboo
 " TODO: https://github.com/stefandtw/quickfix-reflector.vim
 " TODO: Vimspector + Telescope
+"https://github.com/d0c-s4vage/lookatme
+"https://github.com/b3nj5m1n/kommentary
 
 " Plugins :{{{
 set nocompatible              " be iMproved, required
@@ -25,6 +26,15 @@ let mapleader = ","
 let g:mapleader = ","
 
 call plug#begin('~/.config/nvim/bundle')
+
+
+" Declarations: {{{
+"
+" Plug '~/.config/nvim/bundle/tasktags.vim'
+Plug 'jayghoshter/tasktags.vim'
+
+" Plug 'chaoren/vim-wordmotion'
+Plug 'bkad/CamelCaseMotion'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
@@ -38,24 +48,15 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
 Plug 'vim-scripts/argtextobj.vim'
 
-Plug 'bluz71/vim-moonfly-colors'
-
-" Declarations: {{{
-
 Plug 'jremmen/vim-ripgrep'
 Plug 'rbong/vim-crystalline'
-
-" Plug 'wellle/targets.vim'
-" Plug 'kien/ctrlp.vim'                                         " File Access
-" Plug 'idanarye/vim-omnipytent'                                " build system
-" Plug 'Konfekt/FastFold'
 
 Plug 'Valloric/ListToggle' 
 Plug 'lervag/vimtex'
 Plug 'lambdalisue/suda.vim'
 
-" Plug 'arcticicestudio/nord-vim'                               " theme
-Plug 'shaunsingh/nord.nvim'
+Plug 'arcticicestudio/nord-vim'                               " theme
+" Plug 'shaunsingh/nord.nvim'
 Plug 'mboughaba/i3config.vim'                                 " Config syntax
 
 Plug 'tpope/vim-commentary'                                   " comments and stuff
@@ -65,11 +66,10 @@ Plug 'tpope/vim-fugitive'                                     " git stuff
 Plug 'tpope/vim-repeat'                                       " easy repeat of some motions
 Plug 'tpope/vim-obsession'                                    " Sessions in vim (best paired with tmux-continuum)
 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'                                      " Centered Wrapping
 Plug 'junegunn/limelight.vim'                                 " Highlight current Paragraph, dim everything else
                                                               " Plug 'ludovicchabant/vim-gutentags'
+Plug 'wellle/targets.vim'
 Plug 'Raimondi/delimitMate'                                 
 Plug 'mcchrish/nnn.vim'
 Plug 'michaeljsmith/vim-indent-object'
@@ -78,8 +78,13 @@ Plug 'Yggdroot/indentLine'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'skywind3000/asyncrun.vim'
 Plug 'tommcdo/vim-lion'                                       " Alignment with characters (Ex: =)
-Plug 'universal-ctags/ctags'
 Plug 'vim-pandoc/vim-pandoc'
+
+" Plug 'idanarye/vim-omnipytent'                                " build system
+" Plug 'universal-ctags/ctags'
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
 
 " }}}
 
@@ -126,15 +131,6 @@ autocmd! User GoyoEnter nested call <SID>goyo_enter()
 autocmd! User GoyoLeave nested call <SID>goyo_leave()
 
 "}}}
-""Airline: {{{
-
-"Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
-"let g:airline_powerline_fonts = 1
-"let g:Powerline_symbols = 'unicode'
-"let g:airline#extensions#tabline#enabled = 1
-
-""}}}
 " VimWiki:{{{
     Plug 'vimwiki/vimwiki'
 
@@ -151,16 +147,41 @@ autocmd! User GoyoLeave nested call <SID>goyo_leave()
     au FileType vimwiki set filetype=vimwiki.markdown.pandoc.tex
 " }}}
 " Crystalline: {{{
-" function! StatusLine(...)
-"   return '%#Crystalline# %f%h%w%m%r %#CrystallineFill#'
-"         \ . '%=%#Crystalline# %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
-" endfunction
-" let g:crystalline_statusline_fn = 'StatusLine'
+function! StatusLine(current, width)
+  let l:s = ''
+
+  if a:current
+    let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
+  else
+    let l:s .= '%#CrystallineInactive#'
+  endif
+  let l:s .= ' %f%h%w%m%r '
+  if a:current
+    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+  endif
+
+  let l:s .= '%='
+  if a:current
+    let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
+    let l:s .= crystalline#left_mode_sep('')
+  endif
+  if a:width > 80
+    let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
+  else
+    let l:s .= ' '
+  endif
+
+  return l:s
+endfunction
+let g:crystalline_statusline_fn = 'StatusLine'
+
 let g:crystalline_enable_sep = 1
 let g:crystalline_theme = 'nord'
 set tabline=%!crystalline#bufferline()
+set statusline=%!crystalline#StatusLine()
 set showtabline=2
-" set laststatus=2
+set guioptions-=e
+set laststatus=2
 " }}}
 
 call plug#end()            " required
@@ -226,7 +247,7 @@ set matchtime=2
 set splitright            " vsplit defaults right
 set splitbelow            " split defaults bottom
 set wildmenu
-set laststatus=0          " use 2 for airline, 0 otherwise
+set laststatus=2          " use 2 for airline, 0 otherwise
 set inccommand=split
 set clipboard=unnamedplus		"register = clipboard"
 set completeopt=noinsert,menuone,noselect
@@ -238,6 +259,8 @@ set signcolumn=yes          " always show signcolumns: helps with linters for er
 set shortmess+=c
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
+
+set formatoptions+=cro          " Autoinsert commentstring on 'o'
 
 " Search down into subfolders
 " Provides tab-completion for all file related tasks
@@ -259,7 +282,6 @@ let fortran_more_precise           = 1
 let fortran_fold                   = 1
 let fortran_fold_conditionals      = 1
 let fortran_fold_multilinecomments = 1
-" hi link fortranTab NONE
 
 "}}}
 
@@ -271,10 +293,6 @@ syntax on                 "neovim default on
 
 map j gj
 map k gk
-
-" Required for vim-smoothie
-" map J <C-d> 
-" map K <C-U>
 
 noremap J <C-d>
 noremap K <C-U>
@@ -454,6 +472,7 @@ tnoremap <leader>a <C-\><C-n>:call Term_toggle()<cr>
 "}}}
 
 "Create Non Existent Directories:{{{
+" Create non-existent directories before writing. Avoids an annoying error.
 function! s:MkNonExDir(file, buf)
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
         let dir=fnamemodify(a:file, ':h')
@@ -477,41 +496,15 @@ autocmd SwapExists * let v:swapchoice = "o"
 " autocmd Filetype tex set filetype=plaintex.tex
 autocmd Filetype conf,cmake,xns set commentstring=#\ %s
 autocmd Filetype tex set commentstring=%%\ %s
-
 au BufNewFile,BufRead xns*.in* set filetype=xns
-
-"o on line with comment won't generate a commented line
-" autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 "}}}
 
 "Asyncrun functions:{{{
-let g:asyncrun_rootmarks = ['.svn', '.git', '.root', '_darcs', 'build.xml']
+let g:asyncrun_rootmarks = ['.git', '.root']
 let g:asyncrun_bell=20
 let g:asyncrun_trim=1
 let g:asyncrun_open=0
-
-" C: {{{
-function! s:AsyncRunC()
-    let dir=expand('<amatch>:p:h') |
-                \ if filereadable('build/Makefile') || filereadable('build/makefile') |
-                \   execute 'AsyncRun make -C build' |
-                \ endif
-endfunction
-" }}}
-
-" Markdown: {{{
-function! s:AsyncRunMD()
-    let dir=expand('<amatch>:p:h') |
-                \ if filereadable('Makefile') |
-                \   execute 'AsyncRun make -j4 pdf' |
-                \ elseif filereadable('../Makefile') |
-                \   execute 'AsyncRun make -C .. -j4 pdf' |
-                \ endif
-endfunction
-    
-" }}}
-    
 
 " Quickfix: {{{
 function! s:AsyncQuickFix()
@@ -524,10 +517,6 @@ function! s:AsyncQuickFix()
 " }}}
 
 augroup asyncRunGroup
-	" autocmd BufWritePost *.c,*.cpp,*.h,*.hpp :call <SID>AsyncRunC()
-	" autocmd BufWritePost *.md :call <SID>AsyncRunMD()
-	" autocmd BufWritePost *.py :call <SID>AsyncRunPython()
-	" autocmd FileType python :call <SID>AsyncRunPython()
 	autocmd! BufWritePost *.tex execute 'AsyncRun pdflatex %'
 	autocmd! User AsyncRunStop :call <SID>AsyncQuickFix()
 augroup END
@@ -575,18 +564,6 @@ augroup END
 
 " }}}
 
-"Others:{{{
-
-if filereadable($HOME . "/.vimrc_local")
-    source ~/.vimrc_local
-endif
-
-command! -bang -nargs=* Mir :!mir <args>
-
-let $PATH .= ':/home/jayghoshter/bin'
-
-"}}}
-
 " Tmux Navigation: {{{
 if exists('$TMUX')
   function! TmuxOrSplitSwitch(wincmd, tmuxdir)
@@ -614,279 +591,10 @@ else
 endif
 "  }}}
 
-"" CoC.nvim:{{{
-
-"" inoremap <silent><expr> <TAB>
-""             \ pumvisible() ? "\<C-n>" :
-""             \ <SID>check_back_space() ? "\<TAB>" :
-""             \ coc#refresh()
-"" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-"" function! s:check_back_space() abort
-""     let col = col('.') - 1
-""     return !col || getline('.')[col - 1]  =~# '\s'
-"" endfunction
-
-"" Use <c-space> to trigger completion.
-"inoremap <silent><expr> <c-k> coc#refresh()
-
-"" " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-"" " Coc only does snippet and additional edit on confirm.
-"" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-"" Rename
-"nmap <leader>rn <Plug>(coc-rename)
-
-"" Use `[c` and `]c` to navigate diagnostics
-""
-"nnoremap <silent> <space>c  :<C-u>CocDiagnostics<cr>
-"nmap <silent> [c <Plug>(coc-diagnostic-prev)
-"nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-"" Remap keys for gotos
-"nmap <silent> gd <Plug>(coc-definition)
-"nmap <silent> gy <Plug>(coc-type-definition)
-"nmap <silent> gi <Plug>(coc-implementation)
-"nmap <silent> gr <Plug>(coc-references)
-
-"" Use K to show documentation in preview window
-"" nnoremap <silent> K :call <SID>show_documentation()<CR>
-"nnoremap <silent> <leader>k :call <SID>show_documentation()<CR>
-
-"function! s:show_documentation()
-"  if (index(['vim','help'], &filetype) >= 0)
-"    execute 'h '.expand('<cword>')
-"  else
-"    call CocAction('doHover')
-"  endif
-"endfunction
-
-"" Highlight symbol under cursor on CursorHold
-"" autocmd CursorHold * silent call CocActionAsync('highlight')
-
-"" Remap for format selected region
-"" xmap <leader>f  <Plug>(coc-format-selected)
-"" nmap <leader>f  <Plug>(coc-format-selected)
-
-"augroup mygroup
-"  autocmd!
-"  " Setup formatexpr specified filetype(s).
-"  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-"  " Update signature help on jump placeholder
-"  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-"augroup end
-
-"" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-"" xmap <leader>a  <Plug>(coc-codeaction-selected)
-"" nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-"" " Remap for do codeAction of current line
-"" nmap <leader>ac  <Plug>(coc-codeaction)
-"" Fix autofix problem of current line
-"" nmap <leader>qf  <Plug>(coc-fix-current)
-"" nmap <leader>f  <Plug>(coc-fix-current)
-
-"" " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-"" nmap <silent> <TAB> <Plug>(coc-range-select)
-"" xmap <silent> <TAB> <Plug>(coc-range-select)
-"" xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
-
-"" Use `:Format` to format current buffer
-"" command! -nargs=0 Format :call CocAction('format')
-
-"" Use `:Fold` to fold current buffer
-"" command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-"" use `:OR` for organize import of current buffer
-"" command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-"" Add status line support, for integration with other plugin, checkout `:h coc-status`
-"" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-"" Using CocList
-"" Show all diagnostics
-"nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-"" Manage extensions
-"" nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-"" Show commands
-"" nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-"" Find symbol of current document
-"nnoremap <silent> <space>'  :<C-u>CocList outline<cr>
-"" Search workspace symbols
-"" nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-"" Do default action for next item.
-"" nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-"" Do default action for previous item.
-"" nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-"" Resume latest coc list
-"" nnoremap <silent> <space>m  :<C-u>CocListResume<CR>
-
-"" }}}
-
-"Autocomplete: {{{
-
-"}}}
-
-" Nord:{{{
-
-let s:nord0_gui = "#2E3440"
-let s:nord1_gui = "#3B4252"
-let s:nord2_gui = "#434C5E"
-let s:nord3_gui = "#4C566A"
-let s:nord3_gui_bright = "#616E88"
-let s:nord4_gui = "#D8DEE9"
-let s:nord5_gui = "#E5E9F0"
-let s:nord6_gui = "#ECEFF4"
-let s:nord7_gui = "#8FBCBB"
-let s:nord8_gui = "#88C0D0"
-let s:nord9_gui = "#81A1C1"
-let s:nord10_gui = "#5E81AC"
-let s:nord11_gui = "#BF616A"
-let s:nord12_gui = "#D08770"
-let s:nord13_gui = "#EBCB8B"
-let s:nord14_gui = "#A3BE8C"
-let s:nord15_gui = "#B48EAD"
-
-let s:nord1_term = "0"
-let s:nord3_term = "8"
-let s:nord5_term = "7"
-let s:nord6_term = "15"
-let s:nord7_term = "14"
-let s:nord8_term = "6"
-let s:nord9_term = "4"
-let s:nord10_term = "12"
-let s:nord11_term = "1"
-let s:nord12_term = "11"
-let s:nord13_term = "3"
-let s:nord14_term = "2"
-let s:nord15_term = "5"
-
-function! s:hi(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
-  if a:guifg != ""
-    exec "hi " . a:group . " guifg=" . a:guifg
-  endif
-  if a:guibg != ""
-    exec "hi " . a:group . " guibg=" . a:guibg
-  endif
-  if a:ctermfg != ""
-    exec "hi " . a:group . " ctermfg=" . a:ctermfg
-  endif
-  if a:ctermbg != ""
-    exec "hi " . a:group . " ctermbg=" . a:ctermbg
-  endif
-  if a:attr != ""
-    exec "hi " . a:group . " gui=" . a:attr . " cterm=" . a.attr
-  endif
-  if a:guisp != ""
-    exec "hi " . a:group . " guisp=" . a:guisp
-  endif
-endfunction
-
-" }}}
-
-" Task Tag Highlights:{{{
-call s:hi("MyError", s:nord0_gui, s:nord11_gui, "", s:nord11_term, "", "")
-call s:hi("MySuccess", s:nord0_gui, s:nord14_gui, "", s:nord14_term, "", "")
-call s:hi("MyOngoing", s:nord0_gui, s:nord7_gui, "", s:nord7_term, "", "")
-call s:hi("MyTask", s:nord0_gui, s:nord13_gui, "", s:nord13_term, "", "")
-call s:hi("MyNote", s:nord0_gui, s:nord10_gui, "", s:nord10_term, "", "")
-call s:hi("MyWait", s:nord0_gui, s:nord15_gui, "", s:nord15_term, "", "")
-call s:hi("MyDrop", s:nord0_gui, s:nord6_gui, "", s:nord6_term, "", "")
-call s:hi("MyNext", s:nord0_gui, s:nord12_gui, "", s:nord12_term, "", "")
-call s:hi("MyPush", s:nord0_gui, s:nord12_gui, "", s:nord12_term, "", "")
-call s:hi("MyProject", s:nord0_gui, s:nord5_gui, "", s:nord5_term, "", "")
-
-
-augroup HiglightTODO
-    autocmd!
-    autocmd BufEnter * :silent! call matchadd('MySuccess', '\[PASS\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyProject', '\[PROJ:[^]]*\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyProject', '\[PROJ]', -1)
-    autocmd BufEnter * :silent! call matchadd('MySuccess', '\[DONE\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyOngoing', '\[ONGO\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyOngoing', '\[PART\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyError', '\[PROB\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyError', '\[FAIL\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyTask', '\[WORK\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyTask', '\[TASK\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyTask', '\[DCHK\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyTask', '\[REVW\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyNote', '\[NOTE\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyNote', '\[MEET\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyWait', '\[WAIT\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyDrop', '\[DROP\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyNext', '\[NEXT\]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyPush', '\[PUSH\]', -1)
-augroup END
-
-augroup HighlightDND
-    autocmd BufEnter * :silent! call matchadd('MyOngoing', '@npc', -1)
-    autocmd BufEnter * :silent! call matchadd('MyWait', '@loc', -1)
-    autocmd BufEnter * :silent! call matchadd('MySuccess', '@DC[0-9][0-9]', -1)
-    autocmd BufEnter * :silent! call matchadd('MyProject', '@scene', -1)
-    autocmd BufEnter * :silent! call matchadd('MyNext', '@trial', -1)
-    autocmd BufEnter * :silent! call matchadd('MyError', '@combat', -1)
-    autocmd BufEnter * :silent! call matchadd('MyTask', '@task', -1)
-augroup  END
-
-" More keywords: HALT, HOLD, STOP, REVW, DCHK
-" TODO: Save cursor positions
-" TODO: If exists but different, change to current, elseif same, toggle, else
-" create
-
-
-function! Tasker(tag)
-    let l:line = getline('.')
-    let l:lineno = line('.')
-    if match(line, '- \['.a:tag.'\]')>-1 
-        call setline(lineno, substitute(line, ' \['.a:tag.'\]', '', '') )
-    elseif match(line, '\['.a:tag.'\]')>-1
-        call setline(lineno, substitute(line, '\['.a:tag.'\] ', '', '') )
-    elseif match(line, '- \[....\]')>-1
-        call setline(lineno, substitute(line, '\[....\]', '\['.a:tag.']', '') )
-    elseif match(line, '\[....\]')>-1
-        call setline(lineno, substitute(line, '\[....\]', '\['.a:tag.']', '') )
-    elseif match(line, '^\s*-')>-1
-        call setline(lineno, substitute(line, '-', '- \['.a:tag.'\]', ''))
-    else
-        call setline(lineno, substitute(line, '^', '\['.a:tag.'\] ', ''))
-    endif
-endfunction
-
-" nnoremap ;e :call Tasker(' ')<CR>0f[ 
-nnoremap ;x :call Tasker('NEXT')<CR> 
-nnoremap ;t :call Tasker('TASK')<CR>
-nnoremap ;o :call Tasker('ONGO')<CR>
-nnoremap ;d :call Tasker('DONE')<CR>
-nnoremap ;r :call Tasker('DROP')<CR>
-nnoremap ;p :call Tasker('PROB')<CR>
-nnoremap ;f :call Tasker('FAIL')<CR>
-nnoremap ;n :call Tasker('NOTE')<CR>
-nnoremap ;w :call Tasker('WAIT')<CR>
-nnoremap ;u :call Tasker('PUSH')<CR>
-nnoremap ;m :call Tasker('MEET')<CR>
-
-" vnoremap ;e :call Tasker(' ')<CR>0f[ 
-" vnoremap ;x :call Tasker('X')<CR> 
-vnoremap ;x :call Tasker('NEXT')<CR> 
-vnoremap ;t :call Tasker('TASK')<CR>
-vnoremap ;o :call Tasker('ONGO')<CR>
-vnoremap ;d :call Tasker('DONE')<CR>
-vnoremap ;r :call Tasker('DROP')<CR>
-vnoremap ;p :call Tasker('PROB')<CR>
-vnoremap ;f :call Tasker('FAIL')<CR>
-vnoremap ;n :call Tasker('NOTE')<CR>
-vnoremap ;w :call Tasker('WAIT')<CR>
-vnoremap ;u :call Tasker('PUSH')<CR>
-vnoremap ;m :call Tasker('MEET')<CR>
-
-" }}}
-
 " ListToggle: {{{
 let g:lt_location_list_toggle_map = '<space>w'
 let g:lt_quickfix_list_toggle_map = '<space>q'
 let g:lt_height = 10
-
 " }}}
 
 " TeX/VimTex: {{{ 
@@ -926,8 +634,6 @@ let g:nnn#layout = { 'left': '~40%' } " or right, up, down
 " }}}
 
 " Indent lines: {{{
-" let g:indentLine_color_term = 6 " Makes the vertical bars Green from term color 1
-" let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 
 let g:indentLine_enabled = 1 
 let g:indentLine_setConceal = 1
@@ -966,7 +672,7 @@ require'nvim-treesitter.configs'.setup {
           },
   },
   indent = {
-  enable = true
+  enable = true,
   }
 }
 EOF
@@ -979,6 +685,7 @@ nnoremap <space>f <cmd>Telescope live_grep<cr>
 nnoremap <space>l <cmd>Telescope buffers<cr>
 nnoremap <space>h <cmd>Telescope help_tags<cr>
 nnoremap <space>e <cmd>Telescope current_buffer_fuzzy_find<cr>
+nnoremap <C-e>    <cmd>Telescope current_buffer_fuzzy_find<cr>
 nnoremap <space>m <cmd>Telescope marks<cr>
 nnoremap <space>; <cmd>Telescope command_history<cr>
 nnoremap <space>/ <cmd>Telescope search_history<cr>
@@ -1140,19 +847,19 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  buf_set_keymap('n', '<C-j>', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  -- buf_set_keymap('n', '<C-j>', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', '<space>y', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  -- buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   -- buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  -- buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 end
 
@@ -1231,18 +938,32 @@ require('telescope').setup{
     }
 }
 require('telescope').load_extension('fzy_native')
-
--- local M={}
--- M.git_dirty=function()
--- require('telescope.builtin').find_files({
---     prompt_title = "Git Dirty >",
---     find_command = "git ls-files -m -o --exclude-standard",
--- })
--- end
--- return M
-
-
 EOF
 
 nnoremap <space>t :lua require("custom.telescope").project_files()<cr>
 nnoremap <space>gd :lua require("custom.telescope").git_dirty()<cr>
+
+nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
+
+nnoremap <leader>r :Gcd<cr>
+
+map <silent> w <Plug>CamelCaseMotion_w
+map <silent> b <Plug>CamelCaseMotion_b
+map <silent> e <Plug>CamelCaseMotion_e
+map <silent> ge <Plug>CamelCaseMotion_ge
+sunmap w
+sunmap b
+sunmap e
+sunmap ge
+
+omap <silent> iw <Plug>CamelCaseMotion_iw
+xmap <silent> iw <Plug>CamelCaseMotion_iw
+omap <silent> ib <Plug>CamelCaseMotion_ib
+xmap <silent> ib <Plug>CamelCaseMotion_ib
+omap <silent> ie <Plug>CamelCaseMotion_ie
+xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+imap <silent> <S-Left> <C-o><Plug>CamelCaseMotion_b
+imap <silent> <S-Right> <C-o><Plug>CamelCaseMotion_w
+
+" let $PATH .= ':/home/jayghoshter/bin'

@@ -66,7 +66,6 @@ polybar
 pulseaudio-control
 pup-git
 py3status-github-notifications
-pyright
 python-bibtexparser
 python-cmapy
 python-i3-py
