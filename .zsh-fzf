@@ -356,3 +356,19 @@ alias flc="fzf_locate_config"
 #         --expect=ctrl-e,ctrl-b \
 #         --bind 'ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@'
 # }
+
+
+autoload fzf_copy
+function fzf_copy()
+{
+    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+
+    OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2) 
+
+    for file in ${OUT[@]}; do
+        cp "$file" .
+    done
+}
+
+alias fcp="fzf_copy"
+zle -N fzf_copy

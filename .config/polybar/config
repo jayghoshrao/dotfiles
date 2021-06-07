@@ -283,6 +283,18 @@ format-foreground = ${colors.foreground}
 format-background = ${colors.shade6}
 format-font = 6
 
+[module/ghnoti]
+type = custom/script
+exec = ~/bin/ghnoti
+interval = 300
+format-prefix = " "
+format = <label>
+label = %output%
+format-padding = 1
+format-foreground = ${colors.nord4}
+format-background = ${colors.background}
+format-font = 6
+
 [module/pulseaudio-control]
 type = custom/script
 tail = true
@@ -344,7 +356,7 @@ height = 40
 
 modules-left = i3 pomodoro 
 modules-center = xwindow
-modules-right = right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date right1
+modules-right = ghnoti right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date right1
 
 background = ${colors.background}
 foreground = ${colors.foreground}

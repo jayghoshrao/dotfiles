@@ -3,7 +3,7 @@
 """
 USAGE: mir <dirs> -t/s <servers>
 -t pushes to target servers, -s pulls from source servers. They take multiple arguments, so ensure that they come AFTER the <dirs> args.
-<dirs> is run from root directory (with mir.ini file)
+<dirs> is run from root directory (with .mirrors file)
 If called from a subdirectory, the <dirs> is automatically set to current directory
 root directory on the server must exist before using this tool.
 
@@ -13,7 +13,7 @@ BE VERY CAREFUL PULLING THINGS FROM OTHER SERVERS. ESPECIALLY WHEN '.git' IS IN 
 
 ## TODO: move to pathlib
 ## TODO: add prompts, asking confirmation before mirroring
-## DONE: look progressively upwards (depth =1 ) for mir.ini. This should allow any  subdirectory at any depth alone to be synced.
+## DONE: look progressively upwards (depth =1 ) for .mirrors. This should allow any  subdirectory at any depth alone to be synced.
 ## TODO: Ensure mkdir -p
 ## FIXME: Respect gitignore or transmit only git-files: filter ':' considers files to be remote. Tricky as hell.
 ## DONE: Implement Dry Run mode
@@ -52,7 +52,7 @@ def readINI(filestring, dictionary):
                 arr = line.strip().split(' ')
                 dictionary[arr[0]] = arr[1]
     except:
-        print("Error: mir.ini file not found!")
+        print("Error: .mirrors file not found!")
 
 def pull(DIR, SOURCE, remote, dryrun):
     try:
@@ -122,12 +122,12 @@ def main():
         # PRECMDLIST.append(' --exclude-from="' + gitignore + '"')
         # PRECMD = PRECMD + " --filter=':- " + args['filter'] + "'"
 
-    root = find("mir.ini", os.path.realpath('.'))
+    root = find(".mirrors", os.path.realpath('.'))
     if root is None:
-        print("No mir.ini found in current or parent directories.")
+        print("No .mirrors found in current or parent directories.")
         sys.exit()
     print("found root: ", root)
-    inifile = os.path.join(root, "mir.ini")
+    inifile = os.path.join(root, ".mirrors")
     cwd = os.getcwd()
 
     if cwd != root:

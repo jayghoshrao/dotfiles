@@ -1,6 +1,6 @@
 https://hnrss.org/frontpage tech
-http://rss.dw.com/rdf/rss-en-all news world
-https://forum.cadet-web.de/latest.rss
+https://eli.thegreenplace.net/feeds/all.atom.xml blog programming
+https://fasterthanli.me/index.xml blog programming 
 https://www.reddit.com/r/unixporn.rss reddit 
 https://www.reddit.com/r/linux.rss reddit linux
 https://www.archlinux.org/feeds/news/ linux arch
@@ -22,6 +22,7 @@ http://www.npr.org/rss/podcast.php?id=510298 podcast
 
 # "query:Podcasts:tags # \"podcast\""
 
+http://rss.dw.com/rdf/rss-en-all news world
 "query:News:tags # \"news\""
 https://www.youtube.com/feeds/videos.xml?channel_id=UCuyRsHZILrU7ZDIAbGASHdA !news news 
 https://www.reddit.com/r/india.rss reddit !news news india 
