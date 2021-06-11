@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 from github import Github, GithubException
-from pyfzf.pyfzf import FzfPrompt
-import argparse
 from pathlib import Path
-from subprocess import run
-from random import shuffle
 
+credentialsFile = Path('~/.local/share/credentials').expanduser()
 
 def get_notifications(key):
     try:
@@ -16,10 +12,18 @@ def get_notifications(key):
     except GithubException as github_exception:
         return f"error {github_exception}"
 
+def get_token(_name:str):
+    with open(credentialsFile, 'r') as creds:
+        for line in creds:
+            name, token = line.split('=')
+            if name == _name:
+                return token.strip()
+
+def main():
+    key = get_token('GITHUB_NOTIFICATIONS_TOKEN')
+    notis = get_notifications(key)
+    if int(notis) > 0:
+        print("", notis)
 
 if __name__ == "__main__":
-    key=os.getenv('GITHUB_NOTIFICATIONS_TOKEN')
-    notis = get_notifications(key)
-    if notis > 0:
-        print(notis)
-
+    main()

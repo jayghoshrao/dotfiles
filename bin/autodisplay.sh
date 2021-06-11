@@ -1,12 +1,14 @@
 #!/bin/bash
 
-current=$HOME/.cache/current.layout
-xrandr --prop | grep -A2 EDID > $current
+# Display handling script. To be used in conjunction with "bin/savescreenlayout".
+#
 
-# ## Turn off everything except laptop monitor
-# xrandr -q | awk '/ connected / {print $1}' | while read display; do
-#     [[ $display != "eDP1" ]] && xrandr --output $display --off || xrandr --output $display --auto
-# done
+set -euo pipefail
+
+layoutsDir="$HOME/.screenlayout"
+layoutsFile="$layoutsDir/layouts"
+currentHash=$(xrandr --prop | grep -A2 EDID | sha256sum | cut -c 1-32)
+currentLayout=$(grep "$currentHash" "$layoutsFile" | awk '{print $1}')
 
 # ## Turn off everything except laptop monitor
 xrandr \
@@ -22,8 +24,4 @@ xrandr \
 --output DP2-2 --off \
 --output DP2-3 --off 
 
-for prelayout in $HOME/.screenlayout/*.layout; do
-    cmp -s $prelayout $current && echo "Running ${prelayout%%.layout}.sh" && ${prelayout%%.layout}.sh 
-done
-
-run -w -p -c
+"$layoutsDir/${currentLayout}.sh"

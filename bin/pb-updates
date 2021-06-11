@@ -5,5 +5,5 @@ exec 2> /dev/null
 UPD=$(checkupdates | wc -l)
 
 if [ $UPD -gt 0 ]; then 
-	echo $UPD
+	echo " $UPD"
 fi

@@ -12,6 +12,7 @@ import os
 import random
 
 import gnupg
+from pathlib import Path
 
 # token = util.prompt_for_user_token(
 #         username=jayghoshter,
@@ -21,14 +22,23 @@ import gnupg
 #         redirect_uri=redirect_uri)
 # spotify = spotipy.Spotify(auth=token)
 
+credentialsFile = Path('~/.local/share/credentials').expanduser()
+
+def get_token(_name:str):
+    with open(credentialsFile, 'r') as creds:
+        for line in creds:
+            name, token = line.split('=')
+            if name == _name:
+                return token.strip()
+
 
 class Spotify:
 
-    sp = None
+    sp    = None
     VALUE = None
     TAG   = None
-    TYPE = None
-    ID = None
+    TYPE  = None
+    ID    = None
     URI   = None
 
 
@@ -45,8 +55,12 @@ class Spotify:
         # self.play()
 
     def getCredentials(self):
-        cid = os.getenv("SPOTIFY_CLIENT_ID")
-        csec = os.getenv("SPOTIFY_SECRET")
+
+        # cid = os.getenv("SPOTIFY_CLIENT_ID")
+        # csec = os.getenv("SPOTIFY_SECRET")
+
+        cid = get_token("SPOTIFY_CLIENT_ID")
+        csec = get_token("SPOTIFY_SECRET")
 
         if cid is None or csec is None:
             print("No Client ID or Secret found in ENV!")
@@ -82,7 +96,7 @@ class Spotify:
             print("example: sp l Mylo Xyloto")
 
     def search(self):
-        results = self.sp.search(q=self.VALUE, type=self.TYPE)
+        results = self.sp.search(q=self.VALUE, type=self.TYPE, market="US")
         # results = spotify.search(q=VALUE)
         # print(results)
         items=results[self.TYPE+'s']['items']
@@ -96,11 +110,13 @@ class Spotify:
                 'a' : 'artist',
                 't' : 'track',
                 'p' : 'playlist',
-                'l' : 'album'
+                'l' : 'album',
+                'c' : 'show',
+                'e' : 'episode'
             }.get(self.TAG[1], 'Invalid TAG keyword')
             self.search()
             self.play()
-        elif (self.TAG == 'ra'):
+        elif (self.TAG == 'ra'):        # related artists
             self.TYPE = 'artist'
             self.search()
             self.URI = random.choice(self.sp.artist_related_artists(self.ID)['artists'])['uri']
@@ -111,7 +127,7 @@ class Spotify:
 
 
     def play(self):
-        cmd="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:"+self.URI + " >/dev/null 2>&1"
+        cmd="dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.OpenUri string:"+ self.URI + " >/dev/null 2>&1"
         os.system(cmd)
 
 sp = Spotify()
