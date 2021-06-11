@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+die(){
+    echo "Error: $@"
+    exit
+}
+
+[ -z "$1" ] && die "No layout name"
+
+HASH=$(xrandr --prop | grep -A2 EDID | sha256sum | cut -c 1-32)
+STRING="$1 $HASH" 
+
+echo -e "$STRING" >> "$HOME/.screenlayout/layouts"
