@@ -269,15 +269,24 @@ done
 
 # fsend:{{{
 function fsend() {
+    # TODO: Allow depth=1 for home dir
+    # TODO: Fix for files with spaces
     BAK="$FZF_DEFAULT_COMMAND"
-    export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
-    files=$(fzf -m --reverse -q "$1" | tr '\n' ' ')
-    host=$(grep '^Host\b' $HOME/.ssh/config | awk '{print $2}' | fzf)
-    if [[ -n $files && -n $host ]]; then 
-        host=$host":sent"
-        echo "scp -rC $files $host"
-        eval "scp -rC $files $host"
-    fi
+    # export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
+    export FZF_DEFAULT_COMMAND='fd .'
+
+    files=$(fzf -m --reverse -q "$1")
+    [ -z "$files" ] && exit
+
+    host=$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf)
+    [ -z "$host" ] && exit
+
+    host=$host":sent"
+
+    while IFS='\n' read -r file; do
+        scp -rC "$file" "$host"
+    done<<<"$files"
+
     export FZF_DEFAULT_COMMAND="$BAK"
 }
 
@@ -361,13 +370,16 @@ alias flc="fzf_locate_config"
 autoload fzf_copy
 function fzf_copy()
 {
-    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+    # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+    # OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2) 
 
-    OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2) 
-
-    for file in ${OUT[@]}; do
+    OUT=$(fd "$@" . ~ | fuzscope -m | tail -n+2) 
+   
+    while IFS= read -r file; do
         cp "$file" .
-    done
+    done <<< "$OUT"
+
+
 }
 
 alias fcp="fzf_copy"

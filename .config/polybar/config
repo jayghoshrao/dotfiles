@@ -274,8 +274,8 @@ format-foreground = #d3dae6
 [module/updates]
 type = custom/script
 exec = ~/bin/pb-updates
-interval = 30
-format-prefix = " "
+interval = 60
+; format-prefix = " "
 format = <label>
 label = %output%
 format-padding = 1
@@ -283,17 +283,18 @@ format-foreground = ${colors.foreground}
 format-background = ${colors.shade6}
 format-font = 6
 
-[module/ghnoti]
+[module/ghnotify]
 type = custom/script
 exec = ~/bin/ghnoti
-interval = 300
-format-prefix = " "
+interval = 60
+; format-prefix = " "
 format = <label>
 label = %output%
 format-padding = 1
 format-foreground = ${colors.nord4}
 format-background = ${colors.background}
 format-font = 6
+click-left = exec firefox --new-tab https://github.com/notifications
 
 [module/pulseaudio-control]
 type = custom/script
@@ -356,7 +357,7 @@ height = 40
 
 modules-left = i3 pomodoro 
 modules-center = xwindow
-modules-right = ghnoti right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date right1
+modules-right = ghnotify right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date right1
 
 background = ${colors.background}
 foreground = ${colors.foreground}

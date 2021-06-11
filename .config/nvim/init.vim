@@ -8,13 +8,13 @@
 
 " Check out https://github.com/gillescastel/latex-snippets
 " Better compatibility with remote servers: Simpler vimrc
-" TODO:  https://github.com/bkad/CamelCaseMotion or https://github.com/chaoren/vim-wordmotion
+" TODO: https://github.com/bkad/CamelCaseMotion or https://github.com/chaoren/vim-wordmotion
 " TODO: Plug 'voldikss/vim-floaterm'
 " TODO: https://github.com/junegunn/vim-peekaboo
 " TODO: https://github.com/stefandtw/quickfix-reflector.vim
 " TODO: Vimspector + Telescope
-"https://github.com/d0c-s4vage/lookatme
-"https://github.com/b3nj5m1n/kommentary
+" https://github.com/d0c-s4vage/lookatme
+" https://github.com/b3nj5m1n/kommentary
 
 " Plugins :{{{
 set nocompatible              " be iMproved, required
@@ -27,67 +27,69 @@ let g:mapleader = ","
 
 call plug#begin('~/.config/nvim/bundle')
 
+" Custom: plugin for task tags 
+Plug 'jayghoshter/tasktags.vim'     
 
-" Declarations: {{{
-"
-" Plug '~/.config/nvim/bundle/tasktags.vim'
-Plug 'jayghoshter/tasktags.vim'
+" Basic: LSP, Completion and Treesitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-compe'
 
-" Plug 'chaoren/vim-wordmotion'
-Plug 'bkad/CamelCaseMotion'
-
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-
+" Telescope: It's dope
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-github.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
-Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-compe'
+" Tpope's plugins are de-facto standard
+Plug 'tpope/vim-commentary'                                   
+Plug 'tpope/vim-surround'                                     
+Plug 'tpope/vim-unimpaired'                                   
+Plug 'tpope/vim-fugitive'                                     
+Plug 'tpope/vim-repeat'                                      
+Plug 'tpope/vim-obsession'                                   
+
+" Languages: 
+Plug 'lervag/vimtex'
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'mboughaba/i3config.vim'           " [REVW]
+
+Plug 'wellle/targets.vim'               " [REVW]
+Plug 'Raimondi/delimitMate'                                 
 Plug 'vim-scripts/argtextobj.vim'
 
+" General utilities
 Plug 'jremmen/vim-ripgrep'
 Plug 'rbong/vim-crystalline'
-
 Plug 'Valloric/ListToggle' 
-Plug 'lervag/vimtex'
 Plug 'lambdalisue/suda.vim'
-
-Plug 'arcticicestudio/nord-vim'                               " theme
-" Plug 'shaunsingh/nord.nvim'
-Plug 'mboughaba/i3config.vim'                                 " Config syntax
-
-Plug 'tpope/vim-commentary'                                   " comments and stuff
-Plug 'tpope/vim-surround'                                     " brackets and stuff
-Plug 'tpope/vim-unimpaired'                                   " easy maps with []
-Plug 'tpope/vim-fugitive'                                     " git stuff
-Plug 'tpope/vim-repeat'                                       " easy repeat of some motions
-Plug 'tpope/vim-obsession'                                    " Sessions in vim (best paired with tmux-continuum)
-
-Plug 'junegunn/goyo.vim'                                      " Centered Wrapping
-Plug 'junegunn/limelight.vim'                                 " Highlight current Paragraph, dim everything else
-                                                              " Plug 'ludovicchabant/vim-gutentags'
-Plug 'wellle/targets.vim'
-Plug 'Raimondi/delimitMate'                                 
 Plug 'mcchrish/nnn.vim'
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'tommcdo/vim-lion'                                       
+
+" Provide indentlines. 
 Plug 'lukas-reineke/indent-blankline.nvim'
 Plug 'Yggdroot/indentLine'
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'skywind3000/asyncrun.vim'
-Plug 'tommcdo/vim-lion'                                       " Alignment with characters (Ex: =)
-Plug 'vim-pandoc/vim-pandoc'
+
+" Beautiful distraction-free mode
+Plug 'junegunn/goyo.vim'                                    
+Plug 'junegunn/limelight.vim'                              
+
+" " Colorschemes
+" Plug 'arcticicestudio/nord-vim'                               " theme
+Plug 'shaunsingh/nord.nvim'
+
+" Deprecated Plugins: {{{
 
 " Plug 'idanarye/vim-omnipytent'                                " build system
 " Plug 'universal-ctags/ctags'
-" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " Plug 'junegunn/fzf.vim'
 
 " }}}
-
+"
 "Delimitmate: {{{
 let delimitMate_expand_cr = 1
 " }}}
@@ -185,13 +187,15 @@ set laststatus=2
 " }}}
 
 call plug#end()            " required
+
 " }}}
 
 "Set Options: {{{
 
 "set t_Co=256
+
 let g:nord_italic=1
-let g:nord_italic_comments=1
+let g:nord_italic_comments=0
 let g:nord_underline=1
 " let g:nord_comment_brightness=5
 
@@ -915,6 +919,7 @@ inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 " }}}
 
 
+
 map ;c <Plug>VimwikiRemoveSingleCB
 map ;e <Plug>VimwikiToggleListItem
 
@@ -947,23 +952,3 @@ nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
 
 nnoremap <leader>r :Gcd<cr>
 
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
-map <silent> ge <Plug>CamelCaseMotion_ge
-sunmap w
-sunmap b
-sunmap e
-sunmap ge
-
-omap <silent> iw <Plug>CamelCaseMotion_iw
-xmap <silent> iw <Plug>CamelCaseMotion_iw
-omap <silent> ib <Plug>CamelCaseMotion_ib
-xmap <silent> ib <Plug>CamelCaseMotion_ib
-omap <silent> ie <Plug>CamelCaseMotion_ie
-xmap <silent> ie <Plug>CamelCaseMotion_ie
-
-imap <silent> <S-Left> <C-o><Plug>CamelCaseMotion_b
-imap <silent> <S-Right> <C-o><Plug>CamelCaseMotion_w
-
-" let $PATH .= ':/home/jayghoshter/bin'

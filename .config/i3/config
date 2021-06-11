@@ -533,6 +533,29 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 
 # END:{{{
 
 exec $SCRIPTS/run --delay 3 --display 
-exec_always $SCRIPTS/run --notification --keyboard --conky --wallpaper --pulseaudio --polybar 
+exec_always $SCRIPTS/run --notification 
+exec_always $SCRIPTS/run --keyboard 
+exec_always $SCRIPTS/run --conky 
+exec_always $SCRIPTS/run --wallpaper 
+exec_always $SCRIPTS/run --pulseaudio 
+exec_always $SCRIPTS/run --polybar
 
 # }}}
+
+# MODE: My Desktop Environment {{{
+set $mode_deskenv [p]olybar | pulse[a]udio | [c]onky | [k]eyboard | [A]ll
+mode "$mode_deskenv"
+{
+    bindsym p exec --no-startup-id $SCRIPTS/run --polybar, mode "default"
+    bindsym a exec --no-startup-id $SCRIPTS/run --pulseaudio, mode "default"
+    bindsym c exec --no-startup-id $SCRIPTS/run --conky	, mode "default"
+    bindsym k exec --no-startup-id $SCRIPTS/run --keyboard, mode "default"
+    bindsym shift+A exec --no-startup-id $SCRIPTS/run --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
+
+    # back to normal: Enter or Escape
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+}
+
+bindsym $mod+d mode "$mode_deskenv"
+#}}}
