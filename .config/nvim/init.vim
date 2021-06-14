@@ -195,18 +195,20 @@ call plug#end()            " required
 "set t_Co=256
 
 let g:nord_italic=1
-let g:nord_italic_comments=0
-let g:nord_underline=1
+let g:nord_italic_comments=1
+" let g:nord_underline=1
+
 " let g:nord_comment_brightness=5
 
 augroup nord-overrides
     autocmd!
-    autocmd ColorScheme nord highlight Folded cterm=italic ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5
+    " autocmd ColorScheme nord highlight Folded cterm=italic ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5
+    autocmd ColorScheme nord highlight Folded ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5
 augroup END
 
 " nord.nvim settings
 let g:nord_contrast = 1
-let g:nord_borders = 0
+let g:nord_borders = 1
 
 colorscheme nord
 " colorscheme Tomorrow-Night
@@ -657,52 +659,6 @@ let g:rg_command = 'rg --vimgrep -S'
 let g:rg_derive_root = 1
 " }}}
 
-" Treesitter: {{{
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-    ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-    ignore_install = { "javascript" }, -- List of parsers to ignore installing
-    highlight = {
-    enable = true,              -- false will disable the whole extension
-    -- disable = {},  -- list of language that will be disabled
-    },
-  incremental_selection = {
-      enable = true,
-      keymaps = {
-          init_selection = "gnn",
-          node_incremental = "grn",
-          scope_incremental = "grc",
-          node_decremental = "grm",
-          },
-  },
-  indent = {
-  enable = true,
-  }
-}
-EOF
-" }}}
-
-" Telescope:{{{ 
-nnoremap <space>o <cmd>Telescope find_files<cr>
-nnoremap <space>p <cmd>Telescope git_files<cr>
-nnoremap <space>f <cmd>Telescope live_grep<cr>
-nnoremap <space>l <cmd>Telescope buffers<cr>
-nnoremap <space>h <cmd>Telescope help_tags<cr>
-nnoremap <space>e <cmd>Telescope current_buffer_fuzzy_find<cr>
-nnoremap <C-e>    <cmd>Telescope current_buffer_fuzzy_find<cr>
-nnoremap <space>m <cmd>Telescope marks<cr>
-nnoremap <space>; <cmd>Telescope command_history<cr>
-nnoremap <space>/ <cmd>Telescope search_history<cr>
-nnoremap <space>b <cmd>Telescope builtin<cr>
-
-" Telescope GitHub
-lua require('telescope').load_extension('gh')
-nnoremap <space>gi <cmd>Telescope gh issues<cr>
-nnoremap <space>gp <cmd>Telescope gh pull_request<cr>
-nnoremap <space>gg <cmd>Telescope gh gist<cr>
-
-" }}}
-
 ""FZF:{{{
 
 "nnoremap <silent> <space>o :Files<CR>
@@ -826,6 +782,83 @@ nnoremap <space>gg <cmd>Telescope gh gist<cr>
 
 ""}}}
 
+if has('nvim-0.5')
+
+" Treesitter: {{{
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+    ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+    ignore_install = { "javascript" }, -- List of parsers to ignore installing
+    highlight = {
+    enable = true,              -- false will disable the whole extension
+    -- disable = {},  -- list of language that will be disabled
+    },
+  incremental_selection = {
+      enable = true,
+      keymaps = {
+          init_selection = "gnn",
+          node_incremental = "grn",
+          scope_incremental = "grc",
+          node_decremental = "grm",
+          },
+  },
+  indent = {
+  enable = true,
+  }
+}
+EOF
+" }}}
+
+" Telescope:{{{ 
+lua<<EOF
+local actions = require('telescope.actions')
+require('telescope').setup{
+    defaults = {
+        mappings = {
+            i = {
+                ['<C-q>'] = actions.send_to_qflist,
+                ["<esc>"] = actions.close,
+            },
+        },
+        ...
+    },
+    extensions = {
+        fzy_native = {
+            override_generic_sorter = false,
+            override_file_sorter = true,
+        }
+    }
+}
+require('telescope').load_extension('fzy_native')
+EOF
+
+nnoremap <space>o <cmd>Telescope find_files<cr>
+nnoremap <space>p <cmd>Telescope git_files<cr>
+nnoremap <space>f <cmd>Telescope live_grep<cr>
+nnoremap <space>l <cmd>Telescope buffers<cr>
+nnoremap <space>h <cmd>Telescope help_tags<cr>
+nnoremap <space>e <cmd>Telescope current_buffer_fuzzy_find<cr>
+nnoremap <C-e>    <cmd>Telescope current_buffer_fuzzy_find<cr>
+nnoremap <space>m <cmd>Telescope marks<cr>
+nnoremap <space>; <cmd>Telescope command_history<cr>
+nnoremap <space>/ <cmd>Telescope search_history<cr>
+nnoremap <space>b <cmd>Telescope builtin<cr>
+
+" Telescope GitHub
+lua require('telescope').load_extension('gh')
+nnoremap <space>gi <cmd>Telescope gh issues<cr>
+nnoremap <space>gp <cmd>Telescope gh pull_request<cr>
+nnoremap <space>gg <cmd>Telescope gh gist<cr>
+
+nnoremap <space>t :lua require("custom.telescope").project_files()<cr>
+
+" [TASK]: This is obsoleted by Git status built-in. Remove it
+nnoremap <space>gd :lua require("custom.telescope").git_dirty()<cr>
+
+nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
+
+" }}}
+
 " LSPConfig: {{{
 lua << EOF
 require'lspconfig'.pyright.setup{}
@@ -877,15 +910,7 @@ end
 EOF
 "}}}
 
-" Completion:{{{
-
-inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <silent><expr><s-tab> pumvisible() ? "\<C-p>" : "\<TAB>"
-" If you prefer the Omni-Completion tip window to close when a selection is
-" " made, these lines close it on movement in insert mode or when leaving
-" " insert mode
-autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+" Compe: {{{
 
 let g:compe = {}
 let g:compe.enabled = v:true
@@ -918,37 +943,21 @@ inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 
 " }}}
 
+endif
 
+" Completion:{{{
 
-map ;c <Plug>VimwikiRemoveSingleCB
-map ;e <Plug>VimwikiToggleListItem
+inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <silent><expr><s-tab> pumvisible() ? "\<C-p>" : "\<TAB>"
+" If you prefer the Omni-Completion tip window to close when a selection is
+" " made, these lines close it on movement in insert mode or when leaving
+" " insert mode
+autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
-lua<<EOF
-local actions = require('telescope.actions')
-require('telescope').setup{
-    defaults = {
-        mappings = {
-            i = {
-                ['<C-q>'] = actions.send_to_qflist,
-                ["<esc>"] = actions.close,
-            },
-        },
-        ...
-    },
-    extensions = {
-        fzy_native = {
-            override_generic_sorter = false,
-            override_file_sorter = true,
-        }
-    }
-}
-require('telescope').load_extension('fzy_native')
-EOF
-
-nnoremap <space>t :lua require("custom.telescope").project_files()<cr>
-nnoremap <space>gd :lua require("custom.telescope").git_dirty()<cr>
-
-nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
+" }}}
 
 nnoremap <leader>r :Gcd<cr>
+map ;c <Plug>VimwikiRemoveSingleCB
+map ;e <Plug>VimwikiToggleListItem
 

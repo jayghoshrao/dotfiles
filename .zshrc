@@ -15,6 +15,8 @@
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
+ARCH=$(uname -a | awk '{print $(NF-1)}')
+
 # # autoload -U +X bashcompinit && bashcompinit
 
 ## NOTE: Uncomment in case compaudit complains of insecure directories
@@ -53,14 +55,10 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-
 ### Functions to make zinit configuration less verbose
 zpt() { zinit ice wait"${1}" lucid               "${@:2}"; } # Turbo
 zpi() { zinit ice lucid                            "${@}"; } # Regular Ice
 zp()  { [ -z $2 ] && zinit light $@ || zinit $@; } # zinit
-
-# Some inspiration from https://github.com/crivotz/dot_files/blob/master/linux/zplugin/zshrc
-# autoload -Uz compinit; compinit
 
 zinit snippet OMZL::directories.zsh 
 zinit snippet OMZL::termsupport.zsh
@@ -73,67 +71,61 @@ zinit snippet OMZP::git
 zpt 0b blockf
 zp zsh-users/zsh-completions
 
-zinit ice from"gh-r" as"command"
-zinit light junegunn/fzf
-
-zinit ice lucid wait'0c' as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux"
-zinit light junegunn/fzf
-
-zinit ice lucid wait'0c' multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null"
-zinit light junegunn/fzf
-
-zp Aloxaf/fzf-tab
-
-if [ $HOST != "IBT918" ]; then
-    # RIPGREP:{{{
-    zinit ice from"gh-r" as"program" mv"ripgrep* -> ripgrep" pick"ripgrep/rg"
-    zinit light BurntSushi/ripgrep
-    # }}}
-    # NEOVIM: {{{
-    zinit ice from"gh-r" as"program" bpick"*appimage*" ver"nightly" mv"nvim* -> nvim" pick"nvim"
-    zinit light neovim/neovim
-    # }}}
-    # RANGER:{{{
-    zinit ice depth'1' as"program" pick"ranger.py"
-    zinit light ranger/ranger
-    # }}}
-    # FD: {{{
-    zinit ice as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
-    zinit light sharkdp/fd
-    # }}}
-    # GH-CLI: {{{
-    zinit ice lucid wait"0" as"program" from"gh-r" pick"usr/bin/gh"
-    zinit light "cli/cli"
-    # }}}
-    # TMUX: {{{
-    zinit ice from"gh-r" as"program" mv"tmux* -> tmux" pick"tmux" atload"alias tmux=tmux"
-    zinit light tmux/tmux
-    # }}}
-    # NNN: {{{
-    zinit ice from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
-    zinit light jarun/nnn
-    # }}}
-# DISKUS: {{{
-zinit ice as"command" from"gh-r" mv"diskus* -> diskus" pick"diskus/diskus"
-zinit light sharkdp/diskus
-# }}}
-fi
-
-zinit ice as"command" from"gh" pick"bin/git-fuzzy"
-zinit light bigH/git-fuzzy
-
 zpt 0a lucid atload"_zsh_autosuggest_start"
 zp zsh-users/zsh-autosuggestions
 
-## Remove the the next line if compaudit complains of insecurity 
-zpt 0b atload'zpcompinit;zpcdreplay'
-zp zdharma/fast-syntax-highlighting
+if [[ "$ARCH" == "x86_64" ]]; then
+
+    # ## Remove the the next line if compaudit complains of insecurity 
+    # zpt 0b atload'zpcompinit;zpcdreplay'
+    zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
+    zp zdharma/fast-syntax-highlighting
+
+    zpi from"gh-r" as"command"
+    zp junegunn/fzf
+
+    zpt '0c' as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux"
+    zp junegunn/fzf
+
+    zpt '0c' multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null"
+    zp junegunn/fzf
+
+    zp Aloxaf/fzf-tab
+
+    if [ $HOST != "IBT918" ]; then
+        # RIPGREP:{{{
+        zpi from"gh-r" as"program" mv"ripgrep* -> ripgrep" pick"ripgrep/rg"
+        zp BurntSushi/ripgrep
+        # }}}
+        # NEOVIM: {{{
+        zpi from"gh-r" as"program" bpick"*appimage*" ver"nightly" mv"nvim* -> nvim" pick"nvim"
+        zp neovim/neovim
+        # }}}
+        # FD: {{{
+        zpi as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
+        zp sharkdp/fd
+        # }}}
+        # GH-CLI: {{{
+        zpt "0" as"program" from"gh-r" pick"usr/bin/gh"
+        zinit light "cli/cli"
+        # }}}
+        # TMUX: {{{
+        zpi from"gh-r" as"program" mv"tmux* -> tmux" pick"tmux" atload"alias tmux=tmux"
+        zp tmux/tmux
+        # }}}
+        # NNN: {{{
+        zpi from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
+        zpt light jarun/nnn
+        # }}}
+    fi
+fi
+
+# Theme and Colors {{{
 
 zinit for \
     light-mode pick"async.zsh" src"pure.zsh" \
     sindresorhus/pure
 
-# Colors {{{
 # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
 # coreutils package from Homebrew; you can also use https://github.com/ogham/exa)
 zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
@@ -145,7 +137,9 @@ zinit ice atclone"dircolors -b src/dir_colors > c.zsh" \
             pick"c.zsh" \
             nocompile'!'
 zinit light arcticicestudio/nord-dircolors
+
 # }}}
+
 
 # }}}
 
@@ -654,3 +648,7 @@ function vimfu()
     fi
 }
 
+passb() {
+    # fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print $2}' | xargs firefox --new-tab @" 
+    fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab @" 
+}
