@@ -86,7 +86,7 @@ SyncState *
 IMAPStore modsim-remote
 Host ibtwebmail.fz-juelich.de
 User rao
-PassCmd "pass mutt-wizard-modsim | head -n 1"
+PassCmd "pass mutt-modsim | head -n 1"
 SSLType STARTTLS
 AuthMechs PLAIN
 # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
@@ -152,7 +152,7 @@ SyncState *
 IMAPStore cats-remote
 Host mail.rwth-aachen.de
 User jr198806@cats.rwth-aachen.de
-PassCmd "pass mutt-wizard-cats | head -n 1"
+PassCmd "pass mutt-cats | head -n 1"
 SSLType IMAPS
 AuthMechs LOGIN
 Port 993
@@ -178,7 +178,7 @@ SyncState *
 IMAPStore rwth-remote
 Host mail.rwth-aachen.de
 User jr198806@rwth-aachen.de
-PassCmd "pass mutt-wizard-rwth | head -n 1"
+PassCmd "pass mutt-rwth | head -n 1"
 SSLType IMAPS
 AuthMechs LOGIN
 Port 993

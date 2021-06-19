@@ -15,6 +15,8 @@
 " TODO: Vimspector + Telescope
 " https://github.com/d0c-s4vage/lookatme
 " https://github.com/b3nj5m1n/kommentary
+" https://github.com/alpertuna/vim-header
+" https://github.com/garbas/vim-snipmate
 
 " Plugins :{{{
 set nocompatible              " be iMproved, required
@@ -78,8 +80,8 @@ Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'                              
 
 " " Colorschemes
-" Plug 'arcticicestudio/nord-vim'                               " theme
-Plug 'shaunsingh/nord.nvim'
+Plug 'arcticicestudio/nord-vim'                               " theme
+" Plug 'shaunsingh/nord.nvim'
 
 " Deprecated Plugins: {{{
 
@@ -340,6 +342,7 @@ inoremap <F5> <C-R>=strftime("%Y-%m-%d %H:%M")<CR>
 
 "====== HACKS =========
 inoremap ;; <esc>A;<esc>
+inoremap :; ::
 noremap <leader>jl <S-j>
 nnoremap <leader>. :!!<CR>
 

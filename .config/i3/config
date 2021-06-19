@@ -99,6 +99,7 @@ bindsym $mod+space exec rofi -show combi
 bindsym $mod+shift+space exec rofi -show drun -matching fuzzy
 bindsym $mod+control+space exec rofi -show calc 
 bindsym $mod+control+mod1+space exec rofi-pass -matching fuzzy
+bindsym $mod+g exec rofi-pass -matching fuzzy
 
 
 # }}}
@@ -486,7 +487,7 @@ bindsym $mod+shift+g exec echo -e 'on\noff' | dmenu -i | xargs $SCRIPTS/game
 
 # Utilities: {{{
 # bindsym $mod+g exec $term -r _float -c $CONFIG/termite.sprd.cfg -e $SCRIPTS/sprd 
-bindsym $mod+g exec $term --class _float -o "font.size=40" -e $SCRIPTS/sprd 
+# bindsym $mod+g exec $term --class _float -o "font.size=40" -e $SCRIPTS/sprd 
 bindsym $mod+shift+o exec $term -e htop
 bindsym $mod+shift+a exec $term --class _float -t taskell-board -e taskell
 bindsym $mod+a exec $term --class _float -t taskell-board -e taskell Dropbox/taskview.md

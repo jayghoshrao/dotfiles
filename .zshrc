@@ -74,12 +74,13 @@ zp zsh-users/zsh-completions
 zpt 0a lucid atload"_zsh_autosuggest_start"
 zp zsh-users/zsh-autosuggestions
 
+# ## Remove the the next line if compaudit complains of insecurity 
+zpt 0b atload'zpcompinit;zpcdreplay'
+# zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
+zp zdharma/fast-syntax-highlighting
+
 if [[ "$ARCH" == "x86_64" ]]; then
 
-    # ## Remove the the next line if compaudit complains of insecurity 
-    # zpt 0b atload'zpcompinit;zpcdreplay'
-    zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
-    zp zdharma/fast-syntax-highlighting
 
     zpi from"gh-r" as"command"
     zp junegunn/fzf
@@ -295,9 +296,9 @@ export TERM="xterm-256color-italic"
 export LESS="-iR"
 
 # export NNN_FIFO=/tmp/nnn.fifo 
-export NNN_OPTS="exaAu"
+export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG="g:getplugs;c:fuznavconf;f:fuznav;d:fuznavdir;i:imgview;d:diffs;v:preview-tui-ext"
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;d:fuznavdir;i:imgview;d:diffs;v:preview-tui-ext;p:!ptd -m $nnn;'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}
@@ -313,7 +314,7 @@ alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
 # alias nrc="dotf $HOME/.config/nvim/init.vim"
 alias nrc="$EDITOR $HOME/.config/nvim/init.vim"
-alias zsrc="source $HOME/.zshrc"
+alias zz="source $HOME/.zshrc"
 
 alias nn="note"
 alias nd="notes -d $HOME/Dropbox/DND"
@@ -465,7 +466,7 @@ function ranger-cd {
 
 #}}}
 # nnn: cd on quit: {{{
-f ()
+f()
 {
     # Block nesting of nnn in subshells
     if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
@@ -652,3 +653,6 @@ passb() {
     # fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print $2}' | xargs firefox --new-tab @" 
     fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab @" 
 }
+
+alias F="sudo -E nnn -dH" # sudo file browser
+# export VISUAL=ewrap

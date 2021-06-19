@@ -57,6 +57,8 @@ pandoc-sidenote
 pandoc-tablenos
 paraview-nightly-bin
 parmetis
+pass-genphrase
+pass-update
 pdd
 pdftag
 perl-devel-overloadinfo
