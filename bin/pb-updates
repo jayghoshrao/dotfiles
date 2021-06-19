@@ -6,4 +6,6 @@ UPD=$(checkupdates | wc -l)
 
 if [ $UPD -gt 0 ]; then 
 	echo " $UPD"
+else
+    echo ""
 fi

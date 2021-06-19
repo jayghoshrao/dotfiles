@@ -80,8 +80,10 @@ launch_dunst(){
 
 set_autodisplay(){
 
-    current=$HOME/.cache/current.layout
-    xrandr --prop | grep -A2 EDID > $current
+    layoutsDir="$HOME/.screenlayout"
+    layoutsFile="$layoutsDir/layouts"
+    currentHash=$(xrandr --prop | grep -A2 EDID | sha256sum | cut -c 1-32)
+    currentLayout=$(grep "$currentHash" "$layoutsFile" | awk '{print $1}')
 
     # ## Turn off everything except laptop monitor
     xrandr \
@@ -97,9 +99,7 @@ set_autodisplay(){
     --output DP2-2 --off \
     --output DP2-3 --off 
 
-    for prelayout in $HOME/.screenlayout/*.layout; do
-        cmp -s $prelayout $current && echo "Running ${prelayout%%.layout}.sh" && ${prelayout%%.layout}.sh 
-    done
+    "$layoutsDir/${currentLayout}.sh"
 
 }
 

@@ -9,8 +9,10 @@ credentialsFile = Path('~/.local/share/credentials').expanduser()
 def get_notifications(key):
     try:
         return Github(key).get_user().get_notifications().totalCount
-    except GithubException as github_exception:
-        return f"error {github_exception}"
+    except:
+        pass ## silently fail
+    # except GithubException as github_exception:
+    #     return f"error {github_exception}"
 
 def get_token(_name:str):
     with open(credentialsFile, 'r') as creds:
@@ -24,6 +26,8 @@ def main():
     notis = get_notifications(key)
     if int(notis) > 0:
         print("", notis)
+    else:
+        print("")
 
 if __name__ == "__main__":
     main()
