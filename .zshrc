@@ -298,7 +298,7 @@ export LESS="-iR"
 # export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;d:fuznavdir;i:imgview;d:diffs;v:preview-tui-ext;p:!ptd -m $nnn;'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;v:preview-tui-ext;d:diffs;n:nuke'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}
@@ -582,24 +582,30 @@ ring() {
 # }}}
 # Dotfile management: {{{
 ## Functions are better for pipes
-function dot()  {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME "$@"}
-function dots() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME status "$@"}
-function dotc() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME commit --verbose "$@"}
-function dota() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add "$@"}
-function dotu() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add --update "$@"}
-function dotd() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff "$@"}
-function dotr() {/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME rm "$@"}
+export DOTDIR=$HOME/.dots
+function dot()  {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME "$@"}
+function dots() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME status "$@"}
+function dotc() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"}
+function dota() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
+function dotu() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
+function dotd() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
+function dotr() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
 
 function dotf(){
     ## setting the env vars helps vim-fugitive know what's going on
     [ -n "$@" ] && QUERY="-q $@"
-    /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME filer
+    /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME filer
 }
 
 function dotaf(){
-    files=$(/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview='/usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME diff --color {}' )
-    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$HOME/.dots --work-tree=$HOME add 
+    files=$(/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
+    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
 }
+
+## To use local dotfile directories, 
+## DOTDIR=$HOME/.localdots dot
+## An alias to make even that easy:
+alias LD="DOTDIR=$HOME/.localdots"
 
 # }}}
 # }}}
@@ -649,10 +655,12 @@ function vimfu()
     fi
 }
 
-passb() {
-    # fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print $2}' | xargs firefox --new-tab @" 
-    fzf --bind="enter:execute@dex -e {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab @" 
+## Fuzzy pass browser
+fpass() {
+    local DIR=${PWD}
+    cd ~/.password-store
+    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@dex -e {}@" 
+    cd "$DIR"
 }
 
 alias F="sudo -E nnn -dH" # sudo file browser
-# export VISUAL=ewrap

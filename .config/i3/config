@@ -99,7 +99,8 @@ bindsym $mod+space exec rofi -show combi
 bindsym $mod+shift+space exec rofi -show drun -matching fuzzy
 bindsym $mod+control+space exec rofi -show calc 
 bindsym $mod+control+mod1+space exec rofi-pass -matching fuzzy
-bindsym $mod+g exec rofi-pass -matching fuzzy
+# bindsym $mod+g exec rofi-pass -matching fuzzy
+bindsym $mod+g exec $SCRIPTS/rpass 
 
 
 # }}}
