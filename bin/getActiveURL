@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+
+from pathlib import Path
+import lz4.block
+import json
+from time import time
+
+from urllib.parse import urlparse
+
+# Set up path and regex for files
+# path = Path.home().joinpath('.mozilla/firefox')
+# files = path.glob('*default*release*/sessionstore-backups/recovery.jsonlz4')
+# files = path.glob('jayghoshter/sessionstore-backups/recovery'+
+#                   '.jsonlz4')
+
+def get_last_url():
+    f = Path.home().joinpath('.mozilla/firefox/jayghoshter/sessionstore-backups/recovery.jsonlz4')
+# decompress if necessary
+    b = f.read_bytes()
+    if b[:8] == b'mozLz40\0':
+        b = lz4.block.decompress(b[8:])
+
+# load as json
+    j = json.loads(b)
+
+    # HistLen = len(j.get("windows")[0].get("tabs")[j["windows"][0]["selected"]-1].get("entries"))
+    # CurrentTab = j.get("windows")[0].get("tabs")[j["windows"][0]["selected"]-1].get("entries")[HistLen-1].get("url")
+    # print(CurrentTab)
+    #
+
+    urls = []
+    titles = []
+
+    if 'windows' not in j.keys():
+        import sys
+        sys.exit(-1)
+
+    for w in j['windows']:
+
+        # Variables for keeping track of most recent tab
+        most_recent_tab_index = ''
+        min_time = 1000
+
+        # print(w.keys())
+        # print(w['selected'])
+        # print(w['tabs'][w['selected']-1]['entries'][0]['url'])
+
+        # run through tabs
+        for t in w['tabs']:
+            # Firefox does not 0-index
+            i = t['index'] - 1
+            # print(t.keys())
+            # print(w['selected'])
+            # print([ t['entries'][x]['url'] for x in range(len(t['entries'])) ] )
+
+            # print(t['entries'][i]['url'])
+            urls.append(t['entries'][i]['url'])
+            titles.append(t['entries'][i]['title'])
+
+
+            # # Convert time to seconds
+            # access_time = int((int(time()*1000) - t['lastAccessed'])/600)
+
+            # if access_time < min_time:
+            #     most_recent_tab_index = t['entries'][i]['url']
+
+        # print("MOST RECENT TAB: ", most_recent_tab_index)
+        # return most_recent_tab_index
+    return titles, urls
+
+
+if __name__ == "__main__":
+    titles, urls = get_last_url()
+    hostnames = [ urlparse(url).hostname.replace('www.', '') for url in urls ]
+    for x,y in zip(titles,hostnames):
+        print(y, x)
+
+

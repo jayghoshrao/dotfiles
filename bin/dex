@@ -15,6 +15,10 @@ do
             MODE='EDIT'
             shift # past value
             ;;
+        -p|--pager)
+            MODE='PAGER'
+            shift # past value
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -32,6 +36,12 @@ if [[ "$MODE" == "EXCHANGE" ]]; then
     else
         gpg -e "$1" 
         mv "$1".gpg "$1"
+    fi
+elif [[ "$MODE" == "PAGER" ]]; then 
+    if [[ "$typestr" =~ "encrypted" ]]; then 
+        gpg -dq "$1" | less
+    else
+        less "$1"
     fi
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 

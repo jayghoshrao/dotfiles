@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+## A rudimentary script of my own to deal with password input into firefox
+
+## xdotool based script to get the current url.
+## NO good because it messes up element focus
+## Also, the awk part doesn't work for all urls
+# urls=$(~/bin/ffgeturl | awk -F [/:] '{print $4}')
+
+# # Get URL<space>TITLE for all firefox tabs
+# # Unfortunately takes too long for firefox to store tabdata in recovery.jsonlz4
+# urls=$(~/bin/getActiveURL)
+
+## https://github.com/balta2ar/brotab
+## https://addons.mozilla.org/en-US/firefox/addon/brotab/
+## TODO: extracting only the domain name 
+urls=$(bt list | cut -f2- | awk -F $"\t" '{print $2, $1}' | tr $'\t' ' ' | sed -e 's http[s]://  ' | sed -e 's /[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]  ' | sed -e 's www  ')
+
+echo "$urls"
+
+## get the active window title
+## Unfortunately not directly possible from firefox, hence the workaround
+active_title=$(xdotool getactivewindow getwindowname)
+active_title=$(echo "$active_title" | sed -e 's/\s.\sMozilla Firefox//')
+
+echo "active title: $active_title"
+
+## Find the url of current tab
+while IFS=$"\n" read -r URL; do
+    if [[ $active_title =~ $(echo $URL | cut -d ' ' -f2- ) ]]; then
+        passdomain=$(echo "$URL" | awk '{print $1}')
+    fi
+done<<<"$urls"
+
+## Rofi selects the most appropriate pass file based on the domain name and file name
+PASSLIST=$(ls ~/.password-store | sed -e 's/.gpg$//')
+SELECTED=""
+# finds the first match
+while IFS=$"\n" read -r FILE; do
+    if [[ $passdomain =~ $FILE ]] || [[ $FILE =~ $passdomain ]]; then
+        SELECTED="$FILE"
+        break
+    fi
+done<<<"$PASSLIST"
+
+echo "sel: $SELECTED"
+
+## Fuzzy find if substring regex didn't match
+[ -z "$SELECTED" ] && SELECTED=$(echo "$PASSLIST" | fzf -f abc | head -n 1)
+
+echo "fuzzy sel: $SELECTED"
+
+PASSFILE=$(ls ~/.password-store | sed -e 's/.gpg$//' | rofi -dmenu -i -select "$SELECTED")
+
+echo "passfile: $PASSFILE"
+
+[ -z "$PASSFILE" ] && exit
+
+## Get all the password data
+data=$(pass "$PASSFILE")
+password=$(echo "$data" | head -n 1)
+username=$(echo "$data" | grep 'username' | cut -d ' ' -f2-)
+
+## Type of input
+## TODO: Get all possible keys (separated by ':') and allow printing them
+## TODO: Let the url field in the pass file (instead of filename itself) match the current active url
+action=$(echo -e "auto\nusername\npassword" | rofi -dmenu -i)
+
+## Type into firefox
+if [[ "$action" == "auto" ]]; then
+    xdotool type "$username"
+    xdotool key Tab
+    xdotool type "$password"
+elif [[ "$action" == "username" ]]; then
+    xdotool type "$username"
+elif [[ "$action" == "password" ]]; then
+    xdotool type "$password"
+fi
