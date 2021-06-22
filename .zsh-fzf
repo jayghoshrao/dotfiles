@@ -376,7 +376,7 @@ function fzf_copy()
     OUT=$(fd "$@" . ~ | fuzscope -m | tail -n+2) 
    
     while IFS= read -r file; do
-        cp "$file" .
+        cp -r "$file" .
     done <<< "$OUT"
 
 

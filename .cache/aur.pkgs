@@ -71,6 +71,7 @@ pup-git
 py3status-github-notifications
 python-bibtexparser
 python-cmapy
+python-deepdiff
 python-i3-py
 python-pulsectl
 python-pysmartdl

@@ -534,13 +534,7 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 
 
 # END:{{{
 
-exec $SCRIPTS/run --delay 3 --display 
-exec_always $SCRIPTS/run --notification 
-exec_always $SCRIPTS/run --keyboard 
-exec_always $SCRIPTS/run --conky 
-exec_always $SCRIPTS/run --wallpaper 
-exec_always $SCRIPTS/run --pulseaudio 
-exec_always $SCRIPTS/run --polybar
+exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpaper --pulseaudio --polybar
 
 # }}}
 

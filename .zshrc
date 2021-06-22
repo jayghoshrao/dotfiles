@@ -659,7 +659,7 @@ function vimfu()
 fpass() {
     local DIR=${PWD}
     cd ~/.password-store
-    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@dex -e {}@" 
+    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@echo {} | sed 's/.gpg//' | xargs pass edit@" 
     cd "$DIR"
 }
 
