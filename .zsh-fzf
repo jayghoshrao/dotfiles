@@ -74,13 +74,13 @@ vl() {
 autoload fzf_locate
 function fzf_locate()
 {
-    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+    # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
 
     # fd . ~ | fuzscope "$QUERY" | filer
     # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
 
     # OUT=$(locate home media | fuzscope "$QUERY" ) 
-    OUT=$(fd . ~ | fuzscope "$QUERY" ) 
+    OUT=$(fd "$@" . ~ | fuzscope ) 
     if [[ ! -z "$OUT" ]]; then 
         FILE=$(echo -e "$OUT" | tail -1)
         # echo "$FILE"
