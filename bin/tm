@@ -3,7 +3,7 @@
 # Attach or create tmux session named the same as current directory.
 
 # session_name="$(basename "$PWD" | tr . -)"
-session_name="${1:-new}"
+session_name="$1"
 
 session_exists() {
   tmux list-sessions | sed -E 's/:.*$//' | grep -q "^$session_name$"
@@ -13,13 +13,22 @@ not_in_tmux() {
   [ -z "$TMUX" ]
 }
 
+
 if not_in_tmux; then
-  tmux new-session -As "$session_name"
+    if [ -n "$session_name" ] ; then 
+        tmux new-session -As "$session_name"
+    else
+        session_name="$(tmux list-sessions | sed -E 's/:.*$//' | fzf -0 -1)"
+        [ -z "$session_name" ] && session_name="main"
+        tmux new-session -As "$session_name"
+    fi
 else
-  if ! session_exists; then
-    (TMUX='' tmux new-session -Ad -s "$session_name")
-  fi
-  tmux switch-client -t "$session_name"
+    if [ -n "$session_name" ] ; then
+        if ! session_exists; then
+            (TMUX='' tmux new-session -Ad -s "$session_name")
+        fi
+        tmux switch-client -t "$session_name"
+    else
+        tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf | xargs tmux switch-client -t
+    fi
 fi
-
-
