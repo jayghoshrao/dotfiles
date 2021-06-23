@@ -108,7 +108,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
         # }}}
         # GH-CLI: {{{
         zpt "0" as"program" from"gh-r" pick"usr/bin/gh"
-        zinit light "cli/cli"
+        zp "cli/cli"
         # }}}
         # TMUX: {{{
         zpi from"gh-r" as"program" mv"tmux* -> tmux" pick"tmux" atload"alias tmux=tmux"
@@ -116,7 +116,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
         # }}}
         # NNN: {{{
         zpi from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
-        zpt light jarun/nnn
+        zp jarun/nnn
         # }}}
     fi
 fi
