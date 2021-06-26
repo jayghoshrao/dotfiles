@@ -196,7 +196,7 @@ call plug#end()            " required
 
 "set t_Co=256
 
-let g:nord_italic=1
+let g:nord_italic=0
 let g:nord_italic_comments=1
 " let g:nord_underline=1
 
