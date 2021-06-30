@@ -298,7 +298,7 @@ export LESS="-iR"
 # export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;v:preview-tui-ext;d:diffs;n:nuke'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}

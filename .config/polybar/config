@@ -285,6 +285,7 @@ format-font = 6
 
 [module/ghnotify]
 type = custom/script
+exec-if = curl -I google.com
 exec = ~/bin/ghnoti
 interval = 60
 ; format-prefix = " "
@@ -299,6 +300,7 @@ click-left = exec firefox --new-tab https://github.com/notifications
 [module/pulseaudio-control]
 type = custom/script
 tail = true
+exec-if = pgrep pulseaudio
 label-padding = 1
 label-foreground = ${colors.foreground}
 label-background = ${colors.shade5}

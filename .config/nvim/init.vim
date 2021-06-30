@@ -526,6 +526,7 @@ function! s:AsyncQuickFix()
 " }}}
 
 augroup asyncRunGroup
+    autocmd!
 	autocmd! BufWritePost *.tex execute 'AsyncRun pdflatex %'
 	autocmd! User AsyncRunStop :call <SID>AsyncQuickFix()
 augroup END
@@ -867,6 +868,7 @@ lua << EOF
 require'lspconfig'.pyright.setup{}
 require'lspconfig'.ccls.setup{}
 require'lspconfig'.fortls.setup{}
+require'lspconfig'.texlab.setup{}
 
 local nvim_lsp = require('lspconfig')
 

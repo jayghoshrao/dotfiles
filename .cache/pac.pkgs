@@ -164,6 +164,7 @@ perl-eval-closure
 perl-list-allutils
 perl-package-deprecationmanager
 picard
+pinta
 pkgfile
 playerctl
 powerline-fonts
