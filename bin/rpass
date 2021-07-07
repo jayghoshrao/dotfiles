@@ -50,7 +50,7 @@ echo "sel: $SELECTED"
 
 echo "fuzzy sel: $SELECTED"
 
-PASSFILE=$(ls ~/.password-store | sed -e 's/.gpg$//' | rofi -dmenu -i -select "$SELECTED")
+PASSFILE=$(ls ~/.password-store | sed -e 's/.gpg$//' | rofi -dmenu -p pass -i -select "$SELECTED")
 
 echo "passfile: $PASSFILE"
 

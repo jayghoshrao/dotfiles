@@ -18,7 +18,7 @@ if not_in_tmux; then
     if [ -n "$session_name" ] ; then 
         tmux new-session -As "$session_name"
     else
-        session_name="$(tmux list-sessions | sed -E 's/:.*$//' | fzf -0 -1)"
+        session_name="$(tmux list-sessions 2>/dev/null | sed -E 's/:.*$//' | fzf -0 -1)"
         [ -z "$session_name" ] && session_name="main"
         tmux new-session -As "$session_name"
     fi

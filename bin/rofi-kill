@@ -1,4 +1,4 @@
 #!/bin/bash
 
-pid=$(ps -ef | sed 1d | rofi -dmenu -i -show kill | awk '{print $2}') 
+pid=$(ps -ef | sed 1d | rofi -dmenu -i -p kill | awk '{print $2}') 
 [ -n "$pid" ] && kill -"${1:-9}" "$pid"
