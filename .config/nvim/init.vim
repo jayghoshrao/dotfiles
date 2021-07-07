@@ -36,6 +36,7 @@ Plug 'jayghoshter/tasktags.vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-compe'
+Plug 'm-pilia/vim-ccls'
 
 " Telescope: It's dope
 Plug 'nvim-lua/popup.nvim'
@@ -865,8 +866,13 @@ nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
 
 " LSPConfig: {{{
 lua << EOF
+
+local root_pattern = require'lspconfig'.util.root_pattern
+
+require'lspconfig'.ccls.setup{
+    root_dir = root_pattern(".ccls", ".ccls-root", "compile_commands.json", "compile_flags.txt", ".git") or dirname
+}
 require'lspconfig'.pyright.setup{}
-require'lspconfig'.ccls.setup{}
 require'lspconfig'.fortls.setup{}
 require'lspconfig'.texlab.setup{}
 
@@ -966,3 +972,4 @@ nnoremap <leader>r :Gcd<cr>
 map ;c <Plug>VimwikiRemoveSingleCB
 map ;e <Plug>VimwikiToggleListItem
 
+map ;s "ayiW:!splay<space><C-r>a<CR><CR>

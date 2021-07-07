@@ -19,6 +19,8 @@ external-url-viewer "urlextract.py"
 # external-url-viewer "fzf-urlscan"
 # external-url-viewer "urlview"
 
+articlelist-format "%4i %f %D| %t"
+
 # notify-always yes
 # notify-format "newsbeuter: %n unread articles within %f unread feeds"
 # notify-program notify-send

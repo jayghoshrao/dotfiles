@@ -6,7 +6,7 @@
   text-color: #ECEFF4;
   spacing: 0;
   font: "Cascadia Code 12";
-  lines: 3;
+  /* lines: 3; */
 }
 
 inputbar {

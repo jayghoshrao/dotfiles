@@ -6,7 +6,6 @@ anki
 arandr
 arc-gtk-theme
 at
-audacity
 autorandr
 b43-fwcutter
 baobab
@@ -116,6 +115,7 @@ man-db
 man-pages
 materia-gtk-theme
 meld
+mgba-qt
 moreutils
 mpc
 mpd
@@ -182,8 +182,8 @@ python-praw
 python-pyaml
 python-rich
 python-seaborn
+python-selenium
 python-sympy
-python-tqdm
 python-virtualenv
 qt5-networkauth
 qt5-xcb-private-headers

@@ -4,6 +4,7 @@
         "Chromium": "chrome",
 		"Termite": "terminal",
 		"Alacritty": "terminal",
+		"kitty": "terminal",
         "Steam": "steam",
 		"Atom": "edit",
 		"feh": "image",
