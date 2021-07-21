@@ -18,6 +18,10 @@
 " https://github.com/alpertuna/vim-header
 " https://github.com/garbas/vim-snipmate
 
+" https://github.com/ray-x/lsp_signature.nvim
+" https://github.com/lewis6991/gitsigns.nvim
+" https://github.com/tamago324/compe-zsh
+
 " Plugins :{{{
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -45,6 +49,16 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-github.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
+" GitHub: Better pull requests and issues.
+Plug 'pwntester/octo.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+
+
+" Debugger: Woah!
+Plug 'https://github.com/puremourning/vimspector'
+" Plug 'https://github.com/mfussenegger/nvim-dap'
+Plug 'https://github.com/szw/vim-maximizer'
+
 " Tpope's plugins are de-facto standard
 Plug 'tpope/vim-commentary'                                   
 Plug 'tpope/vim-surround'                                     
@@ -62,7 +76,7 @@ Plug 'wellle/targets.vim'               " [REVW]
 Plug 'Raimondi/delimitMate'                                 
 Plug 'vim-scripts/argtextobj.vim'
 
-" General utilities
+" Misc: General utilities
 Plug 'jremmen/vim-ripgrep'
 Plug 'rbong/vim-crystalline'
 Plug 'Valloric/ListToggle' 
@@ -74,9 +88,9 @@ Plug 'tommcdo/vim-lion'
 
 " Provide indentlines. 
 Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'Yggdroot/indentLine'
+" Plug 'Yggdroot/indentLine'
 
-" Beautiful distraction-free mode
+" Writer: Beautiful distraction-free mode
 Plug 'junegunn/goyo.vim'                                    
 Plug 'junegunn/limelight.vim'                              
 
@@ -267,7 +281,7 @@ set conceallevel=2
 set signcolumn=yes          " always show signcolumns: helps with linters for error signs >>
 set shortmess+=c
 set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
+" set foldexpr=nvim_treesitter#foldexpr()
 
 set formatoptions+=cro          " Autoinsert commentstring on 'o'
 
@@ -652,8 +666,8 @@ let g:indentLine_conceallevel = 1
 let g:indentLine_concealcursor = ""
 let g:indentLine_char_list = ["▏"]
 
-let g:indent_blankline_show_first_indent_level = v:false
-let g:indent_blankline_show_trailing_blankline_indent = v:false
+" let g:indent_blankline_show_first_indent_level = v:false
+" let g:indent_blankline_show_trailing_blankline_indent = v:false
 let g:indent_blankline_use_treesitter = v:true
 let g:indent_blankline_char_list = ["▏"]
 
@@ -797,6 +811,7 @@ require'nvim-treesitter.configs'.setup {
     highlight = {
     enable = true,              -- false will disable the whole extension
     -- disable = {},  -- list of language that will be disabled
+    additional_vim_regex_highlighting = true,  
     },
   incremental_selection = {
       enable = true,
@@ -807,9 +822,6 @@ require'nvim-treesitter.configs'.setup {
           node_decremental = "grm",
           },
   },
-  indent = {
-  enable = true,
-  }
 }
 EOF
 " }}}
