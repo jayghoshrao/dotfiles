@@ -5,6 +5,8 @@
 # session_name="$(basename "$PWD" | tr . -)"
 session_name="$1"
 
+default_session_name="main"
+
 session_exists() {
   tmux list-sessions | sed -E 's/:.*$//' | grep -q "^$session_name$"
 }
@@ -19,7 +21,7 @@ if not_in_tmux; then
         tmux new-session -As "$session_name"
     else
         session_name="$(tmux list-sessions 2>/dev/null | sed -E 's/:.*$//' | fzf -0 -1)"
-        [ -z "$session_name" ] && session_name="main"
+        [ -z "$session_name" ] && session_name="$default_session_name"
         tmux new-session -As "$session_name"
     fi
 else
@@ -29,6 +31,9 @@ else
         fi
         tmux switch-client -t "$session_name"
     else
-        tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf | xargs tmux switch-client -t
+        # tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf -0 -1 | xargs tmux switch-client -t
+        session_name="$(tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf -0 -1 )"
+        [ -z "$session_name" ] && session_name="$default_session_name"
+        tmux switch-client -t "$session_name"
     fi
 fi

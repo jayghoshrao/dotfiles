@@ -1,0 +1,14 @@
+#!/usr/bin/sh
+
+FILE="$HOME/Repositories/export-saved-reddit/export-saved.html"
+
+LINKS=$(hq -f "$FILE" a attr href | sed 's|^.*reddit.com/r/||')
+
+SEL=$(echo "$LINKS"| fzf --bind "enter:execute@xdg-open https://www.reddit.com/r/{}@")
+
+while [ -n "$SEL" ]; do
+    xdg-open "https://www.reddit.com/r/$SEL"
+    SEL=$(echo "$LINKS"| fzf --bind "enter:execute@xdg-open https://www.reddit.com/r/{}@")
+done
+
+

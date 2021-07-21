@@ -36,6 +36,7 @@ crypto++
 cscope
 dash
 dconf-editor
+desmume
 diff-so-fancy
 docker
 dovecot
@@ -56,6 +57,7 @@ gedit
 gifsicle
 gifski
 gimagereader-gtk
+git-filter-repo
 github-cli
 gnome-calculator
 gnome-calendar
@@ -213,8 +215,8 @@ swig
 sxiv
 task
 taskell
+tealdeer
 terminus-font
-termite
 testdisk
 texlab
 texlive-bibtexextra

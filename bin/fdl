@@ -1,0 +1,111 @@
+#!/usr/bin/python3
+
+"""
+    Fuzzy DND Lister: A replacement to roland
+
+    Input files must be in yaml in the following format.
+
+    ## Standard format
+    type: <'list'|'multilist'|'files'>
+    times: <rollstring>
+    pick: <int>
+    items: <list of items>
+
+    ## Dice format for backwards compatibility with roland
+    dice: <rollstring>
+    times: <rollstring>
+    results: <list of key:value where key is a number < max(dice)>
+
+    @notes:
+    - where <rollstring> is a string accepted by the roll function in roll.py. (10d6+3 etc)
+    - items is either a list, or list of lists (multilist)
+    - times is not currently used for lists, only multilists. Will implement it when I have to
+    - when type is 'files', items is a list of relative paths, and all of them are processed in sequence
+
+"""
+
+import yaml
+import random
+from roll import roll
+from pyfzf.pyfzf import FzfPrompt
+from pathlib import Path
+from random import seed
+from plumbum.commands.processes import ProcessExecutionError
+
+# from itertools import chain
+
+fzf = FzfPrompt()
+seed(a=None, version=2)
+
+FZF_FILE_OPTS =  '--cycle --bind="ctrl-x:execute@xdg-open {}@","ctrl-o:execute@nvim {}@" --bind="ctrl-y:execute@echo {} | xclip -i -selection clipboard@"'
+
+folder = Path('/home/jayghoshter/Repositories/dmtools/lists')
+allfiles = sorted([x.name for x in folder.iterdir() if x.is_file() ])
+
+def hyphenRange(hyphenString):
+    hyphenString = str(hyphenString)
+    x = [int(x) for x in hyphenString.split('-')]
+    return range(x[0], x[-1]+1)
+
+def load_file(fname):
+    """
+    Load the yaml file
+    """
+    config = {}
+    with open(fname) as inputfile:
+        config = yaml.load(inputfile, Loader=yaml.FullLoader)
+    return config
+
+def process(config):
+    """
+    Process the yaml file.
+    Supported types: Non-recursive list and dice
+
+    """
+
+    # TODO: Allow recursive lists and dice (multilist isn't a recursive thing)
+
+    dice = config.get('dice')
+    datatype = config.get('type')
+
+    if datatype == 'list':
+        ## Simple list
+        print(*random.sample(config.get('items'), config.get('pick', 1)), sep = "\n---\n")
+    elif datatype == 'multilist':
+        ## Simple list of lists
+        ## NOTE: Currently prints entries side by side
+        itemss = config.get('items')
+        picks = config.get('pick',[1]*len(itemss))
+        times = roll(str(config.get('times', 1)))
+        for _ in range(times):
+            for pick,items in zip(picks,itemss):
+                print(*random.sample(items, pick), end = " ")
+            print("")
+    elif datatype == 'files':
+        ## NOTE: picks all listed files by default
+        files = config.get('items')
+        for subfile in files:
+            process(load_file(folder / subfile))
+    elif dice:
+        ## Simple dice lists with dice ranges
+        times = roll(str(config.get('times', 1)))
+        roll_result = [ roll(dice) for _ in range(times) ]
+        results = config.get('results')
+        outputs = [ results.get(key)  for rolled in roll_result for key in results.keys() if rolled in hyphenRange(key) ]
+        print(*outputs, sep="\n---\n")
+
+def main():
+
+    try:
+        selected_file = fzf.prompt(allfiles, FZF_FILE_OPTS)[0]
+        while selected_file:
+            selected_full_file = folder / selected_file
+            process(load_file(selected_full_file))
+            input('-----------')
+            selected_file = fzf.prompt(allfiles, "--query=" + selected_file)[0]
+    except ProcessExecutionError:
+        pass
+
+
+if __name__ == "__main__":
+    main()
