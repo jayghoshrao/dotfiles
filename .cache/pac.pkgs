@@ -5,6 +5,7 @@ alsa-utils
 anki
 arandr
 arc-gtk-theme
+asp
 at
 autorandr
 b43-fwcutter
@@ -92,6 +93,7 @@ hyperfine
 imagescan
 inetutils
 inkscape
+inotify-tools
 intel-mkl
 intel-ucode
 ipw2100-fw

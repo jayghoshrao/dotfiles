@@ -542,7 +542,7 @@ exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpa
 set $mode_deskenv [p]olybar | pulse[a]udio | [c]onky | [k]eyboard | [A]ll
 mode "$mode_deskenv"
 {
-    bindsym p exec --no-startup-id $SCRIPTS/run --polybar, mode "default"
+    bindsym p exec --no-startup-id $SCRIPTS/run --pulseaudio --polybar, mode "default"
     bindsym a exec --no-startup-id $SCRIPTS/run --pulseaudio, mode "default"
     bindsym c exec --no-startup-id $SCRIPTS/run --conky	, mode "default"
     bindsym k exec --no-startup-id $SCRIPTS/run --keyboard, mode "default"

@@ -9,6 +9,7 @@ bibata-cursor-theme
 brotab-git
 c2esp
 chromium-widevine
+citra-qt-git
 conky-lua
 cozy-audiobooks
 ddd
@@ -32,7 +33,6 @@ gron
 grub2-theme-vimix-git
 gsfonts-type1
 gtklp
-howdoi
 hunter
 i3wsr
 j4-dmenu-desktop
@@ -46,6 +46,7 @@ magic-wormhole
 masterpdfeditor
 masterpdfeditor-free
 melonds
+micromamba-bin
 microsoft-python-language-server
 mongodb-bin
 mopidy-podcast
@@ -82,6 +83,7 @@ python-pulsectl
 python-pysmartdl
 python-rauth
 python-rofi-git
+python-scikit-image
 python-spotipy-git
 python-umonitor-git
 qjoypad
@@ -95,7 +97,6 @@ rtv
 samsung-printers
 sc-im
 scholarref-git
-sftpman
 shantz-xwinwrap-bzr
 silo-google-keep
 silo-google-photos
@@ -122,19 +123,19 @@ ttf-ms-fonts
 tuir
 twitch-curses
 typora
+uftp
 urlview
 v4l2ucp
 vcpkg-git
-ventoy-bin
 vitables
 vlc-plugin-ytdl-git
 whatsapp-nativefier
+whatsappqt
 whatscli
 wpa_actiond
-wtfutil-bin
 xboxdrv
+xminesweeper
 xpad-dkms-git
 yay
-youtube-viewer
 zoom
 zsh-notify-git

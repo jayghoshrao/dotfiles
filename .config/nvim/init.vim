@@ -519,7 +519,6 @@ autocmd SwapExists * let v:swapchoice = "o"
 " autocmd BufRead,BufNewFile *.in set filetype=conf
 " autocmd Filetype tex set filetype=plaintex.tex
 autocmd Filetype conf,cmake,xns set commentstring=#\ %s
-autocmd Filetype tex set commentstring=%%\ %s
 au BufNewFile,BufRead xns*.in* set filetype=xns
 
 "}}}
@@ -542,7 +541,8 @@ function! s:AsyncQuickFix()
 
 augroup asyncRunGroup
     autocmd!
-	autocmd! BufWritePost *.tex execute 'AsyncRun pdflatex %'
+	" autocmd! BufWritePost *.tex execute 'AsyncRun pdflatex %'
+	autocmd! BufWritePost *.tex execute 'AsyncRun tectonic %'
 	autocmd! User AsyncRunStop :call <SID>AsyncQuickFix()
 augroup END
 
@@ -571,6 +571,7 @@ augroup markdown
     autocmd FileType vimwiki :noremap <buffer> <Leader>z :! nohup zathura '%<.pdf' 2>&1 >/dev/null & disown<CR><CR>
     autocmd FileType vimwiki :noremap <buffer> <Leader>h :! qutebrowser '%<.html' 2>&1 >/dev/null &<CR><CR>
     autocmd FileType vimwiki :noremap <buffer> <Leader>c :! pandoc --self-contained -t pdf '%' -o '%<.pdf'<CR>
+    autocmd FileType vimwiki :noremap <buffer> <Leader>ct :! pandoc --self-contained -f markdown -t html5 --css "$stylesheet" '%' -o '%<.pdf'<CR>
     autocmd FileType markdown set filetype=vimwiki.markdown.pandoc.tex
     autocmd FileType vimwiki set syntax=vimwiki.markdown.pandoc.tex
     " autocmd Filetype vimwiki set commentstring=<!--%s-->
@@ -583,6 +584,16 @@ augroup markdown
     " syntax region Statement matchgroup=Delimiter start="\\begin{.*}" end="\\end{.*}" contains=Statement
     " "   commands:
     " syntax region Statement matchgroup=Delimiter start="{" end="}" contains=Statement
+
+augroup END
+
+augroup tex
+
+    autocmd! FileType tex
+    autocmd FileType tex :noremap <buffer> <Leader>v :! nohup okular "%" >/dev/null 2>&1 & disown<CR><CR>
+    autocmd FileType tex :noremap <buffer> <Leader>z :! nohup zathura '%<.pdf' 2>&1 >/dev/null & disown<CR><CR>
+    autocmd FileType tex :noremap <buffer> <Leader>c : AsyncRun tectonic %<CR><CR> 
+    " autocmd Filetype tex set commentstring=%%\ %s
 
 augroup END
 

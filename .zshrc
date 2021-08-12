@@ -633,17 +633,17 @@ add-zsh-hook precmd set_longrunning_alert
 
 ## SSH TMUX REFRESH ENV: {{{
 
-# if [ -n "$TMUX" ]; then
-#   function refresh {
-#     # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
-#     export $(tmux show-environment | grep "^DISPLAY")
-#   }
-# else
-#   function refresh { }
-# fi
-# function preexec {
-#     refresh
-# }
+if [ -n "$TMUX" ]; then
+  function refresh {
+    # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
+    export $(tmux show-environment | grep "^DISPLAY")
+  }
+else
+  function refresh { }
+fi
+function preexec {
+    refresh
+}
 
 ## SSH TMUX REFRESH ENV: }}}
 
@@ -664,3 +664,22 @@ fpass() {
 }
 
 alias F="sudo -E nnn -dH" # sudo file browser
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba init' !!
+export MAMBA_EXE="/usr/bin/micromamba";
+export MAMBA_ROOT_PREFIX="/home/jayghoshter/local/micromamba";
+__mamba_setup="$('/usr/bin/micromamba' shell hook --shell zsh --prefix '/home/jayghoshter/local/micromamba' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    if [ -f "/home/jayghoshter/local/micromamba/etc/profile.d/mamba.sh" ]; then
+        . "/home/jayghoshter/local/micromamba/etc/profile.d/mamba.sh"
+    else
+        export PATH="/home/jayghoshter/local/micromamba/bin:$PATH"
+    fi
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
+alias mamba=micromamba
+# export MAMBA_NO_BANNER=1
