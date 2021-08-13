@@ -80,8 +80,11 @@ function fzf_locate()
     # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
 
     # OUT=$(locate home media | fuzscope "$QUERY" ) 
-    OUT=$(fd "$@" . ~ | fuzscope ) 
-    if [[ ! -z "$OUT" ]]; then 
+    # OUT=$(fd "$@" . ~ | fuzscope ) 
+
+    OUT=$(fd "$@" . --base-directory=$HOME | fuzscope --base-directory "$HOME") 
+
+    if [[ -n "$OUT" ]]; then 
         FILE=$(echo -e "$OUT" | tail -1)
         # echo "$FILE"
         [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | filer 

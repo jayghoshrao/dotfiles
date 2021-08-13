@@ -30,5 +30,30 @@
 
 ## TODO: Move to zc
 
-CMD='fzf -0 -1 -e -d "\t" --preview="scope.sh {q} {1}" --preview-window up:75% --expect=ctrl-e,ctrl-b '"$@"' --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@"'
-eval "$CMD"
+# CMD='fzf -0 -1 -e -d "\t" --preview="scope.sh {q} {1}" --preview-window up:75% --expect=ctrl-e,ctrl-b '"$@"' --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@"'
+# eval "$CMD"
+
+## [TASK]: Cleanup and use args/flags etc
+## -b to append base directory
+## flag to switch off the --expect output (first line showing key)
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -b|--base-directory)
+            ## Basically to compensate for fd --base-directory
+            BASEDIR="$2/"
+            shift # past value
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+fzf -0 -1 -m -e --sync -d $"\t" --preview="scope.sh {q} {1}" --preview-window up:60% "$@" --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@" | sed "s@^@$BASEDIR@g"
