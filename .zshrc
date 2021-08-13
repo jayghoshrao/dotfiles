@@ -495,75 +495,6 @@ f()
     fi
 }
 # nnn: cd on quit: }}}
-# filer:{{{
-function filer(){
-    # TODO: just move this to filer.sh and source the damn script for cd capacity?
-    #           This won't allow using this in cd()?. 
-    read KEY
-    read FILE
-
-    [ -z "$FILE" ] && FILE="$KEY"
-
-    FILE=$(echo "$FILE" | cut -f1 -d"	")
-    FILEBASENAME=${FILE##*/}
-    [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
-    FILETYPE="$(file --mime-type "$FILE" | awk '{print $NF}')"
-
-    urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-
-    # echo "ext=$EXT"
-    # echo "file=$FILE"
-    # echo "filebasename=$FILEBASENAME"
-    # echo "c[0]=${FILEBASENAME:0:1}"
-    # echo "filetype=$FILETYPE"
-    # echo "key=$KEY"
-    # return
-
-    ## TODO: Cleanup
-    ## TODO: switch case?
-    
-if [ -n "$FILE" ]; then
-    if [[ -d "$FILE" ]]; then 
-        builtin cd "$FILE" &> /dev/null
-    elif [[ "$FILE" =~ $urlregex ]] && [[ "$FILE" =~ "youtube" ]]; then
-        nohup mpv "$FILE" > /dev/null 2>&1 & disown
-    elif [[ "$FILE" =~ $urlregex ]] && [[ "$FILE" =~ "xkcd" ]]; then 
-        curl -sSL "$FILE" | hq img attr src | grep comics | sed 's/^/https:/' | xargs feh -Z
-    elif [[ "$FILETYPE" =~ "octet-stream" ]]; then
-        dex -e "$FILE"
-    elif [[ "$KEY" == "ctrl-b" ]]; then
-        termite -e ranger "$PWD/$FILE" 
-    elif [[ "$KEY" == "ctrl-x" ]]; then
-        xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
-    elif [[ "$EXT" == "pdf" ]]; then
-        if [[ "$KEY" == "ctrl-p" ]]; then
-            OPENER="polar-bookshelf"
-        elif [[ "$KEY" == "ctrl-e" ]]; then 
-            OPENER="evince"
-        else
-            OPENER="zathura"
-        fi
-        nohup "$OPENER" "$FILE" </dev/null >/dev/null 2>&1 & disown 
-    elif [[ "$EXT" == "md" ]] && [[ "$KEY" == "ctrl-o" ]]; then
-        xdg-open "$FILE"
-    elif [[ "$EXT" == "csv" ]] || [[ "$KEY" == "ctrl-e" ]]; then
-        "$EDITOR" "$FILE"
-    elif [[ "$EXT" == "json" ]]; then
-        "$EDITOR" "$FILE"
-    elif [[ "$FILETYPE" == *"text"* ]] || [[ "$KEY" == "ctrl-e" ]]; then
-        "$EDITOR" "$FILE" 
-    elif [[ "$FILETYPE" == *"symlink"* ]] ; then
-        "$EDITOR" $(readlink -f "$FILE")
-    elif [[ "$FILETYPE" == *"application"* ]] || [[ "$KEY" == "ctrl-o" ]]; then
-        xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
-    else
-        xdg-open "$FILE" </dev/null >/dev/null 2>&1 & disown
-    fi
-fi
-
-}
-autoload -Uz filer
-# filer:}}}
 # ring: {{{
 ring() {
     ## Works even if terminal is closed, unlike the other two
@@ -710,7 +641,7 @@ peek()
         switch "$FILE"
     done
 }
-# }}}
+# peek: }}}
 # }}}
 
 # Bell Hook: {{{

@@ -347,7 +347,7 @@ function fzf_locate_config()
     # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
 
     # OUT=$(locate home media | fuzscope "$QUERY" ) 
-    OUT=$(fd . ~/.config/ -L | fuzscope "$QUERY" ) 
+    OUT=$(fd . -L --base-directory=$HOME/.config | fuzscope --base-directory $HOME/.config $QUERY ) 
     if [[ ! -z "$OUT" ]]; then 
         FILE=$(echo -e "$OUT" | tail -1)
         # echo "$FILE"

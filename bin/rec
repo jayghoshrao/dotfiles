@@ -37,10 +37,6 @@
 
 ## v4
 
-recoll -t -q "$@" | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fuzscope --sync --read0 --reverse  | cut -z -f 1 -d $'\t' | filer
+# recoll -t "$@" 2>/dev/null | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fuzscope --sync --read0 --reverse  | cut -z -f 1 -d $'\t' | peek
 
-# test
-# recoll -t -q "$@" | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fast-p | fuzscope --read0 --reverse
-
-
-
+recoll -t "$@" 2>/dev/null | tail +3 | sed 's/.*\[file:\/\/\([^]]*\)].*/\1/g' | fuzscope --sync | peek
