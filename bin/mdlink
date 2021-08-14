@@ -1,4 +1,7 @@
 #!/bin/bash
+
+## Get forward and backward links, to and from a markdown file
+
 ##DONE: forward links: Just needs the file(s)
 ##DONE: backward links: Needs a BASE_DIR
     # in current dir, look for other files with target == current file

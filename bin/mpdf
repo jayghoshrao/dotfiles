@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# mpdf: mpd fuzzy
+# fuzzy play songs in your library with mpc
+
 if [ "$*" ]; then
     mpc clear
     command='mpc search'

@@ -16,6 +16,7 @@
 
 """
 Generate a list of markdown links (forward and backward).
+Potentially useful for notes with vimwiki
 """
 
 import re
@@ -24,9 +25,9 @@ import argparse
 from pathlib import Path
 from ripgrepy import Ripgrepy
 
-taglinkre='\[([\w\s\d./?=-]+)\]\([^#][\w\s\d./?#=-]+\)'
-tagre='\[([\w\s\d./?=-]+)\]'
-linkre='\([\w\s\d./?#=-]+\)'
+taglinkre='\[([\w\s\d./?=-]+)\]\([^#][\w\s\d./?#=-]+\)' # type: ignore
+tagre='\[([\w\s\d./?=-]+)\]' # type: ignore
+linkre='\([\w\s\d./?#=-]+\)' # type: ignore
 
 def getForwardLinks(filename):
     filepath = Path(filename)

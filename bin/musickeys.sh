@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## xf86 controls for music with playerctl
+
 LAST_COMMAND_FILE=/tmp/i3_music_keys_last_command
 case $1 in
    "toggle")

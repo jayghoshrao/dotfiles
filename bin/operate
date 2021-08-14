@@ -1,5 +1,7 @@
 #!/usr/bin/env bash 
 
+## An attempt at creating a bash repl
+
 # cat operate.cache | fzf --preview-window up:80% --preview "cat operate.out" --bind "enter:execute@eval '{q} > operate.out'@"
 
 TMP="/tmp/operate.tmpfile"

@@ -1,4 +1,0 @@
-#!/bin/bash
-
-nohup termite -e rcd > /dev/null 2>&1 & disown
-

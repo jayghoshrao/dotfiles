@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 
-# TODO: autodisplay?
+print_usage(){
+echo "program    : run
+description: A script to handle my local desktop environment.
+usage      : run [options]
+
+options: 
+
+-p | --polybar        : polybar
+-a | --pulseaudio     : pulseaudio (rename sinks)
+-c | --conky          : conky
+-w | --wallpaper      : wallpaper
+-k | --keyboard       : keyboard config
+-n | --notification   : notification (dunst)
+-d | --display        : display
+--all                 : everything except display
+--delay n             : sleep for n seconds
+--save-display-layout : sleep for n seconds"
+
+exit
+}
 
 launch_conky(){
     exec > /dev/null 2>&1 
@@ -103,12 +122,27 @@ set_autodisplay(){
 
 }
 
+save_display_layout(){
+
+    layoutsDir="$HOME/.screenlayout"
+    layoutsFile="$layoutsDir/layouts"
+    HASH=$(xrandr --prop | grep -A2 EDID | sha256sum | cut -c 1-32)
+    STRING="$1 $HASH" 
+    echo -e "$STRING" >> "$layoutsFile"
+    echo "Layout $1 saved to $layoutsFile" 
+    echo "Please ensure that $layoutsDir/$layoutsFile.sh is created and setup"
+
+}
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
     key="$1"
     case $key in
+        -h|--help)
+            print_usage
+            shift # past value
+            ;;
         -p|--polybar)
             launch_polybar &
             ~/bin/i3_workspace_names.py &
@@ -141,6 +175,11 @@ do
             ;;
         -d|--display)
             set_autodisplay &
+            shift
+            ;;
+        --save-display-layout)
+            save_display_layout "$2"
+            shift
             shift
             ;;
         --all)

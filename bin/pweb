@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## Given a pdf file with link in subject field of metadata, open link
+
 LINK=$(exiftool -t -Subject "$@" | cut -f 2-)
 # echo "$LINK"
 xdg-open "$LINK" >/dev/null 2>&1 & disown

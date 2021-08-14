@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## Get currently playing music's title
+
 if playerctl status &>/dev/null
 then
   STATUS=`playerctl status`

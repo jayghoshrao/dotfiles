@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+## Read saved articles on Pocket.
+## Wrapper around pockyt: https://github.com/achembarpu/pockyt
+## Also depends on fzf
+
 # TODO: auto-change margin padding in terminal (while loop?)
 # TODO: add favorite
 
