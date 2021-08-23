@@ -145,7 +145,7 @@ do
             ;;
         -p|--polybar)
             launch_polybar &
-            ~/bin/i3_workspace_names.py &
+            # ~/bin/i3_workspace_names.py &
             shift # past value
             ;;
         -a|--pulseaudio)
@@ -187,7 +187,7 @@ do
             rename_pulseaudio_sinks &
             set_wallpaper &
             launch_polybar &
-            ~/bin/i3_workspace_names.py &
+            # ~/bin/i3_workspace_names.py &
             launch_conky &
             shift
             ;;

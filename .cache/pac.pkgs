@@ -68,6 +68,7 @@ gnome-documents
 gnome-font-viewer
 gnome-logs
 gnome-maps
+gnome-mines
 gnome-music
 gnome-photos
 gnome-power-manager
@@ -178,6 +179,7 @@ privoxy
 progress
 pv
 pyright
+python-deepdiff
 python-eyed3
 python-gitpython
 python-h5py

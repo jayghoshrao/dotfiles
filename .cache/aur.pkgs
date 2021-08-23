@@ -49,6 +49,7 @@ masterpdfeditor-free
 melonds
 micromamba-bin
 microsoft-python-language-server
+minestein
 mongodb-bin
 mopidy-podcast
 mpv-mpris
@@ -78,7 +79,6 @@ pup-git
 py3status-github-notifications
 python-bibtexparser
 python-cmapy
-python-deepdiff
 python-i3-py
 python-pulsectl
 python-pysmartdl

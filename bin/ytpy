@@ -124,7 +124,7 @@ def main():
     if args['desktop']:
         playcmd='livebackground.sh'
     if args['ytdl_audio']:
-        playcmd='youtube-dl -x --ignore-errors --audio-format mp3 --audio-quality 0'
+        playcmd='youtube-dl -x --ignore-errors --audio-format best --audio-quality 0'
 
     if len(args['query']) != 0:
         searchstring = ' '.join(args['query'])
