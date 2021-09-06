@@ -96,10 +96,10 @@ bindsym $mod+shift+Return exec $term -e tmux &
 
 # Launcher :{{{
 
-bindsym $mod+space exec rofi -show combi 
-bindsym $mod+shift+space exec rofi -show drun -matching fuzzy -p App
-bindsym $mod+control+space exec rofi -show calc 
-bindsym $mod+g exec $SCRIPTS/rpass 
+bindsym $mod+space exec rofi -theme config -show combi 
+bindsym $mod+shift+space exec rofi -theme config -show drun -matching fuzzy -p App
+bindsym $mod+control+space exec rofi -theme config -show calc 
+bindsym $mod+g exec $SCRIPTS/rpass -theme config
 # bindsym $mod+control+mod1+space exec rofi-pass -matching fuzzy
 
 

@@ -87,7 +87,7 @@ function fzf_locate()
     if [[ -n "$OUT" ]]; then 
         FILE=$(echo -e "$OUT" | tail -1)
         # echo "$FILE"
-        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | filer 
+        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | peek
     fi
 
 }
@@ -376,7 +376,7 @@ function fzf_copy()
     # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
     # OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2) 
 
-    OUT=$(fd "$@" . ~ | fuzscope -m | tail -n+2) 
+    OUT=$(fd "$@" . ~ | fuzscope -m) 
    
     while IFS= read -r file; do
         cp -r "$file" .

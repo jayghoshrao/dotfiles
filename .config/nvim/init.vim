@@ -542,7 +542,7 @@ function! s:AsyncQuickFix()
 augroup asyncRunGroup
     autocmd!
 	" autocmd! BufWritePost *.tex execute 'AsyncRun pdflatex %'
-	autocmd! BufWritePost *.tex execute 'AsyncRun tectonic %'
+	" autocmd! BufWritePost *.tex execute 'AsyncRun tectonic %'
 	autocmd! User AsyncRunStop :call <SID>AsyncQuickFix()
 augroup END
 

@@ -614,6 +614,16 @@ peek()
             echo "------------------"
         fi
 
+        if [[ "$FILETYPE" == *"text"* ]]; then
+            $EDITOR "$FILE" && return 
+        elif [[ "$FILE" =~ $urlregex ]]; then
+            if [[ "$FILE" =~ "youtube" ]]; then
+                open mpv "$FILE"
+            else
+                guiopen "$FILE"
+            fi
+        fi
+
         case "$FILETYPE" in 
             "inode/directory"         ) builtin cd "$FILE"            ; return ;;
             "inode/symlink"           ) switch "$(readlink -f $FILE)" ; return ;;
@@ -625,15 +635,6 @@ peek()
             *                         ) ;;
         esac
 
-        if [[ "$FILETYPE" == *"text"* ]]; then
-            $EDITOR "$FILE" && return 
-        elif [[ "$FILE" =~ $urlregex ]]; then
-            if [[ "$FILE" =~ "youtube" ]]; then
-                open mpv "$FILE"
-            else
-                guiopen "$FILE"
-            fi
-        fi
 
     }
 
