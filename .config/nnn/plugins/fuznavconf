@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+## NOTE: Only counts $HOME/.config directory
+
 . "$(dirname "$0")"/.nnn-plugin-helper
 
 function preFlightCheck()
@@ -26,12 +28,11 @@ function preFlightCheck()
 
 
 if [ "$(cmd_exists fd)" -eq "0" ]; then
-    sel=$(fd . ~/.config/ -L | fuzscope)
+    sel=$(fd . --base-directory=$HOME/.config/ -L | fuzscope --base-directory $HOME/.config)
 else
     sel=$(find ~/.config/ . | fuzscope)
 fi
 
 if [ -n "$sel" ]; then
-    FILE=$(echo -e "$sel" | tail -1)
-    [ -d "$FILE" ] && nnn_cd "$FILE" "0" || (echo "$sel" | filer)
+    [ -d "$sel" ] && nnn_cd "$sel" "0" || (echo "$sel" | peek)
 fi

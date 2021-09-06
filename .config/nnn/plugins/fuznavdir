@@ -26,12 +26,11 @@ function preFlightCheck()
 
 
 if [ "$(cmd_exists fd)" -eq "0" ]; then
-    sel=$(fd . ~ | fuzscope)
+    sel=$(fd . --base-directory=$HOME | fuzscope --base-directory "$HOME")
 else
-    sel=$(find ~ . | fuzscope)
+    sel=$(find ~ . | fuzscope )
 fi
 
 if [ -n "$sel" ]; then
-    FILE=$(echo -e "$sel" | tail -1)
-    [ -d "$FILE" ] && nnn_cd "$FILE" "0" || nnn_cd "${FILE%/*}" "0"
+    [ -d "$sel" ] && nnn_cd "$sel" "0" || nnn_cd "${sel%/*}" "0"
 fi

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+## NOTE: depends on peek
+
 . "$(dirname "$0")"/.nnn-plugin-helper
 
 function preFlightCheck()
@@ -26,12 +28,11 @@ function preFlightCheck()
 
 
 if [ "$(cmd_exists fd)" -eq "0" ]; then
-    sel=$(fd . ~ | fuzscope)
+    sel=$(fd . --base-directory=$HOME | fuzscope --base-directory "$HOME")
 else
-    sel=$(find ~ . | fuzscope)
+    sel=$(find ~ . | fuzscope )
 fi
 
 if [ -n "$sel" ]; then
-    FILE=$(echo -e "$sel" | tail -1)
-    [ -d "$FILE" ] && nnn_cd "$FILE" "0" || (echo "$sel" | filer)
+    [ -d "$sel" ] && nnn_cd "$sel" "0" || (echo "$sel" | peek)
 fi
