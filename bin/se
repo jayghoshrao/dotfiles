@@ -1,4 +1,4 @@
-#!/usr/bin/env dash
+#!/usr/bin/env bash
 
 [ "$1" = "-d" ] && [ -n "$2" ] && rm ~/bin/$2 && exit
 [ -n "$2" ] && mv ~/bin/$1 ~/bin/$2 && exit

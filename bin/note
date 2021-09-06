@@ -27,5 +27,5 @@ cd "$DIR" || exit
 EDITOR=nvim
 GOYO=+Goyo
 
-"$EDITOR" "$GOYO" "$*".md
+"$EDITOR" "$GOYO" "$@".md
 
