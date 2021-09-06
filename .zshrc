@@ -668,17 +668,17 @@ add-zsh-hook precmd set_longrunning_alert
 
 ## SSH TMUX REFRESH ENV: {{{
 
-if [ -n "$TMUX" ]; then
-  function refresh {
-    # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
-    export $(tmux show-environment | grep "^DISPLAY")
-  }
-else
-  function refresh { }
-fi
-function preexec {
-    refresh
-}
+# if [ -n "$TMUX" ]; then
+#   function refresh {
+#     # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
+#     export $(tmux show-environment | grep "^DISPLAY")
+#   }
+# else
+#   function refresh { }
+# fi
+# function preexec {
+#     refresh
+# }
 
 ## SSH TMUX REFRESH ENV: }}}
 
