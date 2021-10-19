@@ -2,7 +2,6 @@ acpi
 acpid
 alacritty
 alsa-utils
-anki
 arandr
 arc-gtk-theme
 asp
@@ -16,7 +15,6 @@ bind
 bison
 blueman
 bluez-utils
-boost
 borg
 bpytop
 brasero
@@ -85,6 +83,7 @@ gtop
 gufw
 gutenprint
 haveged
+hddtemp
 hplip
 hq
 htop
@@ -116,6 +115,7 @@ lolcat
 luit
 lvtk
 lxappearance
+magic-wormhole
 man-db
 man-pages
 materia-gtk-theme
@@ -146,6 +146,7 @@ networkmanager-pptp
 newsboat
 nextcloud-client
 nfs-utils
+nix
 nnn
 ocaml-topkg
 ocamlbuild
@@ -163,11 +164,7 @@ pdcurses
 pdfgrep
 pdftk
 pdftricks
-perl-class-load
 perl-devel-globaldestruction
-perl-eval-closure
-perl-list-allutils
-perl-package-deprecationmanager
 picard
 pinta
 pkgfile
@@ -243,12 +240,13 @@ totem
 traceroute
 translate-shell
 transmission-gtk
-tree-sitter
 tsocks
 ttf-carlito
 ttf-cascadia-code
+ttf-iosevka-nerd
 ttf-joypixels
 udiskie
+units
 urlscan
 urlwatch
 utox

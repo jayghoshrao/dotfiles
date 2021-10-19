@@ -627,6 +627,7 @@ peek()
         case "$FILETYPE" in 
             "inode/directory"         ) builtin cd "$FILE"            ; return ;;
             "inode/symlink"           ) switch "$(readlink -f $FILE)" ; return ;;
+            "inode/x-empty"           ) $EDITOR "$FILE"               ; return ;;
             "application/octet-stream") dex -e "$FILE"                ; return ;;
             "text/html"               ) guiopen "$FILE"               ; return ;;
             "application/pdf"         ) guiopen "$FILE"               ; return ;;

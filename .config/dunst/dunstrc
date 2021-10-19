@@ -288,6 +288,10 @@
     new_icon = Spotify
     timeout = 10
 
+[RocketChat]
+    appname = Rocket.Chat
+    timeout = 10
+
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.
 # Messages can be matched by "appname", "summary", "body", "icon", "category",

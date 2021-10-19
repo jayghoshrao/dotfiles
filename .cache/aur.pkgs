@@ -3,6 +3,7 @@ acroread
 acroread-fonts-systemwide
 adobe-base-14-fonts
 anime-downloader-git
+anki
 arcanist-stable
 autojump
 bibata-cursor-theme
@@ -26,6 +27,7 @@ fortran-language-server
 foxitreader
 gcalcli
 gdb-dashboard-git
+gita
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
 googler-git
@@ -43,7 +45,6 @@ libxlsxwriter
 light-locker-settings
 lmod
 lxsession-git
-magic-wormhole
 masterpdfeditor
 masterpdfeditor-free
 melonds
@@ -56,8 +57,8 @@ mpv-mpris
 mutt-ics
 nanoboyadvance-git
 ncspot-git
-neovim-nightly-bin
-nerd-fonts-iosevka
+nerd-fonts-victor-mono
+nodejs-mermaid-git
 pam-gnupg
 pandoc-eqnos
 pandoc-fignos
@@ -114,6 +115,7 @@ teams
 tectonic
 telegram-desktop-bin
 termite
+tidy-viewer
 titillium-fonts
 tmatrix-git
 transset-df

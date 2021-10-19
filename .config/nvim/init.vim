@@ -6,6 +6,16 @@
 " ██  ██ ██  ██       ██    ██   ██  ██   ██  ██  ██  ██    
 " ██   ████  ███████   ██████     ████    ██  ██      ██    
 
+" People to follow for neovim plugin development:
+"    - Junegunn Choi
+"    - TJ DeVries
+"    - Folke
+"    - The Primeagen
+"
+"  [NOTE]: Hub for neovim plugins: https://neovimcraft.com
+
+" Moving to LUA: https://cj.rs/blog/my-setup/nvim-0-5/
+
 " Check out https://github.com/gillescastel/latex-snippets
 " Better compatibility with remote servers: Simpler vimrc
 " TODO: https://github.com/bkad/CamelCaseMotion or https://github.com/chaoren/vim-wordmotion
@@ -13,10 +23,18 @@
 " TODO: https://github.com/junegunn/vim-peekaboo
 " TODO: https://github.com/stefandtw/quickfix-reflector.vim
 " TODO: Vimspector + Telescope
+" https://github.com/gelguy/wilder.nvim
+" https://github.com/ngscheurich/iris.nvim
 " https://github.com/d0c-s4vage/lookatme
 " https://github.com/b3nj5m1n/kommentary
 " https://github.com/alpertuna/vim-header
 " https://github.com/garbas/vim-snipmate
+" https://github.com/luukvbaal/nnn.nvim
+" https://github.com/onsails/diaglist.nvim
+" https://github.com/ahmedkhalf/project.nvim
+" https://github.com/ibhagwan/fzf-lua
+" https://github.com/rmagatti/goto-preview
+" https://github.com/ggandor/lightspeed.nvim " vim-sneak successor
 
 " https://github.com/ray-x/lsp_signature.nvim
 " https://github.com/lewis6991/gitsigns.nvim
@@ -39,7 +57,10 @@ Plug 'jayghoshter/tasktags.vim'
 " Basic: LSP, Completion and Treesitter
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  
 Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-compe'
+Plug 'hrsh7th/cmp-nvim-lsp', {'branch': 'main'}
+Plug 'hrsh7th/cmp-buffer', {'branch': 'main'}
+Plug 'hrsh7th/nvim-cmp', {'branch': 'main'}
+
 Plug 'm-pilia/vim-ccls'
 
 " Telescope: It's dope
@@ -78,21 +99,23 @@ Plug 'vim-scripts/argtextobj.vim'
 
 " Misc: General utilities
 Plug 'jremmen/vim-ripgrep'
-Plug 'rbong/vim-crystalline'
+" Plug 'rbong/vim-crystalline'
 Plug 'Valloric/ListToggle' 
 Plug 'lambdalisue/suda.vim'
-Plug 'mcchrish/nnn.vim'
+Plug 'mcchrish/nnn.vim'             " [TASK] https://github.com/luukvbaal/nnn.nvim
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'tommcdo/vim-lion'                                       
 
 " Provide indentlines. 
 Plug 'lukas-reineke/indent-blankline.nvim'
-" Plug 'Yggdroot/indentLine'
 
 " Writer: Beautiful distraction-free mode
 Plug 'junegunn/goyo.vim'                                    
 Plug 'junegunn/limelight.vim'                              
+" [TASK] https://github.com/Pocco81/TrueZen.nvim
+" [TASK] https://github.com/folke/zen-mode.nvim
+" [TASK] https://github.com/folke/twilight.nvim
 
 " " Colorschemes
 Plug 'arcticicestudio/nord-vim'                               " theme
@@ -165,43 +188,43 @@ autocmd! User GoyoLeave nested call <SID>goyo_leave()
     let g:vimwiki_table_mappings=0
     au FileType vimwiki set filetype=vimwiki.markdown.pandoc.tex
 " }}}
-" Crystalline: {{{
-function! StatusLine(current, width)
-  let l:s = ''
+" " Crystalline: {{{
+" function! StatusLine(current, width)
+"   let l:s = ''
 
-  if a:current
-    let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
-  else
-    let l:s .= '%#CrystallineInactive#'
-  endif
-  let l:s .= ' %f%h%w%m%r '
-  if a:current
-    let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
-  endif
+"   if a:current
+"     let l:s .= crystalline#mode() . crystalline#right_mode_sep('')
+"   else
+"     let l:s .= '%#CrystallineInactive#'
+"   endif
+"   let l:s .= ' %f%h%w%m%r '
+"   if a:current
+"     let l:s .= crystalline#right_sep('', 'Fill') . ' %{fugitive#head()}'
+"   endif
 
-  let l:s .= '%='
-  if a:current
-    let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
-    let l:s .= crystalline#left_mode_sep('')
-  endif
-  if a:width > 80
-    let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
-  else
-    let l:s .= ' '
-  endif
+"   let l:s .= '%='
+"   if a:current
+"     let l:s .= crystalline#left_sep('', 'Fill') . ' %{&paste ?"PASTE ":""}%{&spell?"SPELL ":""}'
+"     let l:s .= crystalline#left_mode_sep('')
+"   endif
+"   if a:width > 80
+"     let l:s .= ' %{&ft}[%{&fenc!=#""?&fenc:&enc}][%{&ff}] %l/%L %c%V %P '
+"   else
+"     let l:s .= ' '
+"   endif
 
-  return l:s
-endfunction
-let g:crystalline_statusline_fn = 'StatusLine'
+"   return l:s
+" endfunction
+" let g:crystalline_statusline_fn = 'StatusLine'
 
-let g:crystalline_enable_sep = 1
-let g:crystalline_theme = 'nord'
-set tabline=%!crystalline#bufferline()
-set statusline=%!crystalline#StatusLine()
-set showtabline=2
-set guioptions-=e
-set laststatus=2
-" }}}
+" let g:crystalline_enable_sep = 1
+" let g:crystalline_theme = 'nord'
+" set tabline=%!crystalline#bufferline()
+" set statusline=%!crystalline#StatusLine()
+" set showtabline=2
+" set guioptions-=e
+" set laststatus=2
+" " }}}
 
 call plug#end()            " required
 
@@ -238,7 +261,7 @@ let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
 let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
 
 set nohidden
-set relativenumber
+" set relativenumber
 set mouse=a             "Copy selected text with mouse to system clipboard
 set undofile            " Persistent undos through file closes 
 set nojoinspaces
@@ -270,10 +293,12 @@ set matchtime=2
 set splitright            " vsplit defaults right
 set splitbelow            " split defaults bottom
 set wildmenu
-set laststatus=2          " use 2 for airline, 0 otherwise
+" set laststatus=2          " use 2 for airline, 0 otherwise
+set laststatus=0          " use 2 for airline, 0 otherwise
 set inccommand=split
 set clipboard=unnamedplus		"register = clipboard"
-set completeopt=noinsert,menuone,noselect
+" set completeopt=noinsert,menuone,noselect
+set completeopt=menu,menuone,noselect " for nvim-cmp
 set timeout timeoutlen=800 ttimeoutlen=10
 set updatetime=300        " Smaller updatetime for CursorHold & CursorHoldI
 set spelllang=en_gb
@@ -817,7 +842,7 @@ if has('nvim-0.5')
 " Treesitter: {{{
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-    ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+    -- ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
     ignore_install = { "javascript" }, -- List of parsers to ignore installing
     highlight = {
     enable = true,              -- false will disable the whole extension
@@ -881,7 +906,7 @@ nnoremap <space>gg <cmd>Telescope gh gist<cr>
 nnoremap <space>t :lua require("custom.telescope").project_files()<cr>
 
 " [TASK]: This is obsoleted by Git status built-in. Remove it
-nnoremap <space>gd :lua require("custom.telescope").git_dirty()<cr>
+" nnoremap <space>gd :lua require("custom.telescope").git_dirty()<cr>
 
 nnoremap <space>s <cmd>Telescope lsp_workspace_symbols<cr>
 
@@ -893,8 +918,9 @@ lua << EOF
 local root_pattern = require'lspconfig'.util.root_pattern
 
 require'lspconfig'.ccls.setup{
-    root_dir = root_pattern(".ccls", ".ccls-root", "compile_commands.json", "compile_flags.txt", ".git") or dirname
+    root_dir = root_pattern(".ccls", ".ccls-root", "compile_commands.json", "compile_flags.txt", ".git") or dirname,
 }
+   -- capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 require'lspconfig'.pyright.setup{}
 require'lspconfig'.fortls.setup{}
 require'lspconfig'.texlab.setup{}
@@ -944,55 +970,53 @@ end
 EOF
 "}}}
 
-" Compe: {{{
+" Completion: {{{
 
-let g:compe = {}
-let g:compe.enabled = v:true
-let g:compe.autocomplete = v:true
-let g:compe.debug = v:false
-let g:compe.min_length = 1
-let g:compe.preselect = 'enable'
-let g:compe.throttle_time = 80
-let g:compe.source_timeout = 200
-let g:compe.incomplete_delay = 400
-let g:compe.max_abbr_width = 100
-let g:compe.max_kind_width = 100
-let g:compe.max_menu_width = 100
-let g:compe.documentation = v:true
+lua << EOF
+  -- Setup nvim-cmp.
+  local cmp = require'cmp'
 
-let g:compe.source = {}
-let g:compe.source.path = v:true
-let g:compe.source.buffer = v:true
-let g:compe.source.calc = v:true
-let g:compe.source.nvim_lsp = v:true
-let g:compe.source.nvim_lua = v:true
-let g:compe.source.vsnip = v:true
-let g:compe.source.ultisnips = v:true
+  cmp.setup({
+     mapping = {
+         ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
+         ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'}),
+      },
+    sources = {
+      { name = 'nvim_lsp' },
 
-inoremap <silent><expr> <C-Space> compe#complete()
-inoremap <silent><expr> <CR>      compe#confirm({ 'keys': "\<Plug>delimitMateCR", 'mode': '' })
-inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+      -- For vsnip user.
+      -- { name = 'vsnip' },
+
+      -- For luasnip user.
+      -- { name = 'luasnip' },
+
+      -- For ultisnips user.
+      -- { name = 'ultisnips' },
+
+      { name = 'buffer' },
+    }
+  })
+EOF
 
 " }}}
 
 endif
 
-" Completion:{{{
+" " Completion:{{{
 
-inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <silent><expr><s-tab> pumvisible() ? "\<C-p>" : "\<TAB>"
-" If you prefer the Omni-Completion tip window to close when a selection is
-" " made, these lines close it on movement in insert mode or when leaving
-" " insert mode
-autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+" inoremap <silent><expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+" inoremap <silent><expr><s-tab> pumvisible() ? "\<C-p>" : "\<TAB>"
+" " If you prefer the Omni-Completion tip window to close when a selection is
+" " " made, these lines close it on movement in insert mode or when leaving
+" " " insert mode
+" autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+" autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
-" }}}
+" " }}}
 
 nnoremap <leader>r :Gcd<cr>
 map ;c <Plug>VimwikiRemoveSingleCB
 map ;e <Plug>VimwikiToggleListItem
 
 map ;s "ayiW:!splay<space><C-r>a<CR><CR>
+nnoremap <space>gd :Gvdiffsplit<CR><CR>
