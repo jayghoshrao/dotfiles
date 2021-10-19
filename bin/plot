@@ -1,0 +1,205 @@
+#!/bin/python3
+
+# depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
+# Usage: ./plotChrom.py <file> <file>
+# Output: plot.pdf and plot.jpg
+
+# DONE: argparse support for xlabel, ylabel and title
+# TODO: argparse support for plt.show
+# DONE: argparse support for delimiter
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from cycler import cycler
+# import csv
+import sys
+import argparse
+
+def readCSV(data_path):
+    time= []
+    conc= []
+    with open(data_path, newline='') as csvfile:
+        # data = list(csv.reader(csvfile))
+        for line in csvfile:
+            data_line = line.strip().split(',')
+            data_line = list(filter(None, data_line))
+            if (data_line != []):
+                time.append(float(data_line[0]))
+                conc.append(float(data_line[1]))
+    return time, conc
+
+## MOve to h5plot
+def readCadet(infile, unit, solution='outlet'):
+    from cadet import Cadet
+    from addict import Dict
+    cadetpath = "/home/jayghoshter/local/bin/cadet-cli"
+    Cadet.cadet_path = cadetpath
+    sim = Cadet()
+    sim.filename = infile
+    sim.load()
+    x = sim.root.output.solution.solution_times
+    y = sim.root.output.solution['unit_' + "%03d" % unit]['solution_' + solution]
+    return x, y
+
+# def normalize(data):
+#     return [ x/data[-1] for x in data ]
+
+def normalize(data, refValue=None):
+    if not refValue:
+        print("No reference value for normalization provided: Using max point of curve.")
+        refValue = max(data)
+    return [ x/float(refValue) for x in data ]
+
+def readfile(data_path, sep, columns):
+    x = []
+    y = []
+    xticksFromFile= None
+    xticks = []
+    # columns = [0, 1]
+    with open(data_path, newline='') as infile:
+        # data = list(csv.reader(infile))
+        for line in infile:
+            data_line = line.strip().split(sep)
+            data_line = list(filter(None, data_line))
+            if (data_line != []):
+                if len(data_line) == 1:
+                    y.append(float(data_line[0]))
+                else:
+                    x.append(float(data_line[columns[0]]))
+                    y.append(float(data_line[columns[1]]))
+                # if columns[0] != -1:
+                #     x.append(float(data_line[columns[0]]))
+                # y.append(float(data_line[columns[1]]))
+                if xticksFromFile:
+                    xticks.append(float(data_line[columns[xticksFromFile]]))
+
+    return x, y, xticks
+
+ap = argparse.ArgumentParser()
+ap.add_argument("files", nargs='*', help="files to plot")
+
+ap.add_argument("-t", "--title", required=False,
+        help="title")
+ap.add_argument("-x", "--xlabel", required=False,
+        help="xlabel")
+ap.add_argument("-y", "--ylabel", required=False,
+        help="ylabel")
+ap.add_argument("-xl", "--xlims", required=False,nargs=2, type=float,
+        help="x axis limits")
+ap.add_argument("-yl", "--ylims", required=False,nargs=2, type=float,
+        help="y axis limits")
+ap.add_argument("-ls", "--linestyles", required=False, nargs='*',
+        help="linestyles = solid dashed ...")
+ap.add_argument("-lw", "--linewidths", required=False, nargs='*',
+        help="linewidth = 0.1 2 ...")
+ap.add_argument("-m", "--markers", required=False, nargs='*',
+        help="markers = s, o, ...")
+ap.add_argument("-n", "--normalize", required=False, action='store_true',
+        help="normalize y data to the last value")
+ap.add_argument("-l", "--labels", required=False, nargs='*',
+        help="legend labels")
+ap.add_argument("-c", "--columns", required=False, nargs='*', default = [0,1], type = int,
+        help="columns to plot as x, y. (Partially implemented)")
+
+ap.add_argument("-hg", "--histogram", type=int, required=False,
+        help="histogram")
+ap.add_argument("-s", "--separator", required=False, default=',', help="separator character")
+ap.add_argument("-f", "--fill", required=False, action='store_true',
+        help="fill area under curve")
+
+ap.add_argument("-nl", "--no-legend", required=False, action='store_true',
+        help="don't show legend")
+ap.add_argument("--legend", required=False, nargs=3, default=['upper center', '0.5', '-0.2'], type=str,
+        help="Legend settings: --legend <location> <bbox_to_anchor>")
+ap.add_argument("--legend-frameon", action='store_true',
+        help="Draw frame around legend")
+ap.add_argument("--legend-size", required=False, default='medium',
+        help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
+ap.add_argument("--legend-ncol", required=False, default=1, type=int,
+        help="Number of columns in legend")
+
+ap.add_argument("-o", "--output", required=False,
+        help="output file")
+# ap.add_argument("-s", "--show", required=False, action='store_true',
+#         help="output file")
+
+ap.add_argument("--cadet", nargs=2, required=False)
+
+args = vars(ap.parse_args())
+
+# TODO: Implement fully
+if not args['labels']:
+    args['labels'] = args['files']
+
+if not args['linestyles']:
+    args['linestyles'] = [ 'solid' ] * len(args['files'])
+    # args['linestyles'] = []
+elif len(args['linestyles']) == 1:
+    args['linestyles'] = args['linestyles'] * len(args['files'])
+
+if not args['markers']:
+    args['markers'] = [ None ] * len(args['files'])
+    # args['markers'] = []
+elif len(args['markers']) == 1:
+    args['markers'] = args['markers'] * len(args['files'])
+
+if not args['linewidths']:
+    args['linewidths'] = [ 2 ] * len(args['files'])
+    # args['linewidths'] = []
+elif len(args['linewidths']) == 1:
+    args['linewidths'] = args['linewidths'] * len(args['files'])
+
+
+with plt.style.context(['science']):
+
+    # plt.rcParams.update({
+    #     "font.family": "serif",   # specify font family here
+    #     "font.serif": ["Times"],  # specify font here
+    #     "font.size":11})          # specify font size here
+
+    ## A way to override the default style
+    if args['legend_frameon']:
+        plt.rcParams.update({
+            "legend.shadow": True,
+            "legend.frameon": True })
+
+    fig, ax = plt.subplots()
+    xs = []
+    ys = []
+    # for arg in args['files']:
+    for filename,label,linestyle,marker,linewidth in zip(args['files'], args['labels'], args['linestyles'], args['markers'], args['linewidths']):
+        if args['cadet']:
+            x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
+            # print(x,y)
+        else:
+            x, y, xticks = readfile(filename, args['separator'], args['columns'])
+        if args['normalize']:
+            y = normalize(y)
+        if x != []:
+            line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+        else:
+            if args['histogram']:
+                line = ax.hist(y, bins=args['histogram'])
+            else:
+                line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+        if args['fill']:
+            ax.fill_between(x, y, 1, interpolate=True)
+        # xs.append(x)
+        # ys.append(y)
+    # legend = ax.legend(loc='best', shadow=True)
+    if not args['no_legend']:
+        # legend = ax.legend(loc='best', shadow=True)
+        legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+    ax.set(title=args['title'])
+    ax.set(xlabel=args['xlabel'])
+    ax.set(ylabel=args['ylabel'])
+    ax.autoscale(tight=True)
+
+    if args['xlims']:
+        plt.xlim(args['xlims'])
+    if args['ylims']:
+        plt.ylim(args['ylims'])
+    if args['output']:
+        fig.savefig(args['output'])
+    else:
+        plt.show()
