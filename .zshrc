@@ -295,7 +295,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 export TERM="xterm-256color-italic"
 export LESS="-iR"
 
-# export NNN_FIFO=/tmp/nnn.fifo 
+export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
 export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs'
@@ -313,7 +313,7 @@ alias zc="dotf $HOME/.zshrc"
 alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
 # alias nrc="dotf $HOME/.config/nvim/init.vim"
-alias nrc="$EDITOR $HOME/.config/nvim/init.vim"
+alias nrc="$EDITOR $HOME/.config/nvim/init.lua"
 alias zz="source $HOME/.zshrc"
 
 alias nn="note"
