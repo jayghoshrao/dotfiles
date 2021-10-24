@@ -59,7 +59,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 # "$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$reader {-1} $pager@,ctrl-b:execute@$BROWSER {-1}@,ctrl-e:execute@elinks {-1}@,ctrl-d:execute@echo -e '{1}' | pockyt mod -d @,ctrl-a:execute@echo -e '{1}' | pockyt mod -a 1@,ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,ctrl-r:execute@artify {-1} | fltrdr@,ctrl-s:execute@artify {-1} > $NOTES_DIR/{2}.md @"
 
 clear
-"$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$reader {-1} $pager@,\
+"$dump" "$listfile" | fzf -d $' \\| ' --bind "enter:execute@$reader {-1} $pager && clear@,\
 ctrl-b:execute@$BROWSER {-1}@,\
 ctrl-o:execute@$BROWSER https://app.getpocket.com/read/{1}@,\
 ctrl-e:execute@elinks {-1}@,\
