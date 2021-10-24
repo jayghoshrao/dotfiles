@@ -1,0 +1,11 @@
+vim.g['pandoc#syntax#conceal#use'] = 1
+vim.g['pandoc#syntax#style#use_definition_lists'] = 0
+vim.g['pandoc#syntax#conceal#urls'] = 1
+vim.g['pandoc#formatting#mode'] = "sA"
+vim.g['pandoc#formatting#smart_autoformat_on_cursormoved'] = 1
+vim.g['pandoc#command#use_message_buffers'] = 1
+vim.g['pandoc#folding#level'] = 1
+vim.g['pandoc#folding#fold_vim_markers'] = 1
+vim.g['pandoc#folding#vim_markers_in_comments_only'] = 1
+vim.g['pandoc#spell#enabled'] = 0
+vim.g['pandoc#filetypes#handled'] = {"pandoc", "markdown"}
