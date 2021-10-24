@@ -99,7 +99,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
         zp BurntSushi/ripgrep
         # }}}
         # NEOVIM: {{{
-        zpi from"gh-r" as"program" bpick"*appimage*" ver"nightly" mv"nvim* -> nvim" pick"nvim"
+        zpi from"gh-r" as"program" bpick"*appimage*" ver"stable" mv"nvim* -> nvim" pick"nvim"
         zp neovim/neovim
         # }}}
         # FD: {{{
