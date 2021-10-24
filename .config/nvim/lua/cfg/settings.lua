@@ -127,6 +127,3 @@ opt.backspace={ 'indent','eol','start' }
 opt.laststatus = 0
 opt.spell = false
 opt.hlsearch = false
-
-vim.cmd[[colorscheme nord]]
--- vim.cmd[[highlight Folded ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5]]

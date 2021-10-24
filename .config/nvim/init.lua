@@ -32,3 +32,5 @@ require 'cfg.folding'
 -- require 'cfg.tabline'
 -- require 'cfg.file_info'
 -- require 'cfg.terminal'
+
+vim.cmd[[colorscheme nord]]
