@@ -111,3 +111,8 @@ map( 'n', 'tl', ':tablast<CR>' )
 
 map('n', '<space>q', [[<cmd>lua require('cfg.utils').toggle_quickfix()<cr>]])
 map('n', '<space>w', [[<cmd>lua require('cfg.utils').toggle_loclist()<cr>]])
+
+map('n', '<leader>,', ':MaximizerToggle<cr>', {silent = true})
+
+map('n', '<leader>..', ':Reload')
+map('n', '<leader>.e', ':e $MYVIMRC<cr>', silent)

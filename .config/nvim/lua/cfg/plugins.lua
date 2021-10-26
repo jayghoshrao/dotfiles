@@ -3,6 +3,7 @@ local fn = vim.fn
 local cmd = vim.cmd
 
 -- Check out https://github.com/gillescastel/latex-snippets
+-- https://github.com/rhysd/clever-f.vim
 -- TODO: https://github.com/bkad/CamelCaseMotion or 
 -- https://github.com/chaoren/vim-wordmotion
 -- TODO: Plug 'voldikss/vim-floaterm'
@@ -22,7 +23,6 @@ local cmd = vim.cmd
 -- https://github.com/ggandor/lightspeed.nvim " vim-sneak successor
 -- https://github.com/ray-x/lsp_signature.nvim
 -- https://github.com/lewis6991/gitsigns.nvim
--- https://github.com/tamago324/compe-zsh
 
 
 -- Automatically install packer.nvim
@@ -120,9 +120,9 @@ return require('packer').startup(function(use)
 
 
     -- Debugger: Woah!
-    use 'https://github.com/puremourning/vimspector'
+    use 'puremourning/vimspector'
     --" Plug 'https://github.com/mfussenegger/nvim-dap'
-    use 'https://github.com/szw/vim-maximizer'
+    use 'szw/vim-maximizer'
 
     -- Tpope's plugins are de-facto standard
     use 'tpope/vim-surround'                                     
@@ -147,7 +147,7 @@ return require('packer').startup(function(use)
 
     -- Language- and Filetype-specific:
     use 'lervag/vimtex'
-    use 'mboughaba/i3config.vim'           -- [REVW] : Do we need this with treesitter? Probably
+    use 'mboughaba/i3config.vim'           
     use {
         'vim-pandoc/vim-pandoc',
         config = function()
@@ -160,8 +160,8 @@ return require('packer').startup(function(use)
     use 'skywind3000/asyncrun.vim'
     use 'tommcdo/vim-lion'                                       
 
-    -- Vim object addons
-    --  1. Indent object
+    -- Vim object extensions
+    -- 1. Indent object
     use 'michaeljsmith/vim-indent-object'
     --  2. [n]ext, [,], and user dI' to delete inner without space
     use 'wellle/targets.vim'               
@@ -173,19 +173,19 @@ return require('packer').startup(function(use)
         config = function() 
             require("nnn").setup({
                 explorer = {
-                    cmd = "nnn",       -- command overrride (-F1 flag is implied, -a flag is invalid!)
+                    cmd = "nnn -eo",       -- command overrride (-F1 flag is implied, -a flag is invalid!)
                     width = 24,        -- width of the vertical split
                     session = "",      -- or global/local/shared
                     tabs = true,       -- seperate explorer buffer per tab
                 },
                 picker = {
-                    cmd = "nnn",       -- command override (-p flag is implied)
+                    cmd = "nnn -eo",       -- command override (-p flag is implied)
                     style = {
                         width = 0.8,     -- width in percentage of the viewport
                         height = 0.8,    -- height in percentage of the viewport
                         xoffset = 0.5,   -- xoffset in percentage
                         yoffset = 0.5,   -- yoffset in percentage
-                        border = "rounded", -- border decoration for example "rounded"(:h nvim_open_win)
+                        border = "solid",
                     },
                     session = "",      -- or global/local/shared
                 },
@@ -197,11 +197,11 @@ return require('packer').startup(function(use)
                     -- { "<C-y>", copy_to_clipboard }, -- copy file(s) to clipboard
                     -- { "<C-w>", cd_to_path },        -- cd to file directory
                 },       
-                windownav = "<C-w>l" -- window movement mapping to navigate out of nnn
+                -- windownav = "<C-w>l" -- window movement mapping to navigate out of nnn
             }) 
             local map = require('cfg.utils').map
-            map('n', '<leader>e', ':NnnExplorer %:p:h<cr>', {silent = true})
-            map('n', '<leader>f', ':NnnPicker<cr>', {silent = true})
+            map('n', '<leader>e', ':NnnExplorer %:p:h<cr>')
+            map('n', '<leader>f', ':NnnPicker<cr>')
         end
     }
 
@@ -252,7 +252,29 @@ return require('packer').startup(function(use)
     }
 
     -- Colorschemes
-    use 'shaunsingh/nord.nvim'
+    -- use 'shaunsingh/nord.nvim'
+
+    use {
+        'maaslalani/nordbuddy',
+        config = function()
+            -- The table used in this example contains the default settings.
+            -- Modify or remove these to your liking:
+            require('nordbuddy').colorscheme({
+                -- Underline style used for spelling
+                -- Options: 'none', 'underline', 'undercurl'
+                underline_option = 'none',
+                -- Italics for certain keywords such as constructors, 
+                -- functions,
+                -- labels and namespaces
+                italic = true,
+                -- Italic styled comments
+                italic_comments = true,
+                -- Minimal mode: different choice of colors for Tabs and 
+                -- StatusLine
+                minimal_mode = false
+            })
+        end
+    }
 
     -- use {
     --   'editorconfig/editorconfig-vim', -- Project-specific settings

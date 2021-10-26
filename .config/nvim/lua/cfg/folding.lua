@@ -25,3 +25,4 @@ opt.foldlevelstart = 99
 -- get around this. 
 cmd[[au VimEnter * highlight Folded ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5]]
 cmd[[au VimEnter * highlight Conceal guifg=#81A1C1 guibg=#2E3440]]
+-- cmd[[au VimEnter * highlight NnnFloatBorder ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5]]

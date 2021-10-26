@@ -37,5 +37,17 @@ require('nvim-treesitter.configs').setup {
     'yaml',
     'css',
     'bash',
+    'c',
+    'cpp',
+    'toml',
+    'cmake',
+    'comment',
+    'dockerfile',
+    'fortran',
+    'json5',
+    'latex',
+    'llvm',
+    'rust',
+    'vim'
   },
 }
