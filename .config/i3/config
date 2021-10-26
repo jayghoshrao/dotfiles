@@ -68,8 +68,11 @@ client.urgent            $bloodred    $bloodred    $whitish   $monokai-bg
 
 # Basic: {{{ 
 
-## modifier = Left Alt
+# modifier = Left Alt
 set $mod Mod4
+# secondary modifier = win key
+set $alt mod1
+
 floating_modifier $mod
 
 # gaps inner 15
@@ -100,7 +103,7 @@ bindsym $mod+space exec rofi -theme config -show combi
 bindsym $mod+shift+space exec rofi -theme config -show drun -matching fuzzy -p App
 bindsym $mod+control+space exec rofi -theme config -show calc 
 bindsym $mod+g exec $SCRIPTS/rpass -theme config
-# bindsym $mod+control+mod1+space exec rofi-pass -matching fuzzy
+# bindsym $mod+control+$alt+space exec rofi-pass -matching fuzzy
 
 
 # }}}
@@ -131,14 +134,14 @@ bindsym $mod+Right focus right
 #bindsym $mod+Shift+Tab workspace next
 
 # change focus between tiling / floating windows
-bindsym mod1+Tab focus mode_toggle
+bindsym $alt+Tab focus mode_toggle
 
 # focus the parent/child container
-bindsym $mod+mod1+k focus parent 
-bindsym $mod+mod1+j focus child
+bindsym $mod+$alt+k focus parent 
+bindsym $mod+$alt+j focus child
 
 #focus previouly focused workspace
-bindsym $mod+mod1+Tab workspace back_and_forth
+bindsym $mod+$alt+Tab workspace back_and_forth
 bindsym $mod+w workspace back_and_forth
 
 # }}}
@@ -184,10 +187,10 @@ focus_follows_mouse no
 
 #workspace_layout tabbed
 
-bindsym mod1+space sticky toggle
+bindsym $alt+space sticky toggle
 
 # bindsym $mod+Shift+minus move scratchpad
-# bindsym $mod+mod1+minus scratchpad show;
+# bindsym $mod+$alt+minus scratchpad show;
 bindsym $mod+Shift+z move scratchpad
 bindsym $mod+z scratchpad show;
 # bindsym $mod+v scratchpad show;
@@ -285,8 +288,8 @@ workspace  $ws10  output  DP1-2
 
 bindsym $mod+Tab focus output right
 bindsym $mod+Shift+Tab move workspace to right
-bindsym $mod+period move workspace to output right
-bindsym $mod+comma move workspace to output left
+# bindsym $mod+period move workspace to output right
+# bindsym $mod+comma move workspace to output left
 
 # bindsym $mod+Tab focus output up
 # bindsym $mod+Shift+Tab move workspace to up
@@ -480,7 +483,7 @@ bindsym F4 exec $SCRIPTS/transparency.sh
 bindsym $mod+u exec fd --extension pdf | rofi -theme config -dmenu -i -p 'Open PDF' | $SCRIPTS/filer                
 bindsym $mod+shift+m exec rofi -theme config -width 25 -dmenu -lines 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
-bindsym $mod+mod1+a exec $SCRIPTS/audiosinks.py
+bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
 
 bindsym $mod+shift+g exec echo -e 'on\noff' | dmenu -i | xargs $SCRIPTS/game
 # }}}
@@ -494,7 +497,7 @@ bindsym $mod+a exec $term --class _float --title taskell-board -e taskell Dropbo
 
 bindsym $mod+y exec mpv --save-position-on-quit $(xclip -selection "clipboard" -o) &
 bindsym $mod+shift+y exec export MPV="mpv --save-position-on-quit" && umpv $(xclip -selection "clipboard" -o)
-bindsym shift+mod1+space fullscreen disable; floating enable; resize set 25ppt 20ppt; sticky enable; move position 75 ppt 75 ppt
+bindsym shift+$alt+space fullscreen disable; floating enable; resize set 25ppt 20ppt; sticky enable; move position 75 ppt 75 ppt
 
 # bindsym $mod+v exec whatsapp-nativefier
 bindsym $mod+v exec telegram-desktop
@@ -510,7 +513,7 @@ bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'm
 # }}}
 
 bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png $HOME/Pictures/wallpapers/current-wall.png
-bindsym $mod+mod1+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
+bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
 
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 25 -dmenu -p 'Workspace')"
 
@@ -554,3 +557,7 @@ mode "$mode_deskenv"
 
 bindsym $mod+d mode "$mode_deskenv"
 #}}}
+
+# Dunst controls
+bindsym $alt+period exec --no-startup-id dunstctl history-pop &
+bindsym Control+period exec --no-startup-id dunstctl close &

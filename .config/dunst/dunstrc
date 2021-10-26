@@ -238,13 +238,13 @@
     # e.g. check output of 'xmodmap -pke'
     #history = ctrl+period
 
-    # Context menu.
-    #context = ctrl+shift+period
-[shortcuts]
-    close = ctrl+space
-    close_all = ctrl+shift+space
-    context = ctrl+shift+period
-    history = ctrl+shift+comma
+#     # Context menu.
+#     #context = ctrl+shift+period
+# [shortcuts]
+#     close = ctrl+space
+#     close_all = ctrl+shift+space
+#     context = ctrl+shift+period
+#     history = ctrl+shift+comma
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
