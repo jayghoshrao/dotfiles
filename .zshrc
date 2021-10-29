@@ -293,7 +293,8 @@ LISTMAX=9999    # In the line editor, number of matches to show before asking pe
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 export TERM="xterm-256color-italic"
-export LESS="-iR"
+# export LESS="-iR"
+export LESS="-iMFRx4 --mouse"
 
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
@@ -339,9 +340,10 @@ alias -g L='| less'
 
 alias d='dirs -v | head -10'
 
-alias ls='ls --color'
-alias la='ls -la --color'
-alias ll='ls -la --color --group-directories-first'
+alias ls='ls --color -v'
+alias la='ls -la --color -v'
+# alias ll='ls -la --color --group-directories-first'
+alias ll='exa --long --all --links --git --git-ignore'
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed
