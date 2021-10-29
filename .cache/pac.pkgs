@@ -44,6 +44,7 @@ dune
 dunst
 element-desktop
 eog
+espeak
 evolution-ews
 exa
 exfat-utils
@@ -289,6 +290,7 @@ xournalpp
 xpdf
 xpra
 xscreensaver
+yaml-language-server
 yarn
 yq
 zsh-autosuggestions

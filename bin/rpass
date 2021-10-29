@@ -50,7 +50,7 @@ echo "sel: $SELECTED"
 
 echo "fuzzy sel: $SELECTED"
 
-PASSFILE=$(ls ~/.password-store | sed -e 's/.gpg$//' | rofi "$@" -theme config -dmenu -p pass -i -select "$SELECTED")
+PASSFILE=$(ls ~/.password-store | sed -e 's/.gpg$//' | rofi "$@" -dmenu -p pass -i -select "$SELECTED")
 
 echo "passfile: $PASSFILE"
 
@@ -64,7 +64,7 @@ username=$(echo "$data" | grep 'username' | cut -d ' ' -f2-)
 ## Type of input
 ## TODO: Get all possible keys (separated by ':') and allow printing them
 ## TODO: Let the url field in the pass file (instead of filename itself) match the current active url
-action=$(echo -e "auto\nusername\npassword" | rofi -dmenu -i)
+action=$(echo -e "auto\nusername\npassword" | rofi -dmenu -i )
 
 ## Type into firefox
 if [[ "$action" == "auto" ]]; then
