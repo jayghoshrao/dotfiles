@@ -14,6 +14,18 @@ function M.map(modes, lhs, rhs, opts)
     end
 end
 
+function M.bufmap(modes, lhs, rhs, opts)
+    opts = opts or {}
+    -- noremap is on by default
+    opts.noremap = opts.noremap == nil and true or opts.noremap
+    if type(modes) == 'string' then
+        modes = { modes }
+    end
+    for _, mode in ipairs(modes) do
+        vim.api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
+    end
+end
+
 function M.create_augroups(definitions)
     for group_name, definition in pairs(definitions) do
         cmd('augroup ' .. group_name)

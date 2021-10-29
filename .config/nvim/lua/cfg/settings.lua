@@ -28,7 +28,7 @@ opt.wildignore = {
 }
 
 -- UI
-opt.wrap = false
+opt.wrap = true
 opt.linebreak = true -- Break lines by spaces or tabs
 
 opt.termguicolors = true

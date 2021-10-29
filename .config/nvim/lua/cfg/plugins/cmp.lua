@@ -26,4 +26,9 @@ cmp.setup {
   documentation = {
     winhighlight = 'NormalFloat:CmpDocumentation',
   },
+
+  experimental = {
+    native_menu = false,
+    ghost_text = true,
+    },
 }

@@ -13,7 +13,8 @@ end
 opt.foldmethod = 'expr'
 opt.foldexpr = 'nvim_treesitter#foldexpr()'
 opt.foldtext = 'v:lua.foldtext()'
-opt.foldlevelstart = 99
+-- opt.foldlevelstart = 99
+-- opt.foldlevelstart = 2
 
 -- Better fold colors
 -- autocmd ColorScheme nord highlight Folded ctermbg=0 ctermfg=12 guibg=#3B4252 guifg=#b5b5b5

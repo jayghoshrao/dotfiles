@@ -58,8 +58,8 @@ map('o', 'ae', ':normal Vae<cr>', { noremap = false, silent = true })
 
 -- Personal 
 -- TODO, look at modes
-map('n','j', 'gj')
-map('n','k', 'gk')
+map({'n', 'v'},'j', 'gj')
+map({'n', 'v'},'k', 'gk')
 
 map({'n', 'v'}, 'J', '<c-d>')
 map({'n', 'v'}, 'K', '<c-u>')

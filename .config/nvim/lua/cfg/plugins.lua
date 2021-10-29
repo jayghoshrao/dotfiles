@@ -4,12 +4,12 @@ local cmd = vim.cmd
 
 -- Check out https://github.com/gillescastel/latex-snippets
 -- https://github.com/rhysd/clever-f.vim
--- TODO: https://github.com/bkad/CamelCaseMotion or 
+-- https://github.com/bkad/CamelCaseMotion or 
 -- https://github.com/chaoren/vim-wordmotion
--- TODO: Plug 'voldikss/vim-floaterm'
--- TODO: https://github.com/junegunn/vim-peekaboo
--- TODO: https://github.com/stefandtw/quickfix-reflector.vim
--- TODO: Vimspector + Telescope
+-- Plug 'voldikss/vim-floaterm'
+-- https://github.com/junegunn/vim-peekaboo
+-- https://github.com/stefandtw/quickfix-reflector.vim
+-- Vimspector + Telescope
 -- https://github.com/gelguy/wilder.nvim
 -- https://github.com/ngscheurich/iris.nvim
 -- https://github.com/d0c-s4vage/lookatme
@@ -23,6 +23,7 @@ local cmd = vim.cmd
 -- https://github.com/ggandor/lightspeed.nvim " vim-sneak successor
 -- https://github.com/ray-x/lsp_signature.nvim
 -- https://github.com/lewis6991/gitsigns.nvim
+-- https://github.com/ThePrimeagen/git-worktree.nvim
 
 
 -- Automatically install packer.nvim
