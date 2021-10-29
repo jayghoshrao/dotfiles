@@ -120,7 +120,10 @@ return require('packer').startup(function(use)
 
 
     -- Debugger: Woah!
-    use 'puremourning/vimspector'
+    if vim.fn.has('python3') == 1 then
+        use 'puremourning/vimspector'
+    end
+
     --" Plug 'https://github.com/mfussenegger/nvim-dap'
     use 'szw/vim-maximizer'
 
@@ -132,7 +135,7 @@ return require('packer').startup(function(use)
 
     use {
         'tpope/vim-fugitive',
-        cmd = { 'Git', 'G', 'Gstatus', 'Gblame', 'Gpush', 'Gpull' },
+        cmd = { 'Git', 'G', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gvdiffsplit', },
     }
 
     -- GitHub: Better pull requests and issues.
@@ -273,6 +276,13 @@ return require('packer').startup(function(use)
                 -- StatusLine
                 minimal_mode = false
             })
+        end
+    }
+
+    use {
+        'norcalli/nvim-colorizer.lua',
+        config = function()
+            require'colorizer'.setup()
         end
     }
 

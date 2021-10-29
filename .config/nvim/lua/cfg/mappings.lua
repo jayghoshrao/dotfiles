@@ -73,8 +73,6 @@ map('n', 'U', '<c-r>')
 map('i', ';;', '<esc>A;<esc>')
 map('i', ':;', '::') 
 
-map('n', '<leader>jl', '<s-j>')
-map('n', '<leader>.', ':!!<cr>')
 
 map('n', '<Left>', ':vertical resize +5<CR>')
 map('n', '<Right>', ':vertical resize -5<CR>')
@@ -116,3 +114,25 @@ map('n', '<leader>,', ':MaximizerToggle<cr>', {silent = true})
 
 map('n', '<leader>..', ':Reload')
 map('n', '<leader>.e', ':e $MYVIMRC<cr>', silent)
+
+-- Thanks Primeagen
+-- n /zz = center/zv = open folds
+map('n', 'n', 'nzzzv')
+map('n', 'N', 'Nzzzv')
+
+map('n', '<leader>jl', '<s-j>') -- standard
+-- map('n', '<leader>jl', 'mz<s-j>`z') -- not repeatable
+
+-- Undo break points: punctuation breaks undo into fragments
+map('i', ',', ',<c-g>u')
+map('i', '.', '.<c-g>u')
+map('i', '!', '!<c-g>u')
+map('i', '?', '?<c-g>u')
+
+-- Move text without ruining registers
+map('n', '<a-j>', ':m .+1<CR>==')
+map('n', '<a-k>', ':m .-2<CR>==')
+map('i', '<a-j>', '<esc>:m .+1<CR>==i')
+map('i', '<a-k>', '<esc>:m .-2<CR>==i')
+map('v', '<a-j>', ":m '>+1<CR>gv=gv" )
+map('v', '<a-k>', ":m '<-2<CR>gv=gv" )

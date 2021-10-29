@@ -4,6 +4,7 @@ local M = {}
 
 function M.map(modes, lhs, rhs, opts)
     opts = opts or {}
+    -- noremap is on by default
     opts.noremap = opts.noremap == nil and true or opts.noremap
     if type(modes) == 'string' then
         modes = { modes }
