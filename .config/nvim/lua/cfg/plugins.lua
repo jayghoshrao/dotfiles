@@ -120,10 +120,6 @@ return require('packer').startup(function(use)
     }
 
 
-    -- Debugger: Woah!
-    if vim.fn.has('python3') == 1 then
-        use 'puremourning/vimspector'
-    end
 
     --" Plug 'https://github.com/mfussenegger/nvim-dap'
     use 'szw/vim-maximizer'
@@ -139,8 +135,7 @@ return require('packer').startup(function(use)
         cmd = { 'Git', 'G', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gvdiffsplit', },
     }
 
-    -- GitHub: Better pull requests and issues.
-    use 'pwntester/octo.nvim'
+
     use 'kyazdani42/nvim-web-devicons'
     use {
         'lewis6991/gitsigns.nvim', -- Git status signs in the gutter
@@ -293,5 +288,18 @@ return require('packer').startup(function(use)
     --     vim.g.EditorConfig_preserve_formatoptions = 1
     --   end,
     -- }
+    --
+
+    -- Conditional loading of plugins helps avoid issues on some server setups
+
+    -- GitHub: Better pull requests and issues.
+    if vim.fn.executable('gh') == 1 then
+        use 'pwntester/octo.nvim'
+    end
+
+    -- Debugger: Woah!
+    if vim.fn.has('python3') == 1 then
+        use 'puremourning/vimspector'
+    end
 
 end)
