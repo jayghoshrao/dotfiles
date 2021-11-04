@@ -314,7 +314,7 @@ alias zc="dotf $HOME/.zshrc"
 alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
 # alias nrc="dotf $HOME/.config/nvim/init.vim"
-alias nrc="$EDITOR $HOME/.config/nvim/init.lua"
+alias nrc="$EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
 alias zz="source $HOME/.zshrc"
 
 alias nn="note"
@@ -721,3 +721,5 @@ unset __mamba_setup
 # <<< mamba initialize <<<
 alias mamba=micromamba
 # export MAMBA_NO_BANNER=1
+
+alias gw='git worktree'

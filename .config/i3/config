@@ -102,7 +102,7 @@ bindsym $mod+shift+Return exec $term -e tmux &
 bindsym $mod+space exec rofi -show combi 
 bindsym $mod+shift+space exec rofi -show drun -matching fuzzy -p App
 bindsym $mod+control+space exec rofi -show calc 
-bindsym $mod+g exec $SCRIPTS/rpass -theme config
+bindsym $mod+g exec $SCRIPTS/rpass
 # bindsym $mod+control+$alt+space exec rofi-pass -matching fuzzy
 
 
@@ -468,7 +468,7 @@ assign [class="Civ5XP"]                                     workspace number $ws
 
 # Keyboard helpers:{{{
 bindsym $mod+i exec $SCRIPTS/emojimenu
-bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
+bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
 bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
 # }}}
 
@@ -477,11 +477,11 @@ bindsym $mod+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p co
 bindsym $mod+shift+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p disconnect | awk '{print $2}') && bluetoothctl disconnect $DEV"
 bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
 bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
-bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -lines 5 | xargs $SCRIPTS/pomodoro-client.py
+bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
 bindsym F4 exec $SCRIPTS/transparency.sh
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | $SCRIPTS/filer                
-bindsym $mod+shift+m exec rofi -width 25 -dmenu -lines 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
+bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
 bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
 

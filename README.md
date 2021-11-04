@@ -67,4 +67,13 @@ On my local machine, I can just have a global install of whatever I want anyway.
 
 `zinit update` is all I need to run once in a while. I just have to ensure that I have the right zsh version installed to begin with. 
 
+## Updating server setups
 
+```
+dot pull
+zinit self-update
+zinit update --parallel
+nvim +PackerSync
+```
+
+Note: Sometimes `zinit delete user/repo` and a shell restart will be required if specifications are changed in the .zshrc file
