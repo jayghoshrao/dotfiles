@@ -42,6 +42,7 @@ dovecot
 doxygen
 dune
 dunst
+eigen
 element-desktop
 eog
 espeak
@@ -50,6 +51,7 @@ exa
 exfat-utils
 extra-cmake-modules
 fd
+feh
 firefox
 fortune-mod
 fzy
@@ -101,6 +103,7 @@ ipw2100-fw
 ipw2200-fw
 irssi
 isync
+jp2a
 julia
 jupyterlab
 keychain
@@ -135,7 +138,6 @@ nautilus
 ncdu
 ncmpcpp
 nemiver
-neofetch
 neomutt
 net-tools
 netctl
@@ -250,6 +252,7 @@ udiskie
 units
 urlscan
 urlwatch
+utf8cpp
 utox
 valgrind
 vbam-wx

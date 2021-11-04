@@ -39,6 +39,7 @@ gtklp
 hunter
 i3wsr
 j4-dmenu-desktop
+jdk
 kyocera-utax-ta
 libsixel
 libvarnam-ibus-git
@@ -65,7 +66,6 @@ pandoc-eqnos
 pandoc-fignos
 pandoc-sidenote
 pandoc-tablenos
-paraview-nightly-bin
 parmetis
 pass-genphrase
 pass-update
