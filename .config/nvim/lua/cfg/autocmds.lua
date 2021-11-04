@@ -1,7 +1,10 @@
 require('cfg.utils').create_augroups {
   setup = {
+
     -- Automatically compile packer when saving the plugins' file
-    { 'BufWritePost', 'plugins.lua', 'PackerCompile' },
+    { 'BufWritePost', 'plugins.lua', [[Reload|PackerSync]] },
+    -- { 'BufWritePost', 'plugins.lua', 'Reload<bar>PackerSync' },
+    { 'BufWritePost', '*/.config/nvim/**', 'PackerCompile' },
     -- Highlight text after yanking
     { 'TextYankPost', '*', [[lua require('vim.highlight').on_yank({ higroup = 'Substitute', timeout = 200 })]] },
     -- Hide cursorline in insert mode
@@ -38,5 +41,7 @@ require('cfg.utils').create_augroups {
     { 'FileType', 'typescriptreact', [[setlocal commentstring=//\ %s]] },
     -- Open images automatically
     { 'FileType', 'image', [[lua require('cfg.filesystem').open_special_file()]] },
+    { 'BufNewFile,BufRead', 'xns*.in*', [[setlocal filetype=xns]]},
+    { 'FileType', 'conf,cmake,xns', [[setlocal commentstring=#\ %s]]}
   },
 }

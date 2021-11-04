@@ -10,13 +10,16 @@ map('n', '<space>f', [[<cmd>lua require'telescope.builtin'.live_grep()<cr>]])
 map('n', '<space>l', [[<cmd>lua require'telescope.builtin'.buffers()<cr>]])
 map('n', '<space>h', [[<cmd>lua require'telescope.builtin'.help_tags()<cr>]])
 map('n', '<space>e', [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find()<cr>]])
-map('n', '<c-e>', [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find()<cr>]])
 map('n', '<space>m', [[<cmd>lua require'telescope.builtin'.marks()<cr>]])
 map('n', '<space>;', [[<cmd>lua require'telescope.builtin'.command_history()<cr>]])
 map('n', '<space>/', [[<cmd>lua require'telescope.builtin'.search_history()<cr>]])
 map('n', '<space>b', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
 map('n', '<space>s', [[<cmd>lua require'telescope.builtin'.lsp_workspace_symbols()<cr>]])
 
+local opts = { noremap = true, silent = true }
+
+map('n', 'gr', [[<cmd>lua require'telescope.builtin'.lsp_references()<cr>]], opts)
+map('n', '<space>gs', [[<cmd>lua require'telescope.builtin'.git_status()<cr>]], opts)
 
 -- map('n', '<leader>fr', [[<cmd>lua require'telescope.builtin'.oldfiles()<cr>]])
 -- map('n', '', [[<cmd>lua require'telescope.builtin'.quickfix()<cr>]])

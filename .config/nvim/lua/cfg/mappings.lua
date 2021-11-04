@@ -18,15 +18,14 @@ map('n', 'Q', '@@')
 map('n', ']n', [[:call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', 'W')<cr>]], { silent = true })
 map('n', '[n', [[:call search('^\(@@ .* @@\|[<=>|]\{7}[<=>|]\@!\)', 'bW')<cr>]], { silent = true })
 
--- -- Navigate loclist
--- map('n', ']l', ':lnext<cr>', { silent = true })
--- map('n', '[l', ':lprev<cr>', { silent = true })
+-- Navigate loclist
+map('n', ']l', ':lnext<cr>', { silent = true })
+map('n', '[l', ':lprev<cr>', { silent = true })
 
 -- Quit the buffer
 map('n', '<leader>q', ':quit<cr>', silent)
 
-
--- Quit Vim without saving
+-- NOTE: Quit Vim without saving
 map('n', '<leader>x', ':q!<cr>', silent)
 
 -- -- Quit Vim without closing windows (useful for keeping a session)
@@ -136,3 +135,12 @@ map('i', '<a-j>', '<esc>:m .+1<CR>==i')
 map('i', '<a-k>', '<esc>:m .-2<CR>==i')
 map('v', '<a-j>', ":m '>+1<CR>gv=gv" )
 map('v', '<a-k>', ":m '<-2<CR>gv=gv" )
+
+-- Quick German mappings
+map('i', '<a-s>', 'ß')
+map('i', '<a-a>', 'ä')
+map('i', '<a-o>', 'ö')
+map('i', '<a-u>', 'ü')
+map('i', '<a-s-a>', 'Ä')
+map('i', '<a-s-o>', 'Ö')
+map('i', '<a-s-u>', 'Ü')

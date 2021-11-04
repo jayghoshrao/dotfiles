@@ -125,15 +125,11 @@ return require('packer').startup(function(use)
     use 'szw/vim-maximizer'
 
     -- Tpope's plugins are de-facto standard
-    use 'tpope/vim-surround'                                     
-    use 'tpope/vim-unimpaired'                                   
-    use 'tpope/vim-repeat'                                      
-    use 'tpope/vim-obsession'                                   
-
-    use {
-        'tpope/vim-fugitive',
-        cmd = { 'Git', 'G', 'Gstatus', 'Gblame', 'Gpush', 'Gpull', 'Gvdiffsplit', },
-    }
+    use 'tpope/vim-surround'
+    use 'tpope/vim-unimpaired'
+    use 'tpope/vim-repeat'
+    use 'tpope/vim-obsession'
+    use 'tpope/vim-fugitive'
 
 
     use 'kyazdani42/nvim-web-devicons'
@@ -154,6 +150,14 @@ return require('packer').startup(function(use)
         end
     }
 
+    use {
+        'vimwiki/vimwiki',
+        config = function()
+            require 'cfg.plugins.vimwiki'
+        end
+    }
+
+
     -- General:
     use 'lambdalisue/suda.vim'
     use 'skywind3000/asyncrun.vim'
@@ -167,42 +171,52 @@ return require('packer').startup(function(use)
     -- use 'vim-scripts/argtextobj.vim'
 
     -- Explore and Pick!
-    use {
-        "luukvbaal/nnn.nvim",
-        config = function() 
-            require("nnn").setup({
-                explorer = {
-                    cmd = "nnn -eo",       -- command overrride (-F1 flag is implied, -a flag is invalid!)
-                    width = 24,        -- width of the vertical split
-                    session = "",      -- or global/local/shared
-                    tabs = true,       -- seperate explorer buffer per tab
-                },
-                picker = {
-                    cmd = "nnn -eo",       -- command override (-p flag is implied)
-                    style = {
-                        width = 0.8,     -- width in percentage of the viewport
-                        height = 0.8,    -- height in percentage of the viewport
-                        xoffset = 0.5,   -- xoffset in percentage
-                        yoffset = 0.5,   -- yoffset in percentage
-                        border = "solid",
-                    },
-                    session = "",      -- or global/local/shared
-                },
-                replace_netrw = "picker", -- or explorer/picker
-                mappings = {
-                    { "<C-t>", "tabedit" },         -- open file(s) in tab
-                    { "<C-s>", "split" },           -- open file(s) in split
-                    { "<C-v>", "vsplit" },          -- open file(s) in vertical split
-                    -- { "<C-y>", copy_to_clipboard }, -- copy file(s) to clipboard
-                    -- { "<C-w>", cd_to_path },        -- cd to file directory
-                },       
-                -- windownav = "<C-w>l" -- window movement mapping to navigate out of nnn
-            }) 
-            local map = require('cfg.utils').map
-            map('n', '<leader>e', ':NnnExplorer %:p:h<cr>')
-            map('n', '<leader>f', ':NnnPicker<cr>')
+    --
+    use { 
+        'mcchrish/nnn.vim', 
+        config = function()    
+            require'cfg.plugins.nnn'    
         end
+
     }
+
+
+    -- use {
+    --     "luukvbaal/nnn.nvim",
+    --     config = function() 
+    --         require("nnn").setup({
+    --             explorer = {
+    --                 cmd = "nnn -eo",       -- command overrride (-F1 flag is implied, -a flag is invalid!)
+    --                 width = 24,        -- width of the vertical split
+    --                 session = "",      -- or global/local/shared
+    --                 tabs = true,       -- seperate explorer buffer per tab
+    --             },
+    --             picker = {
+    --                 cmd = "nnn -eo",       -- command override (-p flag is implied)
+    --                 style = {
+    --                     width = 0.8,     -- width in percentage of the viewport
+    --                     height = 0.8,    -- height in percentage of the viewport
+    --                     xoffset = 0.5,   -- xoffset in percentage
+    --                     yoffset = 0.5,   -- yoffset in percentage
+    --                     border = "solid",
+    --                 },
+    --                 session = "",      -- or global/local/shared
+    --             },
+    --             replace_netrw = "picker", -- or explorer/picker
+    --             mappings = {
+    --                 { "<C-t>", "tabedit" },         -- open file(s) in tab
+    --                 { "<C-s>", "split" },           -- open file(s) in split
+    --                 { "<C-v>", "vsplit" },          -- open file(s) in vertical split
+    --                 -- { "<C-y>", copy_to_clipboard }, -- copy file(s) to clipboard
+    --                 -- { "<C-w>", cd_to_path },        -- cd to file directory
+    --             },       
+    --             -- windownav = "<C-w>l" -- window movement mapping to navigate out of nnn
+    --         }) 
+    --         local map = require('cfg.utils').map
+    --         map('n', '<leader>e', ':NnnExplorer %:p:h<cr>')
+    --         map('n', '<leader>f', ':NnnPicker<cr>')
+    --     end
+    -- }
 
     -- General Utilities
     use {
@@ -301,5 +315,12 @@ return require('packer').startup(function(use)
     if vim.fn.has('python3') == 1 then
         use 'puremourning/vimspector'
     end
+
+    use {
+        'ThePrimeagen/harpoon',
+        config = function()
+            require'cfg.plugins.harpoon'        
+        end
+    }
 
 end)

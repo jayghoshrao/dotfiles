@@ -29,7 +29,7 @@ opt.wildignore = {
 
 -- UI
 opt.wrap = true
-opt.linebreak = true -- Break lines by spaces or tabs
+-- opt.linebreak = true -- Break lines by spaces or tabs
 
 opt.termguicolors = true
 opt.modeline = true
@@ -82,13 +82,14 @@ opt.completeopt = { 'menu', 'menuone', 'noselect' } -- Completion menu
 --  https://github.com/neovim/neovim/issues/14669
 opt.formatoptions = table.concat {
   'c', -- Auto-wrap comments
-  'a', -- Auto format paragraph
+  -- 'a', -- Auto format paragraph
   '2', -- Use the second line's indent vale when indenting (allows indented first line)
   'q', -- Formatting comments with `gq`
-  'w', -- Trailing whitespace indicates a paragraph
+  -- 'w', -- Trailing whitespace indicates a paragraph
   'j', -- Remove comment leader when makes sense (joining lines)
   'r', -- Insert comment leader after hitting Enter
   'o', -- Insert comment leader after hitting `o` or `O`
+  't',
 }
 
 -- Messages
@@ -127,3 +128,13 @@ opt.backspace={ 'indent','eol','start' }
 opt.laststatus = 0
 opt.spell = false
 opt.hlsearch = false
+
+-- Fortran
+vim.cmd [[ let fortran_free_source = 1 ]]
+vim.cmd [[ let fortran_do_enddo = 1]]
+vim.cmd [[ let fortran_more_precise  = 1 ]]
+vim.cmd [[ let fortran_fold = 1 ]]
+vim.cmd [[ let fortran_fold_conditionals = 1 ]]
+vim.cmd [[ let fortran_fold_multilinecomments = 1 ]]
+-- vim.cmd [[ let fortran_have_tabs = 1]]
+-- vim.cmd [[ let fortran_dialect = 'f90']]

@@ -12,6 +12,7 @@ local g = vim.g
 
 local map = require('cfg.utils').map
 
+
 -- Map space to leader
 -- map('n', '<space>', '<nop>')
 -- map('v', '<space>', '<nop>')
