@@ -27,9 +27,18 @@ end
 
 function _G.MarkdownSettings()
   bufmap('n', '<leader>t', [[:!nohup typora '%' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
-  bufmap('n', '<leader>c', [[:Pandoc! pdf<CR><CR>]])
-  bufmap('n', '<leader>b', [[:Pandoc! beamer<CR><CR>]])
+  bufmap('n', '<leader>c', [[:Pandoc pdf<CR><CR>]])
+  bufmap('n', '<leader>b', [[:Pandoc beamer<CR><CR>]])
   bufmap('n', '<leader>z', [[:!nohup zathura '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
+end
+
+M = {}
+function M.AutoPDF()
+    create_augroups {
+        AutoPDF = {
+            { 'BufWritePost', '<buffer>', [[AsyncRun pandoc -t pdf --filter=mermaid-filter -o '%<.pdf' '%']]}
+        }
+    }
 end
 
 -- FIXME: Sometimes switching between tex/md files messes this up
@@ -41,3 +50,9 @@ create_augroups {
     { 'Filetype', 'markdown', ':lua MarkdownSettings()' },
   },
 }
+
+vim.cmd [[command! AutoPDF lua require'cfg.plugins.pandoc'.AutoPDF()]]
+
+
+return M
+

@@ -140,4 +140,18 @@ function M.toggle_loclist()
     vim.cmd('lopen')
 end
 
+-- Create non existent directories when vim passed a filepath
+function M.MkNonExDir(file, buf)
+    -- only do it for normal buffers (not terminals etc)
+    buftype = vim.fn.getbufvar(buf, '&buftype') 
+    -- also only do it for local files, not scp:// etc
+    if buftype == '' and not string.find(file, '^[a-zA-Z]+:') then
+        dir = vim.fn.fnamemodify(file, ':h')
+        isdir = vim.fn.isdirectory(dir)
+        if vim.fn.isdirectory(dir)==0 then
+            vim.fn.mkdir(dir, 'p')
+        end
+    end
+end
+
 return M

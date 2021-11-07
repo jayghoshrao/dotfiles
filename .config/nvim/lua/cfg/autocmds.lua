@@ -5,6 +5,10 @@ require('cfg.utils').create_augroups {
     { 'BufWritePost', 'plugins.lua', [[Reload|PackerSync]] },
     -- { 'BufWritePost', 'plugins.lua', 'Reload<bar>PackerSync' },
     { 'BufWritePost', '*/.config/nvim/**', 'PackerCompile' },
+
+    -- Automatically create parent directories if non existent
+    {'BufWritePre', '*', [[lua require('cfg.utils').MkNonExDir(vim.fn.expand('<afile>'), vim.fn.expand('<abuf>'))]] },
+
     -- Highlight text after yanking
     { 'TextYankPost', '*', [[lua require('vim.highlight').on_yank({ higroup = 'Substitute', timeout = 200 })]] },
     -- Hide cursorline in insert mode

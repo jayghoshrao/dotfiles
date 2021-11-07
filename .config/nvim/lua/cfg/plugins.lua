@@ -25,6 +25,7 @@ local cmd = vim.cmd
 -- https://github.com/lewis6991/gitsigns.nvim
 -- https://github.com/ThePrimeagen/git-worktree.nvim
 
+-- asyncrun, asynctasks, telescope plugin
 
 -- Automatically install packer.nvim
 local install_path = fn.stdpath 'data' .. '/site/pack/packer/opt/packer.nvim'
@@ -160,7 +161,6 @@ return require('packer').startup(function(use)
 
     -- General:
     use 'lambdalisue/suda.vim'
-    use 'skywind3000/asyncrun.vim'
     use 'tommcdo/vim-lion'                                       
 
     -- Vim object extensions
@@ -323,4 +323,39 @@ return require('packer').startup(function(use)
         end
     }
 
+    -- Lua
+    use {
+        "folke/zen-mode.nvim",
+        config = function()
+            require("zen-mode").setup {
+                -- your configuration comes here
+                -- or leave it empty to use the default settings
+                -- refer to the configuration section below
+            }
+        end
+    }
+
+    use {
+        "folke/twilight.nvim",
+        config = function()
+            require("twilight").setup {
+                -- your configuration comes here
+                -- or leave it empty to use the default settings
+                -- refer to the configuration section below
+            }
+        end
+    }
+
+    use "Pocco81/TrueZen.nvim"
+
+    use {
+        'skywind3000/asynctasks.vim',
+        requires = {
+            'skywind3000/asyncrun.vim'
+        }
+    }
+
+    use 'GustavoKatel/telescope-asynctasks.nvim'
+
+        
 end)
