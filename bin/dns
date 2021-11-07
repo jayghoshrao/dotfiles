@@ -1,0 +1,41 @@
+#!/usr/bin/zsh --login
+
+# This script creates step files from recent history
+# See bin/step for more info
+
+# Motivation: A lot of my workflow involves running multiple commands to 
+# process data from simulations. A lot of that information is lost thanks to 
+# residing only in the shell history and eventually being lost. 
+# 
+# This, for instance, makes it hard to reproduce postprocessed data from an
+# existing set of files after correcting something.
+#
+# There should be an easy way to document the operations performed on data. 
+# Ideally a log file for each program should be generated with all the 
+# necessary options and information. 
+
+export HISTFILE="${HOME}/.zsh_history"
+fc -R
+cmds=$(fc -lnr -20 | fzf -m --prompt="Select commands to store in file >"| tac)
+# cmds=$(history -R| fzf --tac -m | cut -f2- -d ' ')
+
+stepfile="commands.step"
+
+if [[ -n "$cmds" ]]; then
+    if [[ "$1" == "-a" ]]; then
+        cat >> $stepfile <<EOF
+$cmds
+EOF
+else
+    cat > $stepfile <<EOF 
+# This is a step file generated from my zsh history
+# It lists a set of commands performed on the data in this directory
+# THIS LIST MAY NOT BE EXHAUSTIVE"
+
+$cmds
+EOF
+    fi
+
+fi
+
+cat $stepfile
