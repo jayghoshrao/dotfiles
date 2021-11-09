@@ -27,20 +27,23 @@ local cmd = vim.cmd
 
 -- asyncrun, asynctasks, telescope plugin
 
--- Automatically install packer.nvim
-local install_path = fn.stdpath 'data' .. '/site/pack/packer/opt/packer.nvim'
+-- -- Automatically install packer.nvim
+local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
     cmd('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
 
-cmd [[packadd packer.nvim]]
+-- cmd [[packadd packer.nvim]]
+
 --- startup and add configure plugins
 -- packer.startup(function()
 return require('packer').startup(function(use)
     local use = use
 
+    use 'wbthomason/packer.nvim'
+
     -- personal
-    use 'jayghoshter/tasktags.vim'
+    use { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki'}}
 
     -- Advanced highlighting
     use {
@@ -142,20 +145,35 @@ return require('packer').startup(function(use)
     }
 
     -- Language- and Filetype-specific:
-    use 'lervag/vimtex'
+    use {
+        'lervag/vimtex', 
+        ft = {
+            'vimwiki',
+            'markdown',
+            'tex'
+        }
+    }
+
     use 'mboughaba/i3config.vim'           
+
     use {
         'vim-pandoc/vim-pandoc',
         config = function()
             require 'cfg.plugins.pandoc'
-        end
+        end,
+        ft = {
+            'markdown',
+            'vimwiki',
+            'tex'
+        }
     }
 
     use {
         'vimwiki/vimwiki',
         config = function()
             require 'cfg.plugins.vimwiki'
-        end
+        end,
+        ft = {'markdown', 'vimwiki'}
     }
 
 
@@ -179,44 +197,6 @@ return require('packer').startup(function(use)
         end
 
     }
-
-
-    -- use {
-    --     "luukvbaal/nnn.nvim",
-    --     config = function() 
-    --         require("nnn").setup({
-    --             explorer = {
-    --                 cmd = "nnn -eo",       -- command overrride (-F1 flag is implied, -a flag is invalid!)
-    --                 width = 24,        -- width of the vertical split
-    --                 session = "",      -- or global/local/shared
-    --                 tabs = true,       -- seperate explorer buffer per tab
-    --             },
-    --             picker = {
-    --                 cmd = "nnn -eo",       -- command override (-p flag is implied)
-    --                 style = {
-    --                     width = 0.8,     -- width in percentage of the viewport
-    --                     height = 0.8,    -- height in percentage of the viewport
-    --                     xoffset = 0.5,   -- xoffset in percentage
-    --                     yoffset = 0.5,   -- yoffset in percentage
-    --                     border = "solid",
-    --                 },
-    --                 session = "",      -- or global/local/shared
-    --             },
-    --             replace_netrw = "picker", -- or explorer/picker
-    --             mappings = {
-    --                 { "<C-t>", "tabedit" },         -- open file(s) in tab
-    --                 { "<C-s>", "split" },           -- open file(s) in split
-    --                 { "<C-v>", "vsplit" },          -- open file(s) in vertical split
-    --                 -- { "<C-y>", copy_to_clipboard }, -- copy file(s) to clipboard
-    --                 -- { "<C-w>", cd_to_path },        -- cd to file directory
-    --             },       
-    --             -- windownav = "<C-w>l" -- window movement mapping to navigate out of nnn
-    --         }) 
-    --         local map = require('cfg.utils').map
-    --         map('n', '<leader>e', ':NnnExplorer %:p:h<cr>')
-    --         map('n', '<leader>f', ':NnnPicker<cr>')
-    --     end
-    -- }
 
     -- General Utilities
     use {
@@ -351,11 +331,25 @@ return require('packer').startup(function(use)
     use {
         'skywind3000/asynctasks.vim',
         requires = {
-            'skywind3000/asyncrun.vim'
-        }
+            {
+                'skywind3000/asyncrun.vim',
+                config = function() 
+                    require 'cfg.plugins.async'
+                end
+            }
+        },
     }
 
     use 'GustavoKatel/telescope-asynctasks.nvim'
+
+    use {
+        'ElPiloto/telescope-vimwiki.nvim',
+        config = function()
+            require('telescope').load_extension('vw')
+            local map = require('cfg.utils').map
+            map('n', '<space>n', ':Telescope vw<cr>')
+        end
+    }
 
         
 end)

@@ -27,16 +27,29 @@ end
 
 function _G.MarkdownSettings()
   bufmap('n', '<leader>t', [[:!nohup typora '%' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
-  bufmap('n', '<leader>c', [[:Pandoc pdf<CR><CR>]])
-  bufmap('n', '<leader>b', [[:Pandoc beamer<CR><CR>]])
+  bufmap('n', '<leader>c', [[:Pandoc pdf --filter=mermaid-filter<CR><CR>]])
+  bufmap('n', '<leader>b', [[:Pandoc beamer --filter=mermaid-filter<CR><CR>]])
   bufmap('n', '<leader>z', [[:!nohup zathura '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
 end
 
 M = {}
-function M.AutoPDF()
+
+-- TODO: Make these toggleable
+
+function M.AutoPandoc()
+    vim.g.autopandoc_active = 1
     create_augroups {
-        AutoPDF = {
+        AutoPandoc = {
             { 'BufWritePost', '<buffer>', [[AsyncRun pandoc -t pdf --filter=mermaid-filter -o '%<.pdf' '%']]}
+        }
+    }
+end
+
+function M.AutoPDFLatex()
+    vim.g.autopdflatex_active = 1
+    create_augroups {
+        AutoPDFLatex = {
+            { 'BufWritePost', '<buffer>', [[AsyncRun pdflatex '%']]}
         }
     }
 end
@@ -51,7 +64,8 @@ create_augroups {
   },
 }
 
-vim.cmd [[command! AutoPDF lua require'cfg.plugins.pandoc'.AutoPDF()]]
+vim.cmd [[command! AutoPandoc lua require'cfg.plugins.pandoc'.AutoPandoc()]]
+vim.cmd [[command! AutoPDFLatex lua require'cfg.plugins.pandoc'.AutoPDFLatex()]]
 
 
 return M

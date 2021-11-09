@@ -29,6 +29,7 @@ gcalcli
 gdb-dashboard-git
 gita
 gitter-bin
+glow
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
 googler-git
@@ -135,9 +136,7 @@ v4l2ucp
 vcpkg-git
 vitables
 vlc-plugin-ytdl-git
-whatsapp-nativefier-arch-electron
 whatsappqt
-whatscli
 wpa_actiond
 xboxdrv
 xminesweeper
