@@ -294,7 +294,7 @@ LISTMAX=9999    # In the line editor, number of matches to show before asking pe
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 export TERM="xterm-256color-italic"
 # export LESS="-iR"
-export LESS="-iMFRx4 --mouse"
+export LESS="-iMFRx4"
 
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
