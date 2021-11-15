@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 print_usage(){
 echo "program    : run
@@ -84,7 +84,7 @@ rename_pulseaudio_sinks(){
 }
 
 set_wallpaper(){
-    feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png $HOME/Pictures/wallpapers/current-wall.png
+    feh --bg-fill $HOME/Pictures/wallpapers/current-wall.jpg $HOME/Pictures/wallpapers/current-wall.jpg
 }
 
 set_keymap(){

@@ -7,3 +7,4 @@
 touch ~/bin/$1
 [ -x ~/bin/$1 ] || chmod +x ~/bin/$1
 "$EDITOR" ~/bin/$1
+dot add ~/bin/$1

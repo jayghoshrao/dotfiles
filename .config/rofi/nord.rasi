@@ -24,7 +24,7 @@
     active-background:           @nord1;
     active-foreground:           @nord7;
     background:                  @nord0;
-    border-color:                @nord4;
+    border-color:                @nord3;
     foreground:                  @nord4;
     selected-active-background:  @nord10;
     selected-active-foreground:  @nord4;

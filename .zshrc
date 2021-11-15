@@ -34,9 +34,9 @@ fi
 # ZINIT: {{{
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
     command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
@@ -48,10 +48,10 @@ autoload -Uz _zinit
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
 zinit light-mode for \
-    zinit-zsh/z-a-rust \
-    zinit-zsh/z-a-as-monitor \
-    zinit-zsh/z-a-patch-dl \
-    zinit-zsh/z-a-bin-gem-node
+    zdharma-continuum/z-a-rust \
+    zdharma-continuum/z-a-as-monitor \
+    zdharma-continuum/z-a-patch-dl \
+    zdharma-continuum/z-a-bin-gem-node
 
 ### End of Zinit's installer chunk
 
@@ -77,7 +77,7 @@ zp zsh-users/zsh-autosuggestions
 # ## Remove the the next line if compaudit complains of insecurity 
 zpt 0b atload'zpcompinit;zpcdreplay'
 # zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
-zp zdharma/fast-syntax-highlighting
+zp zdharma-continuum/fast-syntax-highlighting
 
 if [[ "$ARCH" == "x86_64" ]]; then
 
@@ -670,18 +670,16 @@ add-zsh-hook precmd set_longrunning_alert
 # }}}
 
 ## SSH TMUX REFRESH ENV: {{{
-
-# if [ -n "$TMUX" ]; then
-#   function refresh {
-#     # export $(tmux show-environment | grep "^SSH_AUTH_SOCK")
-#     export $(tmux show-environment | grep "^DISPLAY")
-#   }
-# else
-#   function refresh { }
-# fi
-# function preexec {
-#     refresh
-# }
+# updates DISPLAY env in outdated tmux sessions
+function tmux_update_display(){
+    if [ -n "$TMUX" ]; then
+        if [[ $(tmux show-env | grep "^DISPLAY" | sed 's/DISPLAY=//') != $DISPLAY ]]; then
+            # echo "DISPLAY OUTDATED!"
+            export $(tmux show-environment | grep "^DISPLAY")
+        fi
+    fi
+}
+add-zsh-hook preexec tmux_update_display
 
 ## SSH TMUX REFRESH ENV: }}}
 
@@ -721,5 +719,3 @@ unset __mamba_setup
 # <<< mamba initialize <<<
 alias mamba=micromamba
 # export MAMBA_NO_BANNER=1
-
-alias gw='git worktree'

@@ -4,9 +4,9 @@
 # Usage: ./plotChrom.py <file> <file>
 # Output: plot.pdf and plot.jpg
 
-# DONE: argparse support for xlabel, ylabel and title
-# TODO: argparse support for plt.show
-# DONE: argparse support for delimiter
+# TODO: add option to scale x axis values
+# TODO: add option to specify plots as files with only one column each, with x axis defined separately
+# TODO: Add csvwriter with -w flag (to save the transformed/scaled plot)
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -14,6 +14,7 @@ from cycler import cycler
 # import csv
 import sys
 import argparse
+from subprocess import run
 
 def readCSV(data_path):
     time= []
@@ -51,6 +52,10 @@ def normalize(data, refValue=None):
     return [ x/float(refValue) for x in data ]
 
 def readfile(data_path, sep, columns):
+    if ':' in data_path:
+        run(['scp', '-rC', data_path, '/tmp/plotting.csv'])
+        data_path = '/tmp/plotting.csv'
+
     x = []
     y = []
     xticksFromFile= None
@@ -127,7 +132,6 @@ ap.add_argument("--cadet", nargs=2, required=False)
 
 args = vars(ap.parse_args())
 
-# TODO: Implement fully
 if not args['labels']:
     args['labels'] = args['files']
 

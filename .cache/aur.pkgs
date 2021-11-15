@@ -10,7 +10,6 @@ bibata-cursor-theme
 brotab-git
 c2esp
 chromium-widevine
-citra-qt-git
 conky-lua
 cozy-audiobooks
 ddd
@@ -50,6 +49,7 @@ lmod
 lxsession-git
 masterpdfeditor
 masterpdfeditor-free
+mautrix-whatsapp
 melonds
 micromamba-bin
 microsoft-python-language-server
@@ -122,7 +122,8 @@ tidy-viewer
 titillium-fonts
 tmatrix-git
 transset-df
-ttf-google-fonts-typewolf
+ttf-alegreya
+ttf-alegreya-sans
 ttf-impallari-amiko-devanagari
 ttf-kannada-font
 ttf-ms-fonts
@@ -136,7 +137,8 @@ v4l2ucp
 vcpkg-git
 vitables
 vlc-plugin-ytdl-git
-whatsappqt
+whatsapp-for-linux
+whatsapp-nativefier
 wpa_actiond
 xboxdrv
 xminesweeper

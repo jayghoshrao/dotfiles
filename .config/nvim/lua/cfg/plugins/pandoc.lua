@@ -27,8 +27,8 @@ end
 
 function _G.MarkdownSettings()
   bufmap('n', '<leader>t', [[:!nohup typora '%' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
-  bufmap('n', '<leader>c', [[:Pandoc pdf --filter=mermaid-filter<CR><CR>]])
-  bufmap('n', '<leader>b', [[:Pandoc beamer --filter=mermaid-filter<CR><CR>]])
+  bufmap('n', '<leader>c', [[:AsyncRun pandoc -t pdf --filter=mermaid-filter -o '%<.pdf' '%'<CR>]])
+  bufmap('n', '<leader>b', [[:AsyncRun pandoc -t beamer --filter=mermaid-filter -o '%<.pdf' '%'<CR>]])
   bufmap('n', '<leader>z', [[:!nohup zathura '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
 end
 

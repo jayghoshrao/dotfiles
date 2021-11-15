@@ -131,7 +131,7 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # Focus next workspace
-#bindsym $mod+Shift+Tab workspace next
+# bindsym $mod+Shift+Tab workspace next
 
 # change focus between tiling / floating windows
 bindsym $alt+Tab focus mode_toggle
@@ -287,7 +287,7 @@ workspace  $ws10  output  DP1-2
 # bindsym $mod+Shift+Tab move workspace to left right
 
 bindsym $mod+Tab focus output right
-bindsym $mod+Shift+Tab move workspace to right
+bindsym $mod+Shift+Tab move workspace to output right
 # bindsym $mod+period move workspace to output right
 # bindsym $mod+comma move workspace to output left
 
@@ -512,7 +512,7 @@ bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~
 bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # Area selection
 # }}}
 
-bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png $HOME/Pictures/wallpapers/current-wall.png
+bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/Pictures/wallpapers/current-wall.jpg $HOME/Pictures/wallpapers/current-wall.jpg
 bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
 
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 25 -dmenu -p 'Workspace')"
