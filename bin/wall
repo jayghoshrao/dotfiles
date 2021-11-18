@@ -1,0 +1,5 @@
+#!/usr/bin/zsh
+
+convert "$1" ~/.cache/wallpaper.png
+
+feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
