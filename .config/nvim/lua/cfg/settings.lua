@@ -125,7 +125,7 @@ opt.shada = { '!', "'1000", '<50', 's10', 'h' } -- Increase the shadafile size s
 
 -- Misc
 opt.backspace={ 'indent','eol','start' }
-opt.laststatus = 0
+opt.laststatus = 2
 opt.spell = false
 opt.hlsearch = false
 

@@ -92,7 +92,7 @@ map('n', '<BS><space>', '<c-^>')
 
 map('n', '<Tab>', ':bnext<CR>' )
 map('n', '<S-Tab>', ':bprevious<CR>' )
-map('n', '<space>d', ':bdelete!<CR>' )
+map('n', '<space>bd', ':bdelete!<CR>' )
 map('n', '<space>l', ':Buffers<CR>' )
 
 -- New tab
@@ -144,3 +144,4 @@ map('i', '<a-u>', 'ü')
 map('i', '<a-s-a>', 'Ä')
 map('i', '<a-s-o>', 'Ö')
 map('i', '<a-s-u>', 'Ü')
+

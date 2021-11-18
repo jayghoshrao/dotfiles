@@ -127,7 +127,14 @@ return require('packer').startup(function(use)
 
 
     --" Plug 'https://github.com/mfussenegger/nvim-dap'
-    use 'szw/vim-maximizer'
+    use {
+        'szw/vim-maximizer',
+        config = function()
+            local map = require 'cfg.utils'.map
+            map('n', '<space>m', '<cmd>MaximizerToggle<cr>')
+        end
+
+    }
 
     -- Tpope's plugins are de-facto standard
     use 'tpope/vim-surround'
@@ -294,7 +301,12 @@ return require('packer').startup(function(use)
 
     -- Debugger: Woah!
     if vim.fn.has('python3') == 1 then
-        use 'puremourning/vimspector'
+        use {
+            'puremourning/vimspector',
+            config = function()
+                require 'cfg.plugins.vimspector'
+            end
+        }
     end
 
     use {
@@ -412,5 +424,68 @@ return require('packer').startup(function(use)
             }
         end
     }       
+
+    use {
+        "cuducos/yaml.nvim",
+        ft = {"yaml"}, -- optional
+        requires = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-telescope/telescope.nvim" -- optional
+        },
+        -- config = function ()
+        --     require("yaml_nvim").init()
+        -- end,
+    }
+
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = {'kyazdani42/nvim-web-devicons', opt = true},
+        config = function()
+            require'lualine'.setup {
+                options = {
+                    icons_enabled = true,
+                    theme = 'nord',
+                    component_separators = { left = '', right = ''},
+                    section_separators = { left = '', right = ''},
+                    disabled_filetypes = {},
+                    always_divide_middle = true,
+                },
+                sections = {
+                    lualine_a = {'mode'},
+                    lualine_b = {'branch', 'diff',
+                        {'diagnostics', sources={'nvim_lsp', 'coc'}}},
+                    lualine_c = {'g:asyncrun_status', 'filename'},
+                    lualine_x = {'encoding', 'fileformat', 'filetype'},
+                    lualine_y = {'progress'},
+                    lualine_z = {'location'}
+                },
+                inactive_sections = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = {'filename'},
+                    lualine_x = {'location'},
+                    lualine_y = {},
+                    lualine_z = {}
+                },
+                tabline = {
+                    lualine_a = {
+                        {
+                            'buffers',
+                            buffers_color = {
+                                -- active = 'StatusLine',
+                                inactive = 'StatusLineNC',
+                            }
+                        }
+                    },
+                    lualine_b = {},
+                    lualine_c = {},
+                    lualine_x = {},
+                    lualine_y = {},
+                    lualine_z = {'tabs'}
+                },
+                extensions = {}
+            }
+        end
+    }
 
 end)

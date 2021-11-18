@@ -293,8 +293,7 @@ LISTMAX=9999    # In the line editor, number of matches to show before asking pe
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 export TERM="xterm-256color-italic"
-# export LESS="-iR"
-export LESS="-iMFRx4"
+export LESS="-iR"
 
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
@@ -317,13 +316,14 @@ alias zcl="$EDITOR ~/.zsh-local"
 alias nrc="$EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
 alias zz="source $HOME/.zshrc"
 
+alias n="notes"
 alias nn="note"
-alias nd="notes -d $HOME/Dropbox/DND"
-alias ndn="note -d $HOME/Dropbox/DND"
 alias ns="notesearch"
 alias fns="fnotesearch"
+
+alias nd="notes -d $HOME/Dropbox/DND"
+alias ndn="note -d $HOME/Dropbox/DND"
 # alias nd="ls --group-directories-first $NOTES_DIR"
-alias n="notes"
 
 alias t="thesaurus"
 alias gj="git-jump"
@@ -352,10 +352,8 @@ alias vds="$EDITOR \$(git diff --staged --name-only --diff-filter=ACMR)"
 alias vdc="$EDITOR \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
 alias vdd="$EDITOR \$(git diff develop --name-only --diff-filter=ACMR)"
 
-
 alias stj="ssh -qTfnN2 -D 8086 ibt014"
 
-alias ra="ranger-cd"
 # alias f=". nnnwrap"
 
 alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes'
@@ -423,8 +421,8 @@ function mkc()
 }
 # }}}
 # yank-path and yank-dirs: {{{
-function yp() {echo "$PWD/$1" | xclip -i -selection clipboard}
-function yd() {echo "$PWD" | xclip -i -selection clipboard}
+function yp() {echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard}
+function yd() {echo "$PWD" | tr -d '\n' | xclip -i -selection clipboard}
 #}}}
 # MAN: {{{
 

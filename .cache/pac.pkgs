@@ -23,6 +23,7 @@ breezy
 calcurse
 calibre
 caprine
+catch2
 ccls
 chromium
 cmatrix
@@ -99,7 +100,7 @@ imagescan
 inetutils
 inkscape
 inotify-tools
-intel-mkl
+intel-mkl-static
 intel-ucode
 ipw2100-fw
 ipw2200-fw
@@ -191,7 +192,6 @@ python-pyaml
 python-rich
 python-seaborn
 python-selenium
-python-sympy
 python-virtualenv
 qt5-networkauth
 qt5-xcb-private-headers
