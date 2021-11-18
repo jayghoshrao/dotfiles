@@ -22,7 +22,7 @@ cmds=$(fc -lnr -20 | fzf -m --prompt="Select commands to store in file >"| tac)
 stepfile="commands.step"
 
 if [[ -n "$cmds" ]]; then
-    if [[ "$1" == "-a" ]]; then
+    if [[ -f "$stepfile" ]]; then
         cat >> $stepfile <<EOF
 $cmds
 EOF
