@@ -12,6 +12,7 @@ c2esp
 chromium-widevine
 conky-lua
 cozy-audiobooks
+cppman
 ddd
 dropbox
 elinks-git
@@ -45,6 +46,7 @@ libsixel
 libvarnam-ibus-git
 libxlsxwriter
 light-locker-settings
+lightly-qt
 lmod
 lxsession-git
 masterpdfeditor
@@ -91,6 +93,7 @@ python-rofi-git
 python-scikit-image
 python-spotipy-git
 python-umonitor-git
+qgnomeplatform
 qjoypad
 qt5-styleplugins
 qt5-webengine-widevine

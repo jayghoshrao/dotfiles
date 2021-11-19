@@ -69,6 +69,7 @@ map({'n', 'v'}, 'L', 'g$')
 map('n', 'U', '<c-r>')
 
 -- typohacks
+-- TODO: Make this filetype specific to c/c++
 map('i', ';;', '<esc>A;<esc>')
 map('i', ':;', '::') 
 
@@ -80,9 +81,6 @@ map('n', '<Right>', ':vertical resize -5<CR>')
 map('n', '<leader>d', ':lcd %:p:h<cr>')     -- change working dir to that of current file
 map('n', '<leader>ld', ':pwd<cr>')          -- print current dir
 map('n', '<leader>lcd', ':lcd ~/')          -- prompt for changing working dir
-
--- edit and source config
--- TODO
 
 -- Strip trailing whitespace
 -- map('n', '<F2>', ':%s/\s*$//e<CR>')

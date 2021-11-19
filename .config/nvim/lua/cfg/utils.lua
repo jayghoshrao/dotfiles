@@ -1,4 +1,5 @@
 local cmd = vim.cmd
+local opt = vim.opt
 
 local M = {}
 
@@ -152,6 +153,14 @@ function M.MkNonExDir(file, buf)
             vim.fn.mkdir(dir, 'p')
         end
     end
+end
+
+-- See https://github.com/aitjcize/cppman
+function M.CppMan()
+    opt.iskeyword:append{':'}
+    current_word = vim.fn.expand("<cword>")
+    opt.iskeyword:remove{':'}
+    cmd('Man ' .. current_word)
 end
 
 return M

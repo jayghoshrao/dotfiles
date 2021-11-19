@@ -16,6 +16,7 @@ bind
 bison
 blueman
 bluez-utils
+boost
 borg
 bpytop
 brasero
@@ -113,6 +114,7 @@ keychain
 khal
 kitty
 krita
+kvantum-theme-materia
 lapacke
 licenses
 lightdm-webkit-theme-litarvan

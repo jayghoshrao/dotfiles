@@ -2,5 +2,9 @@
 vim.cmd [[command! -bar Restart lua require'cfg.utils'.restart()]]
 vim.cmd [[command! -bar Reload lua require'cfg.utils'.reload()]]
 
--- gbd helpers
+-- gdb helper
 vim.cmd [[ command! Xg :let @+ = 'b ' . expand('%:p') . ':' . line('.') ]]
+
+-- CppMan
+vim.cmd [[ command! CppMan lua require'cfg.utils'.CppMan() ]]
+
