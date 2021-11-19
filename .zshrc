@@ -534,6 +534,18 @@ function dotaf(){
     [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
 }
 
+## FZF
+function dotlog(){
+    _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+    _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git --git-dir=$DOTDIR --work-tree=$HOME show --color=always % | less '"
+    dot log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@" |
+        fzf --no-sort --reverse --tiebreak=index --no-multi \
+            --ansi --preview="$_viewGitLogLine" \
+                --header "enter to view, ctrl-y to copy hash" \
+                --bind "enter:execute:$_viewGitLogLine   | less -R" \
+                --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard"
+}
+
 ## To use local dotfile directories, 
 ## DOTDIR=$HOME/.localdots dot
 ## An alias to make even that easy:
