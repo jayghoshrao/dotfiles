@@ -14,6 +14,7 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagn
   virtual_text = false,
   signs = true,
   update_in_insert = false,
+  -- underline = false,
 })
 
 -- Use FZF to find references
@@ -73,6 +74,11 @@ for i, kind in ipairs(kinds) do
   kinds[i] = icons[kind] or kind
 end
 
+
+-- Enable completion triggered by <c-x><c-o>
+local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
 -- Construct some utilities that are needed for setting up the LSP servers
 
 local M = {}
@@ -84,25 +90,29 @@ function M.on_attach(client, bufnr)
   end
 
   -- Set up keymaps
-  local opts = { noremap = true, silent = true }
-  -- buf_map('n', '<c-]>', [[<cmd>lua require('cfg.plugins.lsp').definitions()<cr>]], opts)
-  buf_map('n', '<c-]>', [[<cmd>lua vim.lsp.buf.definition()<cr>]], opts)
+  local opts = { noremap = true, silent = false }
+  buf_map('n', '<c-]>', [[<cmd>lua require('cfg.plugins.lsp').definitions()<cr>]], opts)
+  -- buf_map('n', '<c-]>', [[<cmd>lua vim.lsp.buf.definition()<cr>]], opts)
   buf_map('n', 'gd', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
   buf_map('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
   buf_map('n', 'gD', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
 
-  -- buf_map('n', 'K', [[<cmd>lua vim.lsp.buf.hover()<cr>]], opts)
   buf_map('n', '<space>rn', [[<cmd>lua vim.lsp.buf.rename()<CR>]], opts)
   buf_map('n', '<space>ca', [[<cmd>lua vim.lsp.buf.code_action()<cr>]], opts)
-  buf_map('n', '<space>y', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
+
+  buf_map('n', 'gk', [[<cmd>lua vim.lsp.buf.hover()<cr>]], opts)
+  buf_map('n', 'gs', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
+  -- buf_map('n', '<space>y', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
 
   -- Navigate diagnostics
-  -- buf_map('n', '[g', [[<cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {border = 'single'}})<cr>]], opts)
-  -- buf_map('n', ']g', [[<cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {border = 'single'}})<cr>]], opts)
+
+  buf_map('n', '[g', [[<cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {border = 'single'}})<cr>]], opts)
+  buf_map('n', ']g', [[<cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {border = 'single'}})<cr>]], opts)
+
   buf_map('n', '[d', [[<cmd>lua vim.lsp.diagnostic.goto_prev()<cr>]], opts)
   buf_map('n', ']d', [[<cmd>lua vim.lsp.diagnostic.goto_next()<cr>]], opts)
-  -- Show diagnostics popup with <leader>d
 
+  -- Show diagnostics popup with <leader>d
   -- TODO: Remap
   -- buf_map('n', '<space>ld', [[<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({ border = 'single' })<cr>]], opts)
 
