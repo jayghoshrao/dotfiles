@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 
-grep -v "jog" ~/.zsh_history_ext | grep -a --color=never "${PWD}   " | cut -f1 -d"|" | tail
+grep -v "jog" ~/.zsh_history_ext | grep -a --color=never "${PWD}   " | cut -f1 -d"|" | fzf --tac
 
 # # To be used with https://github.com/larkery/zsh-histdb
 # jog() {

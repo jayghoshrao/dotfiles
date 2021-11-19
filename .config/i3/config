@@ -441,6 +441,7 @@ for_window [class="skypeforlinux"] floating enable, resize set 70 ppt 80 ppt, mo
 for_window [title="zoom"] floating enable, resize set 80 ppt 70 ppt, move position center 
 for_window [title="VNC authentication"] floating enable, move position center
 for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, move position center
+for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
 
 
 #}}}
@@ -564,3 +565,6 @@ bindsym $mod+d mode "$mode_deskenv"
 # Dunst controls
 bindsym $alt+period exec --no-startup-id dunstctl history-pop &
 bindsym Control+period exec --no-startup-id dunstctl close &
+
+## NOTE: Deactivates lxappearance
+# exec --no-startup-id /usr/lib/gsd-xsettings
