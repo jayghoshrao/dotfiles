@@ -83,7 +83,8 @@
 
     ### Text ###
 
-    font = Cascadia Code 10
+    # font = Cascadia Code 10
+    font = Iosevka Extended 10
 
     # The spacing between lines.  If the height is smaller than the
     # font height, it will get raised to the font height.
