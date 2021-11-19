@@ -39,13 +39,13 @@ Create Both
 SyncState *
 
 ##########################################
-# jayghoshrao@gmail.com
+# jayghosh.rao@gmail.com
 ##########################################
 
-IMAPAccount gmail
+IMAPAccount jayghoshrao
 # Address to connect to
 Host imap.gmail.com
-User jayghoshrao@gmail.com
+User jayghosh.rao@gmail.com
 PassCmd "pass google-jayghoshrao | head -n 1"
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
@@ -58,19 +58,20 @@ CertificateFile /etc/ssl/certs/ca-certificates.crt
 #CertificateFile ~/.cert/Equifax_Secure_CA.pem
 
 IMAPStore jayghoshrao-remote
-Account gmail
+Account jayghoshrao
 
 MaildirStore jayghoshrao-local
 SubFolders Verbatim
 # The trailing "/" is important
-Path ~/.local/share/mail/jayghoshrao/
-Inbox ~/.local/share/mail/jayghoshrao/INBOX
+Path ~/.local/share/mail/jrao/
+Inbox ~/.local/share/mail/jrao/INBOX
 
 Channel jayghoshrao
 Far :jayghoshrao-remote:
 Near :jayghoshrao-local:
 # Exclude everything under the internal [Gmail] folder, except the interesting folders
-Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+# Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
+Patterns *
 # Or include everything
 #Patterns *
 # Automatically create missing mailboxes, both locally and on the server
