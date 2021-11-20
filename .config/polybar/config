@@ -11,20 +11,6 @@
 
 [colors]
 
-; background = #1F1F1F
-; foreground = #FFFFFF
-; foreground-alt = #FFFFFF
-
-; ;; shades
-; shade1 = #0D47A1
-; shade2 = #1565C0
-; shade3 = #1976D2
-; shade4 = #1E88E5
-; shade5 = #2196F3
-; shade6 = #42A5F5
-; shade7 = #64B5F6
-; shade8 = #90CAF9
-
 nord0   = #2E3440
 nord1   = #3B4252
 nord2   = #434C5E
@@ -42,19 +28,21 @@ nord13  = #EBCB8B
 nord14  = #A3BE8C
 nord15  = #B48EAD
 
-;; shades
-shade1 = ${self.background}
-shade2 = ${self.nord14}
-shade3 = ${self.nord13}
-shade4 = ${self.nord10}
-shade5 = ${self.nord9}
-shade6 = ${self.nord8}
+black = ${colors.nord0}
+lightgrey = ${colors.nord3}
+whitegrey = ${colors.nord4}
+white = ${colors.nord6}
 
+greenblue = ${colors.nord7}
+cyan = ${colors.nord8}
+lightblue = ${colors.nord9}
+deepblue = ${colors.nord10}
 
-background   = ${colors.nord0}
-; foreground   = ${colors.nord4}
-foreground   = ${colors.nord0}
-foreground-dark   = ${colors.nord0}
+red = ${colors.nord11}
+orange = ${colors.nord12}
+yellow = ${colors.nord13}
+green = ${colors.nord14}
+pink = ${colors.nord15}
 
 selection    = #bf616a
 separator    = #3b4252
@@ -68,8 +56,8 @@ include-file = $HOME/.config/polybar/glyphs.ini
 
 
 [settings]
-format-background = ${colors.background}
-format-foreground = ${colors.foreground}
+; format-background = ${colors.black}
+; format-foreground = ${colors.white}
 
 [module/vpnstatus]
 type              = custom/script
@@ -77,8 +65,8 @@ exec              = ~/bin/vpnstatus
 interval          = 1
 format = <label>
 label = %output%
-format-background = ${colors.nord13}
-format-foreground = ${colors.foreground-dark}
+format-background = ${colors.yellow}
+format-foreground = ${colors.black}
 format-padding = 1
 format-font = 6
 
@@ -87,7 +75,7 @@ format-font = 6
 ; interface                   = enp0s25
 ; label-connected             = "  "
 ; format-connected            = <label-connected>
-; format-connected-background = ${colors.shade2}
+; format-connected-background = ${colors.nord14}
 
 [module/wireless]
 type                        = internal/network
@@ -124,7 +112,7 @@ label-connected            = %essid%
 
 format-disconnected           = <label-disconnected>
 label-disconnected            = %ifname% disconnected
-label-disconnected-foreground = ${colors.foreground}
+label-disconnected-foreground = ${colors.black}
 
 format-connected-padding = 1
 format-connected-margin  = 1
@@ -152,8 +140,8 @@ format-padding = 1
 label = %date% %time%
 label-font = 6
 
-format-background = ${colors.shade2}
-format-foreground = ${colors.foreground}
+format-background = ${colors.deepblue}
+format-foreground = ${colors.black}
 
 [module/i3]
 type = internal/i3
@@ -165,22 +153,21 @@ wrapping-scroll = false
 pin-workspaces = true
 
 label-mode-padding = 1
-label-mode-foreground = ${colors.nord0}
-label-mode-background = ${colors.nord13}
+label-mode-foreground = ${colors.black}
+label-mode-background = ${colors.yellow}
 
 ; focused                = Active workspace on focused monitor
 label-focused            = %name%
-label-focused-background = ${colors.nord10}
-; label-focused-background = ${colors.background}
-label-focused-foreground = ${colors.nord0}
+label-focused-background = ${colors.deepblue}
+label-focused-foreground = ${colors.black}
 label-focused-padding    = 1
 label-focused-font       = 6
 
 ; unfocused             = Inactive workspace on any monitor
 label-unfocused         = %name%
 label-unfocused-padding = 1
-label-unfocused-background = ${colors.background}
-label-unfocused-foreground = ${colors.nord4}
+label-unfocused-background = ${colors.black}
+label-unfocused-foreground = ${colors.whitegrey}
 
 ; visible                = Active workspace on unfocused monitor
 label-visible            = %name%
@@ -214,12 +201,6 @@ ramp-capacity-2 = 
 ramp-capacity-3 = 
 ramp-capacity-4 = 
 
-; ramp-capacity-0-background = ${colors.nord11}
-; ramp-capacity-1-background = ${colors.nord12}
-; ramp-capacity-2-background = ${colors.nord13}
-; ramp-capacity-3-background = ${colors.nord14}
-; ramp-capacity-4-background = ${colors.nord10}
-
 label-charging = %percentage%%
 label-discharging = %percentage%%
 label-full = %percentage%%
@@ -234,16 +215,16 @@ animation-charging-4 = 
 
 animation-charging-framerate = 750
 
-format-full-background = ${colors.shade4}
-format-full-foreground = ${colors.foreground}
+format-full-background = ${colors.deepblue}
+format-full-foreground = ${colors.black}
 format-full-font = 6
 
-format-charging-background = ${colors.shade4}
-format-charging-foreground = ${colors.foreground}
+format-charging-background = ${colors.deepblue}
+format-charging-foreground = ${colors.black}
 format-charging-font= 6
 
-format-discharging-background = ${colors.shade4}
-format-discharging-foreground = ${colors.foreground}
+format-discharging-background = ${colors.deepblue}
+format-discharging-foreground = ${colors.black}
 format-discharging-font= 6
 
 
@@ -254,8 +235,8 @@ interval = 1
 format = <label>
 label = %output%
 format-padding = 1
-format-background = ${colors.shade5}
-format-foreground = ${colors.nord0}
+format-background = ${colors.yellow}
+format-foreground = ${colors.black}
 format-font = 6
 
 
@@ -279,8 +260,8 @@ interval = 60
 format = <label>
 label = %output%
 format-padding = 1
-format-foreground = ${colors.foreground}
-format-background = ${colors.shade6}
+format-foreground = ${colors.black}
+format-background = ${colors.cyan}
 format-font = 6
 
 [module/ghnotify]
@@ -292,8 +273,8 @@ interval = 60
 format = <label>
 label = %output%
 format-padding = 1
-format-foreground = ${colors.nord4}
-format-background = ${colors.background}
+format-foreground = ${colors.whitegrey}
+format-background = ${colors.black}
 format-font = 6
 click-left = exec firefox --new-tab https://github.com/notifications
 
@@ -302,8 +283,8 @@ type = custom/script
 tail = true
 exec-if = pgrep pulseaudio
 label-padding = 1
-label-foreground = ${colors.foreground}
-label-background = ${colors.shade5}
+label-foreground = ${colors.black}
+label-background = ${colors.lightblue}
 label-font = 6
 
 ; Icons mixed from Font Awesome 5 and Material Icons
@@ -327,13 +308,13 @@ type = internal/xkeyboard
 blacklist-0 = num lock
 
 format-prefix = " "
-format-prefix-foreground = ${colors.foreground-alt}
+format-prefix-foreground = ${colors.black}
 
 label-layout = %layout%
 
 label-indicator-padding = 2
 label-indicator-margin = 1
-label-indicator-background = ${colors.secondary}
+label-indicator-background = ${colors.red}
 
 [module/temperature]
 type = internal/temperature
@@ -345,12 +326,12 @@ format-warn = <ramp> <label-warn>
 
 label = %temperature%
 label-warn = %temperature%
-label-warn-foreground = ${colors.selection}
+label-warn-foreground = ${colors.orange}
 
 ramp-0 = 
 ramp-1 = 
 ramp-2 = 
-ramp-foreground = ${colors.foreground}
+ramp-foreground = ${colors.black}
 
 [bar/left]
 ; bottom = true
@@ -383,30 +364,41 @@ tray-padding = 2
 tray-offset-y = 0%
 tray-offset-x = 0%
 tray-detached = false
-tray-background = ${colors.shade1}
+tray-background = ${colors.background}
 tray-maxsize = 60
 dpi=-1
 
-[bar/right]
+[bar/mid]
 ; bottom = true
 ; monitor-strict = true
-monitor = ${env:DISPLAY1}
+; monitor = ${env:DISPLAY0}
 height = 40
 
-modules-left = i3
-modules-center = xwindow
-modules-right = right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date 
+modules-left = date left1 pomodoro left2
+modules-center = i3 
+modules-right = ghnotify right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 
 
-background = ${colors.background}
-foreground = ${colors.foreground}
+background = ${colors.black}
+foreground = ${colors.lightgrey}
 
-; font-0 = Cascadia Code:fontformat=truetype:size=14;1
-font-0 = "Iosevka Term:style=Medium:size=22;5"
-font-1 = FontAwesome:fontformat=truetype:size=14;1
-font-2 = Font Awesome 5 Free:pixelsize=14;3
-font-3 = Font Awesome 5 Free Solid:pixelsize=14;3
-font-4 = Font Awesome 5 Brands:pixelsize=14;3
-; font-5 = Cascadia Code:fontformat=truetype:size=16:weight=bold;1
-font-5 = "Iosevka Term:style=Medium:size=22;5"
-font-6 = "Iosevka Term:style=Medium:size=22;5"
+; font-0 = Cascadia Code:fontformat=truetype:size=10;1
+; font-5 = Cascadia Code:fontformat=truetype:size=10:weight=bold;1
+; font-6 = Cascadia Code:weight=bold:size=22;5
 
+font-0 = Iosevka Extended:fontformat=truetype:size=14;1
+font-5 = Iosevka Extended:fontformat=truetype:size=14:weight=bold;1
+font-6 = Iosevka Extended:style=Medium:size=22;5
+
+font-1 = FontAwesome:fontformat=truetype:size=10;1
+font-2 = Font Awesome 5 Free:pixelsize=10;3
+font-3 = Font Awesome 5 Free Solid:pixelsize=10;3
+font-4 = Font Awesome 5 Brands:pixelsize=10;3
+
+tray-position = right
+tray-padding = 2
+tray-offset-y = 0%
+tray-offset-x = 0%
+tray-detached = false
+tray-background = ${colors.background}
+tray-maxsize = 60
+dpi=-1
