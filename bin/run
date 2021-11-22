@@ -49,7 +49,7 @@ launch_polybar(){
     export DISPLAY0=$(xrandr -q | awk '/ connected primary / {print $1}')
     # export DISPLAY1=$(xrandr -q | grep -w connected | grep -v primary | awk '{print $1}')
 
-    nohup polybar left >/dev/null 2>&1 & disown
+    nohup polybar mid >/dev/null 2>&1 & disown
     # nohup polybar right  >/dev/null 2>&1 & disown
 
 }
