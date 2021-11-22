@@ -2,6 +2,7 @@ require('cfg.utils').create_augroups {
   setup = {
 
     -- Automatically compile packer when saving the plugins' file
+    -- { 'BufWritePost', 'plugins.lua', [[Reload|PackerSync]] },
     { 'BufWritePost', 'plugins.lua', [[Reload|PackerSync]] },
     -- { 'BufWritePost', 'plugins.lua', 'Reload<bar>PackerSync' },
     { 'BufWritePost', '*/.config/nvim/**', 'PackerCompile' },

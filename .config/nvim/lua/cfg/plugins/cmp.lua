@@ -1,4 +1,5 @@
 local cmp = require 'cmp'
+local lspkind = require('lspkind')
 
 cmp.setup {
   snippet = {
@@ -31,4 +32,9 @@ cmp.setup {
     native_menu = false,
     ghost_text = true,
     },
+
+  formatting = {
+    format = lspkind.cmp_format({with_text = false, maxwidth = 50})
+  },
 }
+

@@ -2,30 +2,25 @@ local vim = vim
 local fn = vim.fn
 local cmd = vim.cmd
 
--- Check out https://github.com/gillescastel/latex-snippets
--- https://github.com/rhysd/clever-f.vim
--- https://github.com/bkad/CamelCaseMotion or 
--- https://github.com/chaoren/vim-wordmotion
--- Plug 'voldikss/vim-floaterm'
+-- TODO: Check
+-- https://github.com/onsails/diaglist.nvim
+-- https://github.com/nvim-telescope/telescope-vimspector.nvim
 -- https://github.com/junegunn/vim-peekaboo
+-- https://github.com/rhysd/clever-f.vim
+-- https://github.com/ggandor/lightspeed.nvim -- vim-sneak successor
+-- https://github.com/ray-x/lsp_signature.nvim
+-- https://github.com/ThePrimeagen/git-worktree.nvim
 -- https://github.com/stefandtw/quickfix-reflector.vim
--- Vimspector + Telescope
--- https://github.com/gelguy/wilder.nvim
--- https://github.com/ngscheurich/iris.nvim
--- https://github.com/d0c-s4vage/lookatme
+
 -- https://github.com/b3nj5m1n/kommentary
 -- https://github.com/alpertuna/vim-header
--- https://github.com/garbas/vim-snipmate
--- https://github.com/onsails/diaglist.nvim
 -- https://github.com/ahmedkhalf/project.nvim
--- https://github.com/ibhagwan/fzf-lua
--- https://github.com/rmagatti/goto-preview
--- https://github.com/ggandor/lightspeed.nvim " vim-sneak successor
--- https://github.com/ray-x/lsp_signature.nvim
--- https://github.com/lewis6991/gitsigns.nvim
--- https://github.com/ThePrimeagen/git-worktree.nvim
+-- https://github.com/gelguy/wilder.nvim
 
--- asyncrun, asynctasks, telescope plugin
+-- https://github.com/ibhagwan/fzf-lua
+-- https://github.com/d0c-s4vage/lookatme  -- presentation!
+-- https://github.com/ngscheurich/iris.nvim
+
 
 -- -- Automatically install packer.nvim
 local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
@@ -102,6 +97,9 @@ return require('packer').startup(function(use)
                     require 'cfg.plugins.lsp.null_ls'
                 end,
             },
+            {
+                'onsails/lspkind-nvim'
+            }
         },
     }
     use 'm-pilia/vim-ccls'
@@ -145,6 +143,7 @@ return require('packer').startup(function(use)
 
 
     use 'kyazdani42/nvim-web-devicons'
+
     use {
         'lewis6991/gitsigns.nvim', -- Git status signs in the gutter
         config = function()
@@ -181,7 +180,18 @@ return require('packer').startup(function(use)
         config = function()
             require 'cfg.plugins.vimwiki'
         end,
-        ft = {'markdown', 'vimwiki'}
+        ft = {'markdown', 'vimwiki', 'pandoc'}
+    }
+
+    -- NOTE: doesn't work everywhere since vimwiki 
+    -- is only used for certain filetypes
+    use {
+        'ElPiloto/telescope-vimwiki.nvim',
+        config = function()
+            require('telescope').load_extension('vw')
+            local map = require('cfg.utils').map
+            map('n', '<space>n', ':Telescope vw<cr>')
+        end
     }
 
 
@@ -299,15 +309,69 @@ return require('packer').startup(function(use)
         use 'pwntester/octo.nvim'
     end
 
-    -- Debugger: Woah!
-    if vim.fn.has('python3') == 1 then
-        use {
-            'puremourning/vimspector',
-            config = function()
-                require 'cfg.plugins.vimspector'
-            end
-        }
-    end
+    -- -- Debugger: Woah!
+    -- if vim.fn.has('python3') == 1 then
+    --     use {
+    --         'puremourning/vimspector',
+    --         config = function()
+    --             require 'cfg.plugins.vimspector'
+    --         end
+    --     }
+    -- end
+    --
+    use {'mfussenegger/nvim-dap',
+        config = function()
+            require'cfg.plugins.dap'
+        end
+    }
+
+    use {
+        'rcarriga/nvim-dap-ui',
+        config = function()
+            require("dapui").setup({
+                icons = { expanded = "▾", collapsed = "▸" },
+                mappings = {
+                    -- Use a table to apply multiple mappings
+                    expand = { "<CR>", "<2-LeftMouse>" },
+                    open = "o",
+                    remove = "d",
+                    edit = "e",
+                    repl = "r",
+                },
+                sidebar = {
+                    -- You can change the order of elements in the sidebar
+                    elements = {
+                        -- Provide as ID strings or tables with "id" and "size" keys
+                        {
+                            id = "scopes",
+                            size = 0.25, -- Can be float or integer > 1
+                        },
+                        { id = "breakpoints", size = 0.25 },
+                        { id = "stacks", size = 0.25 },
+                        { id = "watches", size = 00.25 },
+                    },
+                    size = 40,
+                    position = "left", -- Can be "left", "right", "top", "bottom"
+                },
+                tray = {
+                    elements = { "repl" },
+                    size = 10,
+                    position = "bottom", -- Can be "left", "right", "top", "bottom"
+                },
+                floating = {
+                    max_height = nil, -- These can be integers or a float between 0 and 1.
+                    max_width = nil, -- Floats will be treated as percentage of your screen.
+                    border = "single", -- Border style. Can be "single", "double" or "rounded"
+                    mappings = {
+                        close = { "q", "<Esc>" },
+                    },
+                },
+                windows = { indent = 1 },
+            })
+            require('cfg.utils').map('n', '<space>dd', '<cmd>lua require("dapui").toggle()<cr>')
+        end
+    }
+
 
     use {
         'ThePrimeagen/harpoon',
@@ -384,8 +448,6 @@ return require('packer').startup(function(use)
         end
     }
 
-    use "Pocco81/TrueZen.nvim"
-
     use {
         'skywind3000/asynctasks.vim',
         requires = {
@@ -398,19 +460,17 @@ return require('packer').startup(function(use)
         },
     }
 
-    use 'GustavoKatel/telescope-asynctasks.nvim'
-
     use {
-        'ElPiloto/telescope-vimwiki.nvim',
+        'GustavoKatel/telescope-asynctasks.nvim',
         config = function()
-            require('telescope').load_extension('vw')
             local map = require('cfg.utils').map
-            map('n', '<space>n', ':Telescope vw<cr>')
+            map('n', '<leader>tt', [[<cmd>lua require('telescope').extensions.asynctasks.all()<cr>]])
         end
     }
 
+
     use {
-        'https://github.com/derekwyatt/vim-fswitch',
+        'derekwyatt/vim-fswitch',
         config = [[require('cfg.utils').map('n', 'gh', ':FSHere<cr>')]]
     }
 
@@ -418,12 +478,9 @@ return require('packer').startup(function(use)
         "folke/which-key.nvim",
         config = function()
             require("which-key").setup {
-                -- your configuration comes here
-                -- or leave it empty to use the default settings
-                -- refer to the configuration section below
             }
         end
-    }       
+    }      
 
     use {
         "cuducos/yaml.nvim",
@@ -474,18 +531,28 @@ return require('packer').startup(function(use)
                             buffers_color = {
                                 -- active = 'StatusLine',
                                 inactive = 'StatusLineNC',
-                            }
+                            },
                         }
                     },
                     lualine_b = {},
                     lualine_c = {},
                     lualine_x = {},
                     lualine_y = {},
-                    lualine_z = {'tabs'}
+                    lualine_z = {
+                        {
+                            'tabs',
+                            tabs_color = {
+                                -- active = 'StatusLine',
+                                inactive = 'StatusLineNC',
+                            }
+                        }
+                    }
                 },
                 extensions = {}
             }
         end
     }
+
+    use_rocks 'lunajson'
 
 end)

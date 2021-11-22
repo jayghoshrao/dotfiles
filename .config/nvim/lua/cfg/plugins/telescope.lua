@@ -20,13 +20,14 @@ map('n', '<space>b', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
 
 local opts = { noremap = true, silent = true }
 
+-- TODO: This or lsp references?
 map('n', 'gr', [[<cmd>lua require'telescope.builtin'.lsp_references()<cr>]], opts)
 map('n', '<space>gs', [[<cmd>lua require'telescope.builtin'.git_status()<cr>]], opts)
 
 -- map('n', '<leader>fr', [[<cmd>lua require'telescope.builtin'.oldfiles()<cr>]])
 -- map('n', '', [[<cmd>lua require'telescope.builtin'.quickfix()<cr>]])
-
 -- map('n', '<leader>fx', [[<cmd>lua require'telescope.builtin'.git_status()<cr>]])
+
 map('n', '<space>gc', [[<cmd>lua require'telescope.builtin'.git_commits()<cr>]])
 map('n', '<space>gi', [[<cmd>lua require'telescope'.extensions.gh.issues()<cr>]])
 map('n', '<space>gp', [[<cmd>lua require'telescope'.extensions.gh.pull_request()<cr>]])

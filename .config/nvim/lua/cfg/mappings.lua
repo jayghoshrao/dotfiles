@@ -56,7 +56,6 @@ map('v', 'ae', [[:<c-u>silent! normal! m'gg0VG$<cr>]], { silent = true })
 map('o', 'ae', ':normal Vae<cr>', { noremap = false, silent = true })
 
 -- Personal 
--- TODO, look at modes
 map({'n', 'v'},'j', 'gj')
 map({'n', 'v'},'k', 'gk')
 

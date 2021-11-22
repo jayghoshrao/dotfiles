@@ -48,6 +48,8 @@ require('nvim-treesitter.configs').setup {
     'latex',
     'llvm',
     'rust',
-    'vim'
+    'vim',
+    'bibtex',
+    'http'
   },
 }
