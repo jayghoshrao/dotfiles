@@ -181,13 +181,13 @@ cdf() {
 #
 # fshow - git commit browser
 
-alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
+alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | less '"
 
 fshow() {
   git log --graph --color=always \
-      --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+      --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
         --header "enter to view, ctrl-y to copy hash" \
         --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard" \

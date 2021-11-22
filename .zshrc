@@ -538,7 +538,7 @@ function dotaf(){
 function dotlog(){
     _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
     _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git --git-dir=$DOTDIR --work-tree=$HOME show --color=always % | less '"
-    dot log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@" |
+    dot log --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr% C(auto)%an" "$@" |
         fzf --no-sort --reverse --tiebreak=index --no-multi \
             --ansi --preview="$_viewGitLogLine" \
                 --header "enter to view, ctrl-y to copy hash" \
@@ -711,21 +711,3 @@ fpass() {
 
 alias F="sudo -E nnn -dH" # sudo file browser
 
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="/usr/bin/micromamba";
-export MAMBA_ROOT_PREFIX="/home/jayghoshter/local/micromamba";
-__mamba_setup="$('/usr/bin/micromamba' shell hook --shell zsh --prefix '/home/jayghoshter/local/micromamba' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    if [ -f "/home/jayghoshter/local/micromamba/etc/profile.d/mamba.sh" ]; then
-        . "/home/jayghoshter/local/micromamba/etc/profile.d/mamba.sh"
-    else
-        export PATH="/home/jayghoshter/local/micromamba/bin:$PATH"
-    fi
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
-alias mamba=micromamba
-# export MAMBA_NO_BANNER=1
