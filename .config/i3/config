@@ -545,14 +545,17 @@ exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpa
 # }}}
 
 # MODE: My Desktop Environment {{{
-set $mode_deskenv [p]olybar | pulse[a]udio | [c]onky | [k]eyboard | [A]ll
+set $mode_deskenv [p]olybar | pulse[a]udio | [c]onky | [k]eyboard | [n]otification | [d]isplay | [r]eload | [R]estart
 mode "$mode_deskenv"
 {
     bindsym p exec --no-startup-id $SCRIPTS/run --pulseaudio --polybar, mode "default"
     bindsym a exec --no-startup-id $SCRIPTS/run --pulseaudio, mode "default"
     bindsym c exec --no-startup-id $SCRIPTS/run --conky	, mode "default"
     bindsym k exec --no-startup-id $SCRIPTS/run --keyboard, mode "default"
-    bindsym shift+A exec --no-startup-id $SCRIPTS/run --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
+    bindsym d exec --no-startup-id $SCRIPTS/run --display, mode "default"
+    bindsym n exec --no-startup-id $SCRIPTS/run --notification, mode "default"
+    bindsym r exec --no-startup-id $SCRIPTS/run --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
+    bindsym shift+r exec --no-startup-id $SCRIPTS/run --display --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
 
     # back to normal: Enter or Escape
 	bindsym Return mode "default"
