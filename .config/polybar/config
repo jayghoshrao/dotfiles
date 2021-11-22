@@ -374,9 +374,9 @@ dpi=-1
 ; monitor = ${env:DISPLAY0}
 height = 40
 
-modules-left = date left1 pomodoro left2
+modules-left = date left1 pomodoro left2 ghnotify 
 modules-center = i3 
-modules-right = ghnotify right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 
+modules-right = right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 
 
 background = ${colors.black}
 foreground = ${colors.lightgrey}
