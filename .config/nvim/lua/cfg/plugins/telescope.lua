@@ -7,12 +7,12 @@ map('n', '<space>o', [[<cmd>lua require'telescope.builtin'.find_files()<cr>]])
 map('n', '<space>p', [[<cmd>lua require'telescope.builtin'.git_files()<cr>]])
 map('n', '<space>f', [[<cmd>lua require'telescope.builtin'.live_grep()<cr>]])
 
-map('n', '<space>v', [[<cmd>lua require'telescope.builtin'.buffers()<cr>]])
+map('n', '<space>b', [[<cmd>lua require'telescope.builtin'.buffers()<cr>]])
 map('n', '<space>h', [[<cmd>lua require'telescope.builtin'.help_tags()<cr>]])
 map('n', '<space>e', [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find()<cr>]])
 map('n', '<space>;', [[<cmd>lua require'telescope.builtin'.command_history()<cr>]])
 map('n', '<space>/', [[<cmd>lua require'telescope.builtin'.search_history()<cr>]])
-map('n', '<space>b', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
+map('n', '<space>t', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
 
 -- Unused
 -- map('n', '<space>m', [[<cmd>lua require'telescope.builtin'.marks()<cr>]])

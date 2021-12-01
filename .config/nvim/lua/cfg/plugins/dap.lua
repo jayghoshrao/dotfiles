@@ -3,7 +3,7 @@ local map = require('cfg.utils').map
 
 -- autocomplete in REPL
 require('cfg.utils').create_augroups {
-    setup = {
+    dap_launch = {
         { 'FileType', 'dap-repl', [[lua require('dap.ext.autocompl').attach()]] },
     }
 }
@@ -33,7 +33,7 @@ map('n', '<space>dj', ':lua require"dap".down()<CR>')
 
 map('n', '<space>dx', ':lua require"dap".terminate()<CR>')
 
-map('n', '<space>dr', ':lua require"dap".repl.toggle({}, "vsplit")<CR><C-w>l')
+map('n', '<space>dr', ':lua require"dap".repl.toggle({}, "split")<CR><C-w>j')
 
 -- map('n', '<space>di', ':lua require"dap.ui.variables".hover()<CR>')
 -- map('n', '<space>di', ':lua require"dap.ui.variables".visual_hover()<CR>')

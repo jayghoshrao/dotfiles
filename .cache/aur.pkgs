@@ -39,6 +39,7 @@ gsfonts-type1
 gtklp
 hunter
 i3wsr
+ilastik-bin
 j4-dmenu-desktop
 jdk
 kyocera-utax-ta
@@ -92,6 +93,7 @@ python-rofi-git
 python-scikit-image
 python-spotipy-git
 python-umonitor-git
+python2-pip
 qgnomeplatform
 qjoypad
 qt5-styleplugins

@@ -2,6 +2,7 @@ local vim = vim
 local fn = vim.fn
 local cmd = vim.cmd
 
+
 -- TODO: Check
 -- https://github.com/onsails/diaglist.nvim
 -- https://github.com/nvim-telescope/telescope-vimspector.nvim
@@ -11,6 +12,12 @@ local cmd = vim.cmd
 -- https://github.com/ray-x/lsp_signature.nvim
 -- https://github.com/ThePrimeagen/git-worktree.nvim
 -- https://github.com/stefandtw/quickfix-reflector.vim
+-- telescope-dap
+--
+
+-- TODO: MANUALS
+-- https://github.com/sunaku/vim-dasht
+-- https://github.com/rhysd/devdocs.vim
 
 -- https://github.com/b3nj5m1n/kommentary
 -- https://github.com/alpertuna/vim-header
@@ -27,8 +34,6 @@ local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
     cmd('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
-
--- cmd [[packadd packer.nvim]]
 
 --- startup and add configure plugins
 -- packer.startup(function()
@@ -66,7 +71,7 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.json_ls'
             -- require 'cfg.plugins.lsp.lua_ls'
             -- require 'cfg.plugins.lsp.lua_types'
-            require 'cfg.plugins.lsp.null_ls'
+            -- require 'cfg.plugins.lsp.null_ls'
             require 'cfg.plugins.lsp.pyright'
             require 'cfg.plugins.lsp.texlab'
             require 'cfg.plugins.lsp.yaml_ls'
@@ -91,12 +96,12 @@ return require('packer').startup(function(use)
                     require 'cfg.plugins.cmp'
                 end,
             },
-            {
-                'jose-elias-alvarez/null-ls.nvim',
-                config = function()
-                    require 'cfg.plugins.lsp.null_ls'
-                end,
-            },
+            -- {
+            --     'jose-elias-alvarez/null-ls.nvim',
+            --     config = function()
+            --         require 'cfg.plugins.lsp.null_ls'
+            --     end,
+            -- },
             {
                 'onsails/lspkind-nvim'
             }
@@ -174,7 +179,8 @@ return require('packer').startup(function(use)
             'tex'
         }
     }
-
+    require 'cfg.utils'.map('n', '<leader>vwl', '<Plug>VimwikiNextLink', {noremap=false} )
+    require 'cfg.utils'.map('n', '<leader>vwh', '<Plug>VimwikiPrevLink', {noremap=false} )
     use {
         'vimwiki/vimwiki',
         config = function()
@@ -266,11 +272,11 @@ return require('packer').startup(function(use)
     -- use 'shaunsingh/nord.nvim'
 
     use {
-        'maaslalani/nordbuddy',
+        'andersevenrud/nordic.nvim',
         config = function()
             -- The table used in this example contains the default settings.
             -- Modify or remove these to your liking:
-            require('nordbuddy').colorscheme({
+            require('nordic').colorscheme({
                 -- Underline style used for spelling
                 -- Options: 'none', 'underline', 'undercurl'
                 underline_option = 'none',
@@ -284,6 +290,12 @@ return require('packer').startup(function(use)
                 -- StatusLine
                 minimal_mode = false
             })
+
+            require('cfg.utils').create_augroups {
+              nord = {
+                    { 'User', 'PlugLoaded', [[++nested colorscheme nordic]] },
+                }
+            }
         end
     }
 
@@ -322,7 +334,10 @@ return require('packer').startup(function(use)
     use {'mfussenegger/nvim-dap',
         config = function()
             require'cfg.plugins.dap'
-        end
+        end,
+        -- lunajson for a custom launch function. See dap.lua
+        rocks = 'lunajson'
+
     }
 
     use {
@@ -553,6 +568,9 @@ return require('packer').startup(function(use)
         end
     }
 
-    use_rocks 'lunajson'
+    use 'ggandor/lightspeed.nvim'
+
+    use 'duane9/nvim-rg'
 
 end)
+
