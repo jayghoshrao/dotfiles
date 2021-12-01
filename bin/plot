@@ -3,19 +3,21 @@
 # depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
 # USAGE: ./plotChrom.py <file> <file> -o plot.pdf 
 
-# TODO: add option to scale x axis values
+# DONE: add option to scale x axis values
+# TODO: Add option to scale by file
 # TODO: add option to specify plots as files with only one column each, with x axis defined separately
 
 # TODO: --xscale and --yscale 
 # DONE: Add csvwriter with -w flag (to save the transformed/scaled plot)
 
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 from cycler import cycler
 # import csv
 import sys
 import argparse
 from subprocess import run
+from pathlib import Path
 
 def readCSV(data_path):
     time= []
@@ -52,7 +54,14 @@ def normalize(data, refValue=None):
         refValue = max(data)
     return [ x/float(refValue) for x in data ]
 
-def readfile(data_path, sep, columns):
+def readArray(data_path):
+    values =[]
+    with open(data_path, newline='') as csvfile:
+        for line in csvfile:
+            values.append(float(line.strip()))
+    return values
+
+def readfile(data_path, columns):
     if ':' in data_path:
         run(['scp', '-rC', data_path, '/tmp/plotting.csv'])
         data_path = '/tmp/plotting.csv'
@@ -62,10 +71,14 @@ def readfile(data_path, sep, columns):
     xticksFromFile= None
     xticks = []
     # columns = [0, 1]
+    delimiter = ' '
+    with open(data_path, newline='') as csvfile:
+        if ',' in csvfile.readline():
+            delimiter = ','
     with open(data_path, newline='') as infile:
         # data = list(csv.reader(infile))
         for line in infile:
-            data_line = line.strip().split(sep)
+            data_line = line.strip().split(delimiter)
             data_line = list(filter(None, data_line))
             if (data_line != []):
                 if len(data_line) == 1:
@@ -80,6 +93,15 @@ def readfile(data_path, sep, columns):
                     xticks.append(float(data_line[columns[xticksFromFile]]))
 
     return x, y, xticks
+
+def scale_axis(vec:list, scale_factor_or_file):
+    if Path(scale_factor_or_file).expanduser().exists():
+        scale_factors = readArray(scale_factor_or_file)
+        vec = [ v*s for v,s in zip(vec, scale_factors)]
+    else: 
+        scale_factor = float(scale_factor_or_file)
+        vec = [ v * scale_factor for v in vec ]
+    return vec
 
 ap = argparse.ArgumentParser()
 ap.add_argument("files", nargs='*', help="files to plot")
@@ -105,11 +127,12 @@ ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around
 ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
 ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
 
-ap.add_argument("-xs", "--xscale", type=float, help="Scale the x axis")
-ap.add_argument("-ys", "--yscale", type=float, help="Scale the y axis")
+ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots")
+ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots")
 
 ap.add_argument("-o", "--output", help="output file")
 ap.add_argument("-w", "--write", help="Write the CSV file (after applying rescaling if any)")
+ap.add_argument("--split", action='store_true', help="Split the data into x and y.")
 
 ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
 
@@ -160,14 +183,19 @@ with plt.style.context(['science']):
             x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
             # print(x,y)
         else:
-            x, y, xticks = readfile(filename, args['separator'], args['columns'])
+            x, y, xticks = readfile(filename, args['columns'])
         if args['normalize']:
             y = normalize(y)
 
         if args['xscale']:
-            x = [ args['xscale'] * value for value in x ]
+            if x == []:
+                x = [1] * len(y)
+            x = scale_axis(x, args['xscale'])
         if args['yscale']:
-            y = [ args['yscale'] * value for value in y ]
+            y = scale_axis(y, args['yscale'])
+
+        xs.append(x)
+        ys.append(y)
 
         if x != []:
             line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
@@ -202,3 +230,13 @@ with plt.style.context(['science']):
             with open(args['write'], 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(x, y))
+
+    if args['split']:
+        import csv
+        for filename,x,y in zip(args['files'], xs, ys):
+            with open(filename + '.x', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(x))
+            with open(filename + '.y', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(y))

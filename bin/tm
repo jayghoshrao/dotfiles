@@ -33,7 +33,7 @@ else
     else
         # tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf -0 -1 | xargs tmux switch-client -t
         session_name="$(tmux list-sessions | sed -E 's/:.*$//' | grep -v $(tmux display-message -p '#S') | fzf -0 -1 )"
-        [ -z "$session_name" ] && session_name="$default_session_name"
-        tmux switch-client -t "$session_name"
+        # [ -z "$session_name" ] && session_name="$default_session_name"
+        [ -n "$session_name" ] && tmux switch-client -t "$session_name"
     fi
 fi
