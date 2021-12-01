@@ -1,6 +1,5 @@
 configuration {
     font: "Iosevka Term Regular 14";
-    theme: "nord.rasi";
 /*  modi: "window,run,ssh"; */
 /*	location: 0;*/
 /*	yoffset: 0;*/
@@ -146,3 +145,4 @@ configuration {
       sorting-method:    "name";
   }
 }
+@theme "nord.rasi"
