@@ -165,7 +165,7 @@ bindkey '  ' autosuggest-accept
 bindkey '^ ' autosuggest-clear
 bindkey '^ ' kill-line
 bindkey '^s' vi-forward-blank-word
-bindkey '^v' vi-backward-blank-word
+# bindkey '^v' vi-backward-blank-word
 bindkey '^p' up-history
 bindkey '^n' down-history
 
@@ -534,6 +534,12 @@ function dotaf(){
     [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
 }
 
+function dotcf(){
+    files=$(/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
+    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
+    /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"
+}
+
 ## FZF
 function dotlog(){
     _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
@@ -711,3 +717,10 @@ fpass() {
 
 alias F="sudo -E nnn -dH" # sudo file browser
 
+
+
+alias ma="mamba"
+alias maa="mamba activate"
+alias mad="mamba deactivate"
+alias mai="mamba install"
+alias mae="mamba env"
