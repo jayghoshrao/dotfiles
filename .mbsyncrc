@@ -6,7 +6,7 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User jayghoshter@gmail.com
-PassCmd "pass google-jayghoshter | head -n 1"
+PassCmd "pass mutt-jayghoshter | head -n 1"
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 #
