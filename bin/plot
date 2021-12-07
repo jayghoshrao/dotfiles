@@ -3,12 +3,7 @@
 # depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
 # USAGE: ./plotChrom.py <file> <file> -o plot.pdf 
 
-# DONE: add option to scale x axis values
-# TODO: Add option to scale by file
 # TODO: add option to specify plots as files with only one column each, with x axis defined separately
-
-# TODO: --xscale and --yscale 
-# DONE: Add csvwriter with -w flag (to save the transformed/scaled plot)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -127,11 +122,16 @@ ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around
 ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
 ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
 
-ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots")
-ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots")
+ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
+ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
+
+ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
+ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
+
+ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
 
 ap.add_argument("-o", "--output", help="output file")
-ap.add_argument("-w", "--write", help="Write the CSV file (after applying rescaling if any)")
+ap.add_argument("-w", "--write", nargs='*', help="Write the CSV file (after applying rescaling if any)")
 ap.add_argument("--split", action='store_true', help="Split the data into x and y.")
 
 ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
@@ -198,7 +198,10 @@ with plt.style.context(['science']):
         ys.append(y)
 
         if x != []:
-            line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+            if args['scatter']:
+                line = ax.scatter(x, y, label=label.replace('_', '-'))
+            else:
+                line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
         else:
             if args['histogram']:
                 line = ax.hist(y, bins=args['histogram'])
@@ -213,6 +216,12 @@ with plt.style.context(['science']):
     ax.set(title=args['title'])
     ax.set(xlabel=args['xlabel'])
     ax.set(ylabel=args['ylabel'])
+
+    if args['xlog']:
+        ax.set(xscale="log")
+    if args['ylog']:
+        ax.set(yscale="log")
+
     ax.autoscale(tight=True)
 
     if args['xlims']:
@@ -226,8 +235,8 @@ with plt.style.context(['science']):
 
     if args['write']:
         import csv
-        for filename,x,y in zip(args['files'], xs, ys):
-            with open(args['write'], 'w') as f:
+        for filename,newname,x,y in zip(args['files'], args['write'], xs, ys):
+            with open(newname, 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(x, y))
 
