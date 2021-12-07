@@ -96,31 +96,34 @@ if [[ "$ARCH" == "x86_64" ]]; then
     zp Aloxaf/fzf-tab
 
     if [ $HOST != "IBT918" ]; then
-        # RIPGREP:{{{
+        # RIPGREP:
         zpi from"gh-r" as"program" mv"ripgrep* -> ripgrep" pick"ripgrep/rg"
         zp BurntSushi/ripgrep
-        # }}}
-        # NEOVIM: {{{
+        
+        # NEOVIM: 
         zpi from"gh-r" as"program" bpick"*appimage*" ver"stable" mv"nvim* -> nvim" pick"nvim"
         zp neovim/neovim
-        # }}}
-        # FD: {{{
+      
+        # FD: 
         zpi as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
         zp sharkdp/fd
-        # }}}
-        # GH-CLI: {{{
+     
+        # GH-CLI: 
         zpt "0" as"program" from"gh-r" pick"usr/bin/gh"
         zp "cli/cli"
-        # }}}
-        # TMUX: {{{
+       
+        # TMUX: 
         zpi from"gh-r" as"program" mv"tmux* -> tmux" pick"tmux" atload"alias tmux=tmux"
         zp tmux/tmux
-        # }}}
-        # NNN: {{{
+        
+        # NNN: 
         zpi from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
         zp jarun/nnn
-        # }}}
 
+        # BTOP: 
+        zpi from"gh-r" as"program" mv"btop* -> btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop"
+        zp load aristocratos/btop
+        
         # if [ ! -d $HOME/local/miniconda3 ]; then
         #     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
         #     chmod +x Miniconda3-latest-Linux-x86_64.sh
