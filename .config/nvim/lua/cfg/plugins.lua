@@ -67,11 +67,10 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.cc_ls'
             require 'cfg.plugins.lsp.docker_ls'
             require 'cfg.plugins.lsp.fortls'
-            require 'cfg.plugins.lsp.init'
+            -- require 'cfg.plugins.lsp.init'
             require 'cfg.plugins.lsp.json_ls'
             -- require 'cfg.plugins.lsp.lua_ls'
             -- require 'cfg.plugins.lsp.lua_types'
-            -- require 'cfg.plugins.lsp.null_ls'
             require 'cfg.plugins.lsp.pyright'
             require 'cfg.plugins.lsp.texlab'
             require 'cfg.plugins.lsp.yaml_ls'
@@ -571,6 +570,8 @@ return require('packer').startup(function(use)
     use 'ggandor/lightspeed.nvim'
 
     use 'duane9/nvim-rg'
+
+    use 'kdheepak/lazygit.nvim'
 
 end)
 

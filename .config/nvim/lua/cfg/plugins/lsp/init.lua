@@ -4,10 +4,10 @@ local make_entry = require 'telescope.make_entry'
 local conf = require('telescope.config').values
 
 -- Highlight line numbers for diagnostics
-vim.fn.sign_define('DiagnosticSignError', { numhl = 'LspDiagnosticsLineNrError', text = '' })
-vim.fn.sign_define('DiagnosticSignWarn', { numhl = 'LspDiagnosticsLineNrWarning', text = '' })
-vim.fn.sign_define('DiagnosticSignInfo', { text = '' })
-vim.fn.sign_define('DiagnosticSignHint', { text = '' })
+vim.fn.sign_define('DiagnosticSignError', { numhl = 'LspDiagnosticsLineNrError', text = '🚩' })
+vim.fn.sign_define('DiagnosticSignWarn', { numhl = 'LspDiagnosticsLineNrWarning', text = '⚠️' })
+vim.fn.sign_define('DiagnosticSignInfo', { text = '❕' })
+vim.fn.sign_define('DiagnosticSignHint', { text = '🪧' })
 
 -- Configure diagnostics displaying
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {

@@ -49,7 +49,6 @@ eigen
 electron
 element-desktop
 eog
-espeak
 evolution-ews
 exa
 exfat-utils
@@ -116,6 +115,7 @@ kitty
 krita
 kvantum-theme-materia
 lapacke
+lazygit
 licenses
 lightdm-webkit-theme-litarvan
 linux
