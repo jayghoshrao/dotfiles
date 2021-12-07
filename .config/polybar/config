@@ -387,7 +387,7 @@ foreground = ${colors.lightgrey}
 
 font-0 = Iosevka Extended:fontformat=truetype:size=14;1
 font-5 = Iosevka Extended:fontformat=truetype:size=14:weight=bold;1
-font-6 = Iosevka Extended:style=Medium:size=22;5
+font-6 = Iosevka Extended:style=Medium:size=24;5
 
 font-1 = FontAwesome:fontformat=truetype:size=10;1
 font-2 = Font Awesome 5 Free:pixelsize=10;3

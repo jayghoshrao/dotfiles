@@ -12,6 +12,8 @@
 #  ~/.zsh-local
 #
 #  Might wanna add `export XDG_CURRENT_DESKTOP=GNOME` to /etc/profile on fresh installs
+#  TODO: Install LMOD automatically if it doesn't exist
+
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
@@ -118,6 +120,18 @@ if [[ "$ARCH" == "x86_64" ]]; then
         zpi from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
         zp jarun/nnn
         # }}}
+
+        # if [ ! -d $HOME/local/miniconda3 ]; then
+        #     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        #     chmod +x Miniconda3-latest-Linux-x86_64.sh
+        #     ./Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/local/miniconda3
+        #     source $HOME/local/miniconda3/etc/profile.d/conda.sh
+        #     conda install mamba
+        #     source $HOME/local/miniconda3/etc/profile.d/mamba.sh
+        #     mamba init zsh
+        #     wget https://gist.githubusercontent.com/jayghoshter/0c7cda4e23a223fb5a0e7c0262925464/raw/44b0598b60c5f848eec4f7f6ec3d9263c78d0db1/dev.conda.env.yaml
+        #     mamba env create -n dev -f dev.conda.env.yaml
+        # fi
     fi
 fi
 
@@ -724,3 +738,10 @@ alias maa="mamba activate"
 alias mad="mamba deactivate"
 alias mai="mamba install"
 alias mae="mamba env"
+
+alias lg="lazygit"
+
+alias ne="nix-env"
+alias neq="nix-env -q"
+alias neia="nix-env -iA"
+alias neu="nix-env --uninstall"
