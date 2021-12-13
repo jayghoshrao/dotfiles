@@ -447,7 +447,7 @@ return require('packer').startup(function(use)
                 end,
             }
             local map = require('cfg.utils').map
-            map('n', '<leader>g', ':ZenMode<cr>')
+            map('n', '<leader>z', ':ZenMode<cr>')
         end
     }
 
@@ -524,7 +524,7 @@ return require('packer').startup(function(use)
                 sections = {
                     lualine_a = {'mode'},
                     lualine_b = {'branch', 'diff',
-                        {'diagnostics', sources={'nvim_lsp', 'coc'}}},
+                        {'diagnostics', sources={'nvim_diagnostic', 'coc'}}},
                     lualine_c = {'g:asyncrun_status', 'filename'},
                     lualine_x = {'encoding', 'fileformat', 'filetype'},
                     lualine_y = {'progress'},
