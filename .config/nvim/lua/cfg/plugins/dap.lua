@@ -19,6 +19,7 @@ vim.fn.sign_define('DapStopped', {text='⭐️', texthl='', linehl='', numhl=''}
 map('n', '<space>db', ':lua require"dap".toggle_breakpoint()<CR>')
 map('n', '<space>dcb', ":lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
 map('n', '<space>dL', ':lua require"dap".set_breakpoint(nil, nil, vim.fn.input("Log point message: ")<CR>')
+map('n', '<space>de', ':lua require"dap".set_exception_breakpoints({"all"})<CR>')
 
 map('n', '<space>k', ':lua require"dap".step_out()<CR>')
 map('n', '<space>l', ':lua require"dap".step_into()<CR>')
@@ -39,7 +40,6 @@ map('n', '<space>dr', ':lua require"dap".repl.toggle({}, "split")<CR><C-w>j')
 -- map('n', '<space>di', ':lua require"dap.ui.variables".visual_hover()<CR>')
 map('n', '<space>di', ':lua require"dap.ui.widgets".hover()<CR>')
 
-map('n', '<space>de', ':lua require"dap".set_exception_breakpoints({"all"})<CR>')
 
 map('n', '<space>d?', ':lua require"dap.ui.variables".scopes()<CR>')
 map('n', '<space>d?', ':lua local widgets=require"dap.ui.widgets";widgets.centered_float(widgets.scopes)<CR>')

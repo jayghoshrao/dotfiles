@@ -20,6 +20,8 @@ BE VERY CAREFUL PULLING THINGS FROM OTHER SERVERS. ESPECIALLY WHEN '.git' IS IN 
 ## DONE: invocation from subsubdirectory should sync only that directory relative to parent
 ## TODO: mir <file> -t remote disregards the file and syncs the entire subdir when called from a subdir
 
+## FIXME: mir -t <remote> doesn't work in a subdir if parent dirs don't exist in the remote
+
 import os
 import sys
 import argparse
