@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+"""
+    A commandline file consistency checker inspired by michaelosthege/gittrail
+
+    USAGE: 
+        `state -s` saves current state of files to .hashes/state.json
+        `state` checks the state of files with an existing state.json
+
+    WORKFLOW:
+        Save the last known good state after processing your data
+        Later, you can check the state to ensure that your input and output files are consistent
+    
+"""
+
+# CONTEMPLATE: Do I need a full history of saves?
+# NOTE: Doesn't prevent running git-dirty code on files
+# TODO: Distinguish between input and output files? 
+# TODO: Ignore binary files when archiving
+# TODO: Distinguish between save and archive (archive should save and zip)
+
+import argparse
+import json
+import sys
+import tarfile
+
+from deepdiff import DeepDiff
+from hashlib import md5
+from pathlib import Path
+from rich import print
+# from rich.columns import Columns
+
+STATEDIR = Path('.states')
+STATEFILE = STATEDIR / "state.json"
+STATEARCHIVE = STATEDIR / "state.tar.gz"
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-s', '--save', action='store_true', help='save state WITHOUT archive. Delete any existing archive to maintain consistency.')
+    ap.add_argument('-a', '--archive', action='store_true', help='save and archive state')
+    ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
+    ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
+    args = ap.parse_args()
+
+    if args.save:
+        save_state()
+    if args.archive:
+        archive_state()
+    elif args.restore:
+        restore_state()
+    elif args.reset:
+        reset_state()
+    else:
+        check_state()
+
+
+def read_state() -> dict:
+    files = [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+    hashes = {}
+    for ifile in files: 
+        with open(ifile, 'rb') as fp:
+            hash = md5(fp.read()).hexdigest()
+            hashes.update({str(ifile) : hash})
+    return hashes
+
+def save_state():
+    STATEDIR.mkdir(exist_ok=True)
+    hashes = read_state()
+    with open(STATEFILE, 'w') as fp:
+        json.dump(hashes, fp, indent=4)
+
+    ## Remove the archive, if any, to avoid inconsistent archive and save states
+    try: 
+        STATEARCHIVE.unlink()
+    except FileNotFoundError:
+        pass
+
+    return hashes
+
+def archive_state():
+    hashes = save_state()
+    with tarfile.open(STATEARCHIVE, 'w:gz') as tar:
+        for key in hashes:
+            tar.add(key)
+
+def reset_state():
+    if not STATEARCHIVE.is_file():
+        raise(RuntimeError('state archive not found!'))
+
+    files = [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+    for f in files:
+        f.unlink()
+
+    restore_state()
+
+def restore_state():
+    with tarfile.open(STATEARCHIVE, 'r:gz') as tar:
+        tar.extractall(Path('.'))
+
+
+def check_state():
+    hashes_files = read_state()
+    with open(STATEFILE) as fp:
+        hashes_saved = json.load(fp)
+
+    diff = DeepDiff(hashes_saved, hashes_files)
+    if diff:
+        if 'dictionary_item_added' in diff:
+            # added   = Columns([ x[6:-2] for x in  diff['dictionary_item_added'] ] , equal=False, expand=True)
+            added = [ x[6:-2] for x in  diff['dictionary_item_added'] ]
+            print("[green]ADDED[/green]:", *added)
+        if 'dictionary_item_removed' in diff:
+            # removed = Columns([ x[6:-2] for x in  diff['dictionary_item_removed'] ] , equal=False, expand=True)
+            removed = [ x[6:-2] for x in  diff['dictionary_item_removed'] ]
+            print("[red]REMOVED[/red]:", *removed)
+        if 'values_changed' in diff:
+            # changed = Columns([ x[6:-2] for x in  diff['dictionary_item_changed'] ] , equal=True, expand=True)
+            changed = { x[6:-2]:diff['values_changed'][x]  for x in  diff['values_changed'] }
+            print("[blue]CHANGED[/blue]", *changed)
+            # print(changed)
+
+        sys.exit(-1)
+
+if __name__ == "__main__":
+    main()

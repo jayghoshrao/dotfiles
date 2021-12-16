@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+times="$1"
+shift
+
+for arg in "$@"
+do
+    paste -d ',' "$times" "$arg" > "$arg""_withtime.csv"
+done
