@@ -42,6 +42,8 @@ def main():
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
     args = ap.parse_args()
 
+    # print(vars(args))
+
     if args.save:
         save_state()
     if args.archive:
@@ -53,9 +55,24 @@ def main():
     else:
         check_state()
 
+def find_files(ignore_files=[], ignore_dirs=['.git']):
+    # return [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+    ignore_dirs = [Path(dir) for dir in ignore_dirs]
+    ignore_files = [Path(f) for f in ignore_files]
+
+    files = [ p for p in Path('.').rglob('*') if p.is_file() ]
+    files = list(filter(lambda f: STATEDIR not in f.parents, files))
+
+    for dir in ignore_dirs:
+        files = list(filter(lambda f: dir not in f.parents, files))
+    for ignore_file in ignore_files:
+        files = list(filter(lambda f: ignore_file not in f, files))
+
+    return files
+
 
 def read_state() -> dict:
-    files = [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+    files = find_files()
     hashes = {}
     for ifile in files: 
         with open(ifile, 'rb') as fp:
@@ -87,7 +104,7 @@ def reset_state():
     if not STATEARCHIVE.is_file():
         raise(RuntimeError('state archive not found!'))
 
-    files = [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+    files = find_files()
     for f in files:
         f.unlink()
 
