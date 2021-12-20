@@ -18,7 +18,8 @@
 # TODO: Distinguish between input and output files? 
 # TODO: Ignore binary files when archiving
 # TODO: Add --ignore-files and --ignore-dirs options
-# TODO: If changed, and archive exists, print diff
+# TODO: Allow archive names? 
+# TODO: Add a --list option
 
 import argparse
 import json
@@ -34,7 +35,10 @@ from rich import print
 # from rich.columns import Columns
 
 
-STATEDIR = Path('.states')
+# STATEDIR = Path('.states')
+STATEDIR = Path.home().joinpath('.cache/states/').joinpath(
+    Path().cwd().relative_to(Path.home())
+)
 STATEFILE = STATEDIR / "state.json"
 STATEARCHIVE = STATEDIR / "state.tar.gz"
 
@@ -85,7 +89,7 @@ def read_state() -> dict:
     return hashes
 
 def save_state():
-    STATEDIR.mkdir(exist_ok=True)
+    STATEDIR.mkdir(parents=True, exist_ok=True)
     hashes = read_state()
     with open(STATEFILE, 'w') as fp:
         json.dump(hashes, fp, indent=4)
