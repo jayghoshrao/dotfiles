@@ -17,18 +17,22 @@
 # NOTE: Doesn't prevent running git-dirty code on files
 # TODO: Distinguish between input and output files? 
 # TODO: Ignore binary files when archiving
-# TODO: Distinguish between save and archive (archive should save and zip)
+# TODO: Add --ignore-files and --ignore-dirs options
+# TODO: If changed, and archive exists, print diff
 
 import argparse
 import json
 import sys
 import tarfile
 
+import difflib
+
 from deepdiff import DeepDiff
 from hashlib import md5
 from pathlib import Path
 from rich import print
 # from rich.columns import Columns
+
 
 STATEDIR = Path('.states')
 STATEFILE = STATEDIR / "state.json"
@@ -66,7 +70,7 @@ def find_files(ignore_files=[], ignore_dirs=['.git']):
     for dir in ignore_dirs:
         files = list(filter(lambda f: dir not in f.parents, files))
     for ignore_file in ignore_files:
-        files = list(filter(lambda f: ignore_file not in f, files))
+        files = list(filter(lambda f: ignore_file != str(f), files))
 
     return files
 
@@ -133,8 +137,24 @@ def check_state():
         if 'values_changed' in diff:
             # changed = Columns([ x[6:-2] for x in  diff['dictionary_item_changed'] ] , equal=True, expand=True)
             changed = { x[6:-2]:diff['values_changed'][x]  for x in  diff['values_changed'] }
-            print("[blue]CHANGED[/blue]", *changed)
-            # print(changed)
+            print("[yellow]CHANGED[/yellow]:", *changed)
+            
+            if STATEARCHIVE.is_file():
+                with tarfile.open(STATEARCHIVE, 'r:gz') as tar:
+                    tar.extractall(STATEDIR, members=[x for x in tar.getmembers() if x.name in changed])
+                for changed_file in changed:
+                    with open(changed_file, 'r') as fp:
+                        newfile = fp.read().split('\n')
+                    with open(STATEDIR/changed_file, 'r') as fp:
+                        oldfile = fp.read().split('\n')
+                    out = list(difflib.unified_diff(oldfile, newfile, fromfile=str(STATEDIR/changed_file), tofile=changed_file, n=0))
+                    for line in out:
+                        if line[0] == '-': 
+                            print('[red]' + line)
+                        if line[0] == '+': 
+                            print('[green]' + line)
+            
+
 
         sys.exit(-1)
 

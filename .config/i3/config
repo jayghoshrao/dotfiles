@@ -286,6 +286,8 @@ workspace  $ws8   output  DP1-2
 workspace  $ws9   output  DP1-2
 workspace  $ws10  output  DP1-2
 
+workspace  "Zoom Meeting"  output  DP1-1
+
 # bindsym $mod+Tab focus output up
 # bindsym $mod+Shift+Tab move workspace to left right
 
@@ -439,6 +441,7 @@ for_window [class="matplotlib"]  floating enable, resize set 80 ppt 90 ppt, move
 for_window [class="Skype"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="skypeforlinux"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [title="zoom"] floating enable, resize set 80 ppt 70 ppt, move position center 
+for_window [title="Zoom Meeting"] move to workspace  "Zoom Meeting"
 for_window [title="VNC authentication"] floating enable, move position center
 for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, move position center
 for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 

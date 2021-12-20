@@ -13,7 +13,7 @@ local cmd = vim.cmd
 -- https://github.com/ThePrimeagen/git-worktree.nvim
 -- https://github.com/stefandtw/quickfix-reflector.vim
 -- telescope-dap
---
+-- https://github.com/chipsenkbeil/distant.nvim
 
 -- TODO: MANUALS
 -- https://github.com/sunaku/vim-dasht
