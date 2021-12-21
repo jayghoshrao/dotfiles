@@ -25,8 +25,10 @@ import argparse
 import json
 import sys
 import tarfile
+import plumbum
 
 import difflib
+from pyfzf.pyfzf import FzfPrompt
 
 from deepdiff import DeepDiff
 from hashlib import md5
@@ -34,47 +36,66 @@ from pathlib import Path
 from rich import print
 # from rich.columns import Columns
 
+from datetime import datetime as dt
 
-# STATEDIR = Path('.states')
+fzf = FzfPrompt()
+
 STATEDIR = Path.home().joinpath('.cache/states/').joinpath(
     Path().cwd().relative_to(Path.home())
 )
-STATEFILE = STATEDIR / "state.json"
-STATEARCHIVE = STATEDIR / "state.tar.gz"
+
+TIMESTAMP = dt.now().strftime("%Y-%m-%d-%H%M%S")
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('-s', '--save', action='store_true', help='save state WITHOUT archive. Delete any existing archive to maintain consistency.')
-    ap.add_argument('-a', '--archive', action='store_true', help='save and archive state')
+    ap.add_argument('-s', '--save', nargs='?', const='', help='save state WITHOUT archive. Delete any existing archive to maintain consistency.')
+    ap.add_argument('-a', '--archive', nargs='?', const='', help='save and archive state')
+
     ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
     args = ap.parse_args()
 
-    # print(vars(args))
+    print(vars(args))
 
-    if args.save:
-        save_state()
-    if args.archive:
-        archive_state()
+    FZF_FILE_OPTS = "--cycle" 
+
+    if args.save is not None:
+        save_state(args.save)
+    elif args.archive is not None:
+        archive_state(args.archive)
     elif args.restore:
-        restore_state()
+        try: 
+            selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"RESTORE ❯ \"")[0]
+        except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+            return
+        statearchive = STATEDIR / selected
+        restore_state(statearchive)
     elif args.reset:
-        reset_state()
+        try: 
+            selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"RESET ❯ \"")[0]
+        except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+            return
+        statearchive = STATEDIR / selected
+        restore_state(statearchive)
     else:
         check_state()
 
-def find_files(ignore_files=[], ignore_dirs=['.git']):
-    # return [ p for p in Path('.').rglob('*') if p.is_file() and STATEDIR not in p.parents]
+def find_files(path=Path('.'), ignore_files=[], ignore_dirs=['.git'], suffix=None):
     ignore_dirs = [Path(dir) for dir in ignore_dirs]
     ignore_files = [Path(f) for f in ignore_files]
 
-    files = [ p for p in Path('.').rglob('*') if p.is_file() ]
-    files = list(filter(lambda f: STATEDIR not in f.parents, files))
+    files = [ p for p in Path(path).rglob('*') if p.is_file() ]
+
+    ## Ignores the statedir
+    # files = list(filter(lambda f: STATEDIR not in f.parents, files))
 
     for dir in ignore_dirs:
         files = list(filter(lambda f: dir not in f.parents, files))
     for ignore_file in ignore_files:
         files = list(filter(lambda f: ignore_file != str(f), files))
+
+    if suffix:
+        files = list(filter(lambda f: f.suffix == suffix, files))
 
     return files
 
@@ -88,44 +109,59 @@ def read_state() -> dict:
             hashes.update({str(ifile) : hash})
     return hashes
 
-def save_state():
+def save_state(name):
     STATEDIR.mkdir(parents=True, exist_ok=True)
+
+    filename = f"{TIMESTAMP}_{name}.json" if name else f"{TIMESTAMP}.json"
+    archivename =  f"{TIMESTAMP}_{name}.tar.gz" if name else f"{TIMESTAMP}.tar.gz"
+    statefile = STATEDIR / filename
+    statearchive = STATEDIR / archivename
+
     hashes = read_state()
-    with open(STATEFILE, 'w') as fp:
+    with open(statefile, 'w') as fp:
         json.dump(hashes, fp, indent=4)
 
     ## Remove the archive, if any, to avoid inconsistent archive and save states
     try: 
-        STATEARCHIVE.unlink()
+        statearchive.unlink()
     except FileNotFoundError:
         pass
 
     return hashes
 
-def archive_state():
-    hashes = save_state()
-    with tarfile.open(STATEARCHIVE, 'w:gz') as tar:
+def archive_state(name):
+    hashes = save_state(name)
+
+    archivename = f"{TIMESTAMP}_{name}.tar.gz" if name else f"{TIMESTAMP}.tar.gz"
+    statearchive = STATEDIR / archivename
+
+    with tarfile.open(statearchive, 'w:gz') as tar:
         for key in hashes:
             tar.add(key)
 
-def reset_state():
-    if not STATEARCHIVE.is_file():
+def reset_state(statearchive):
+    if not statearchive.is_file():
         raise(RuntimeError('state archive not found!'))
 
     files = find_files()
     for f in files:
         f.unlink()
 
-    restore_state()
+    restore_state(statearchive)
 
-def restore_state():
-    with tarfile.open(STATEARCHIVE, 'r:gz') as tar:
+def restore_state(statearchive):
+    with tarfile.open(statearchive, 'r:gz') as tar:
         tar.extractall(Path('.'))
 
 
 def check_state():
     hashes_files = read_state()
-    with open(STATEFILE) as fp:
+
+    files = find_files(STATEDIR, suffix='.json')
+    last_modified_statefile = max(files, key=lambda p: p.stat().st_ctime)
+    print(f"Checking against {last_modified_statefile.name}")
+
+    with open(last_modified_statefile) as fp:
         hashes_saved = json.load(fp)
 
     diff = DeepDiff(hashes_saved, hashes_files)
@@ -143,8 +179,10 @@ def check_state():
             changed = { x[6:-2]:diff['values_changed'][x]  for x in  diff['values_changed'] }
             print("[yellow]CHANGED[/yellow]:", *changed)
             
-            if STATEARCHIVE.is_file():
-                with tarfile.open(STATEARCHIVE, 'r:gz') as tar:
+            statearchive = last_modified_statefile.with_suffix('.tar.gz')
+
+            if statearchive.is_file():
+                with tarfile.open(statearchive, 'r:gz') as tar:
                     tar.extractall(STATEDIR, members=[x for x in tar.getmembers() if x.name in changed])
                 for changed_file in changed:
                     with open(changed_file, 'r') as fp:
