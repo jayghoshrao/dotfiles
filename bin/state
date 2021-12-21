@@ -18,10 +18,10 @@
 # TODO: Distinguish between input and output files? 
 # TODO: Ignore binary files when archiving
 # TODO: Add --ignore-files and --ignore-dirs options
-# TODO: Allow archive names? 
 # TODO: Add a --list option
 
 import argparse
+import argcomplete
 import json
 import sys
 import tarfile
@@ -53,8 +53,11 @@ def main():
 
     ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
+
     ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
     ap.add_argument('-la', '--list-archives', action='store_true', help='list all the archives (.tar.gz) available for the current directory')
+
+    argcomplete.autocomplete(ap)
     args = ap.parse_args()
 
     # print(vars(args))
