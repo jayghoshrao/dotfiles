@@ -53,9 +53,11 @@ def main():
 
     ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
+    ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
+    ap.add_argument('-la', '--list-archives', action='store_true', help='list all the archives (.tar.gz) available for the current directory')
     args = ap.parse_args()
 
-    print(vars(args))
+    # print(vars(args))
 
     FZF_FILE_OPTS = "--cycle" 
 
@@ -77,6 +79,10 @@ def main():
             return
         statearchive = STATEDIR / selected
         reset_state(statearchive)
+    elif args.list_states:
+        print(sorted([f.name for f in find_files(STATEDIR, suffix='.json')], reverse=True) )
+    elif args.list_archives:
+        print('\n'.join(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True)))
     else:
         check_state()
 
@@ -196,6 +202,8 @@ def check_state():
                         if line[0] == '+': 
                             print('[green]' + line)
             
+    else:
+        print("Clean!")
 
 
         sys.exit(-1)
