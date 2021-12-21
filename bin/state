@@ -18,7 +18,7 @@
 # TODO: Distinguish between input and output files? 
 # TODO: Ignore binary files when archiving
 # TODO: Add --ignore-files and --ignore-dirs options
-# TODO: Add a --list option
+# TODO: Add --compare to diff two separate state archives
 
 import argparse
 import argcomplete
@@ -204,12 +204,9 @@ def check_state():
                             print('[red]' + line)
                         if line[0] == '+': 
                             print('[green]' + line)
-            
+        sys.exit(-1)
     else:
         print("Clean!")
-
-
-        sys.exit(-1)
 
 if __name__ == "__main__":
     main()
