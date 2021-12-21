@@ -76,7 +76,7 @@ def main():
         except plumbum.commands.processes.ProcessExecutionError: #type:ignore
             return
         statearchive = STATEDIR / selected
-        restore_state(statearchive)
+        reset_state(statearchive)
     else:
         check_state()
 
