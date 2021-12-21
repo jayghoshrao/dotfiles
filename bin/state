@@ -173,7 +173,11 @@ def check_state():
     with open(last_modified_statefile) as fp:
         hashes_saved = json.load(fp)
 
-    diff = DeepDiff(hashes_saved, hashes_files)
+    last_modified_statearchive = last_modified_statefile.with_suffix('.tar.gz')
+    my_fancy_diff(hashes_saved, hashes_files, path1=last_modified_statearchive, path2=Path('.'))
+
+def my_fancy_diff(state1, state2, path1=None, path2=None):
+    diff = DeepDiff(state1, state2)
     if diff:
         if 'dictionary_item_added' in diff:
             # added   = Columns([ x[6:-2] for x in  diff['dictionary_item_added'] ] , equal=False, expand=True)
@@ -187,23 +191,28 @@ def check_state():
             # changed = Columns([ x[6:-2] for x in  diff['dictionary_item_changed'] ] , equal=True, expand=True)
             changed = { x[6:-2]:diff['values_changed'][x]  for x in  diff['values_changed'] }
             print("[yellow]CHANGED[/yellow]:", *changed)
-            
-            statearchive = last_modified_statefile.with_suffix('.tar.gz')
 
-            if statearchive.is_file():
-                with tarfile.open(statearchive, 'r:gz') as tar:
-                    tar.extractall(STATEDIR, members=[x for x in tar.getmembers() if x.name in changed])
-                for changed_file in changed:
-                    with open(changed_file, 'r') as fp:
-                        newfile = fp.read().split('\n')
-                    with open(STATEDIR/changed_file, 'r') as fp:
-                        oldfile = fp.read().split('\n')
-                    out = list(difflib.unified_diff(oldfile, newfile, fromfile=str(STATEDIR/changed_file), tofile=changed_file, n=0))
-                    for line in out:
-                        if line[0] == '-': 
-                            print('[red]' + line)
-                        if line[0] == '+': 
-                            print('[green]' + line)
+            if path1.is_file() and path1.suffix == '.gz':
+                with tarfile.open(path1, 'r:gz') as tar:
+                    tar.extractall(Path('/tmp') / "path1", members=[x for x in tar.getmembers() if x.name in changed])
+                path1 = Path("/tmp/path1")
+
+            if path2.is_file() and path2.suffix == '.gz':
+                with tarfile.open(path2, 'r:gz') as tar:
+                    tar.extractall(Path('/tmp') / "path2", members=[x for x in tar.getmembers() if x.name in changed])
+                path2 = Path("/tmp/path2")
+                
+            for changed_file in changed:
+                with open(path1 / changed_file, 'r') as fp:
+                    oldfile = fp.read().split('\n')
+                with open(path2 / changed_file, 'r') as fp:
+                    newfile = fp.read().split('\n')
+                out = list(difflib.unified_diff(oldfile, newfile, fromfile=str(path1/changed_file), tofile=str(path2/changed_file), n=0))
+                for line in out:
+                    if line[0] == '-': 
+                        print('[red]' + line)
+                    if line[0] == '+': 
+                        print('[green]' + line)
         sys.exit(-1)
     else:
         print("Clean!")
