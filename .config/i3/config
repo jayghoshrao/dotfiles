@@ -522,7 +522,7 @@ bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'm
 bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
 bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
 
-bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -width 25 -dmenu -p 'Workspace')"
+bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -matching fuzzy -dmenu -p 'Workspace')"
 
 # Deprecated: {{{
 # bindsym $mod+shift+d exec --no-startup-id $SCRIPTS/display.sh &
