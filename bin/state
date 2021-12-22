@@ -26,6 +26,7 @@ import json
 import sys
 import tarfile
 import plumbum
+import magic
 
 import difflib
 from pyfzf.pyfzf import FzfPrompt
@@ -202,17 +203,21 @@ def my_fancy_diff(state1, state2, path1=None, path2=None):
                     tar.extractall(Path('/tmp') / "path2", members=[x for x in tar.getmembers() if x.name in changed])
                 path2 = Path("/tmp/path2")
                 
+            mime = magic.Magic(mime=True)
+            allowed_types = ['text/plain', 'text/csv', 'application/json']
             for changed_file in changed:
-                with open(path1 / changed_file, 'r') as fp:
-                    oldfile = fp.read().split('\n')
-                with open(path2 / changed_file, 'r') as fp:
-                    newfile = fp.read().split('\n')
-                out = list(difflib.unified_diff(oldfile, newfile, fromfile=str(path1/changed_file), tofile=str(path2/changed_file), n=0))
-                for line in out:
-                    if line[0] == '-': 
-                        print('[red]' + line)
-                    if line[0] == '+': 
-                        print('[green]' + line)
+                mimetype = mime.from_file(str(path1 / changed_file))
+                if mimetype in allowed_types:
+                    with open(path1 / changed_file, 'r') as fp:
+                        oldfile = fp.read().split('\n')
+                    with open(path2 / changed_file, 'r') as fp:
+                        newfile = fp.read().split('\n')
+                    out = list(difflib.unified_diff(oldfile, newfile, fromfile=str(path1/changed_file), tofile=str(path2/changed_file), n=0))
+                    for line in out:
+                        if line[0] == '-': 
+                            print('[red]' + line)
+                        if line[0] == '+': 
+                            print('[green]' + line)
         sys.exit(-1)
     else:
         print("Clean!")
