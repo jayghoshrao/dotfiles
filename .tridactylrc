@@ -5,7 +5,7 @@ set update.nag true
 set update.nagwait 7
 set update.lastnaggedversion 1.14.0
 set update.checkintervalsecs 86400
-set theme dark
+set theme midnight
 set smoothscroll false
 set searchurls.gl  http://www.google.com/search?q=%s&btnI=I%27m+Feeling+Lucky
 set searchurls.t https://www.powerthesaurus.org/%s/synonymns
