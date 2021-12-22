@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
     A commandline file consistency checker inspired by michaelosthege/gittrail
 
@@ -58,6 +57,8 @@ def main():
     ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
     ap.add_argument('-la', '--list-archives', action='store_true', help='list all the archives (.tar.gz) available for the current directory')
 
+    ap.add_argument('-ca', '--compare-archives', action='store_true', help='compare two of the archives (.tar.gz) available for the current directory')
+
     argcomplete.autocomplete(ap)
     args = ap.parse_args()
 
@@ -87,6 +88,8 @@ def main():
         print(sorted([f.name for f in find_files(STATEDIR, suffix='.json')], reverse=True) )
     elif args.list_archives:
         print('\n'.join(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True)))
+    elif args.compare_archives:
+        compare_archives()
     else:
         check_state()
 
@@ -164,6 +167,8 @@ def restore_state(statearchive):
         tar.extractall(Path('.'))
 
 
+# TODO: Change to check_last_state
+# TODO: Create check_state that can check against any state/archive
 def check_state():
     hashes_files = read_state()
 
@@ -205,6 +210,7 @@ def my_fancy_diff(state1, state2, path1=None, path2=None):
                 
             mime = magic.Magic(mime=True)
             allowed_types = ['text/plain', 'text/csv', 'application/json']
+
             for changed_file in changed:
                 mimetype = mime.from_file(str(path1 / changed_file))
                 if mimetype in allowed_types:
@@ -221,6 +227,31 @@ def my_fancy_diff(state1, state2, path1=None, path2=None):
         sys.exit(-1)
     else:
         print("Clean!")
+            
+def compare_archives():
+    FZF_FILE_OPTS = "--cycle --multi" 
+    try: 
+        selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"COMPARE❯ \"")
+    except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+        sys.exit(-1)
+
+    if len(selected) != 2:
+        raise RuntimeError("Can only compare two archives at once!")
+
+    path1 = STATEDIR / selected[0]
+    path2 = STATEDIR / selected[1]
+
+    statefile1 = path1.with_suffix('').with_suffix('.json')
+    statefile2 = path2.with_suffix('').with_suffix('.json')
+
+    with open(statefile1, 'r') as fp:
+        state1 = json.load(fp)
+
+    with open(statefile2, 'r') as fp:
+        state2 = json.load(fp)
+
+    my_fancy_diff(state1, state2, path1=path1, path2=path2)
+
 
 if __name__ == "__main__":
     main()
