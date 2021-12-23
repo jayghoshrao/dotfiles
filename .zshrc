@@ -539,6 +539,7 @@ function dota() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
 function dotu() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
 function dotd() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
 function dotr() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
+function dotlg() {lazygit --git-dir=$DOTDIR --work-tree=$HOME} 
 
 function dotf(){
     ## setting the env vars helps vim-fugitive know what's going on
@@ -743,6 +744,7 @@ alias mai="mamba install"
 alias mae="mamba env"
 
 alias lg="lazygit"
+alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 
 alias ne="nix-env"
 alias neq="nix-env -q"
