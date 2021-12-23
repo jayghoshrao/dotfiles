@@ -19,7 +19,8 @@ stty -ixon                                                       # Disables ctrl
 
 ARCH=$(uname -a | awk '{print $(NF-1)}')
 
-# # autoload -U +X bashcompinit && bashcompinit
+autoload -U +X bashcompinit && bashcompinit
+
 
 ## NOTE: Uncomment in case compaudit complains of insecure directories
 # autoload -U +X compinit && compinit -i
@@ -750,3 +751,6 @@ alias ne="nix-env"
 alias neq="nix-env -q"
 alias neia="nix-env -iA"
 alias neu="nix-env --uninstall"
+
+# Requires bashcompinit
+eval "$(register-python-argcomplete state)"
