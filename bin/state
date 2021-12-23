@@ -54,6 +54,8 @@ def main():
     ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
 
+    ap.add_argument('-e', '--extract', action='store_true', help='extract an archive into a subfolder. Helps compare multiple archive states with binary information')
+
     ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
     ap.add_argument('-la', '--list-archives', action='store_true', help='list all the archives (.tar.gz) available for the current directory')
 
@@ -90,6 +92,13 @@ def main():
         print('\n'.join(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True)))
     elif args.compare_archives:
         compare_archives()
+    elif args.extract:
+        try: 
+            selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.gz')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"RESET ❯ \"")[0]
+        except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+            return
+        statearchive = STATEDIR / selected
+        extract_state(statearchive)
     else:
         check_state()
 
@@ -165,6 +174,10 @@ def reset_state(statearchive):
 def restore_state(statearchive):
     with tarfile.open(statearchive, 'r:gz') as tar:
         tar.extractall(Path('.'))
+
+def extract_state(statearchive):
+    with tarfile.open(statearchive, 'r:gz') as tar:
+        tar.extractall(Path('.') / statearchive.name.rstrip('.tar.gz'))
 
 
 # TODO: Change to check_last_state
