@@ -5,14 +5,19 @@
 
 # TODO: add option to specify plots as files with only one column each, with x axis defined separately
 
+
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from cycler import cycler
 # import csv
+from itertools import cycle, islice
 import sys
 import argparse
 from subprocess import run
 from pathlib import Path
+
+COLORS = ['#0C5DA5', '#00B945', '#FF9500', '#FF2C00', '#845B97', '#474747', '#9e9e9e']
 
 def readCSV(data_path):
     time= []
@@ -118,6 +123,8 @@ ap.add_argument("-hg", "--histogram", type=int, help="histogram")
 ap.add_argument("-s", "--separator", default=',', help="separator character")
 ap.add_argument("-f", "--fill", action='store_true', help="fill area under curve")
 
+ap.add_argument("--color-cycle", type = int, default=7, help="Number of colors to cycle through for each line")
+
 ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
 
 ap.add_argument("-nl", "--no-legend", action='store_true', help="don't show legend")
@@ -149,8 +156,8 @@ if not args['labels']:
 if not args['linestyles']:
     args['linestyles'] = [ 'solid' ] * len(args['files'])
     # args['linestyles'] = []
-elif len(args['linestyles']) == 1:
-    args['linestyles'] = args['linestyles'] * len(args['files'])
+elif len(args['linestyles']) < len(args['files']):
+    args['linestyles'] = list(islice(cycle(args['linestyles']), len(args['files'])))
 
 if not args['markers']:
     args['markers'] = [ None ] * len(args['files'])
@@ -159,11 +166,12 @@ elif len(args['markers']) == 1:
     args['markers'] = args['markers'] * len(args['files'])
 
 if not args['linewidths']:
-    args['linewidths'] = [ 2 ] * len(args['files'])
+    args['linewidths'] = [ 1 ] * len(args['files'])
     # args['linewidths'] = []
 elif len(args['linewidths']) == 1:
     args['linewidths'] = args['linewidths'] * len(args['files'])
 
+custom_cycler = cycler('color', COLORS[:args['color_cycle']])
 
 with plt.style.context(['science']):
 
@@ -179,6 +187,8 @@ with plt.style.context(['science']):
             "legend.frameon": True })
 
     fig, ax = plt.subplots()
+    ax.set_prop_cycle(custom_cycler)
+
     xs = []
     ys = []
 
