@@ -57,6 +57,7 @@ extra-cmake-modules
 fd
 feh
 firefox
+font-manager
 fortune-mod
 fzy
 gedit
@@ -163,12 +164,13 @@ ocamlbuild
 offlineimap
 okular
 opam
-opencascade
 openldap
+openvr
 otf-font-awesome
 owncloud-client
 paperkey
 papirus-icon-theme
+paraview
 pavucontrol
 pdcurses
 pdfgrep
@@ -184,6 +186,7 @@ powertop
 prettyping
 privoxy
 progress
+pulsemixer
 pv
 pyright
 python-deepdiff

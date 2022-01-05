@@ -54,6 +54,7 @@ def main():
     ap.add_argument('-r', '--restore', action='store_true', help='restore last state from archive')
     ap.add_argument('--reset', action='store_true', help='HARD reset to last state from archive')
 
+    ap.add_argument('-c', '--check', action='store_true', help='check the state of the current directory vs stored states (and archives).')
     ap.add_argument('-e', '--extract', action='store_true', help='extract an archive into a subfolder. Helps compare multiple archive states with binary information')
 
     ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
@@ -99,8 +100,10 @@ def main():
             return
         statearchive = STATEDIR / selected
         extract_state(statearchive)
-    else:
+    elif args.check:
         check_state()
+    else:
+        check_last_state()
 
 def find_files(path=Path('.'), ignore_files=[], ignore_dirs=['.git'], suffix=None):
     ignore_dirs = [Path(dir) for dir in ignore_dirs]
@@ -180,9 +183,7 @@ def extract_state(statearchive):
         tar.extractall(Path('.') / statearchive.name.rstrip('.tar.gz'))
 
 
-# TODO: Change to check_last_state
-# TODO: Create check_state that can check against any state/archive
-def check_state():
+def check_last_state():
     hashes_files = read_state()
 
     files = find_files(STATEDIR, suffix='.json')
@@ -194,6 +195,23 @@ def check_state():
 
     last_modified_statearchive = last_modified_statefile.with_suffix('.tar.gz')
     my_fancy_diff(hashes_saved, hashes_files, path1=last_modified_statearchive, path2=Path('.'))
+
+def check_state():
+    hashes_files = read_state()
+
+    FZF_FILE_OPTS = "--cycle" 
+    try: 
+        selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.json')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"Select state❯ \"")[0]
+    except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+        return
+
+    statefile = STATEDIR / selected
+    with open(statefile) as fp:
+        hashes_saved = json.load(fp)
+
+    statearchive = statefile.with_suffix('.tar.gz')
+    my_fancy_diff(hashes_saved, hashes_files, path1=statearchive, path2=Path('.'))
+
 
 def my_fancy_diff(state1, state2, path1=None, path2=None):
     diff = DeepDiff(state1, state2)
