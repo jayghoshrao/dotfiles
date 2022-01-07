@@ -62,6 +62,8 @@ def main():
 
     ap.add_argument('-ca', '--compare-archives', action='store_true', help='compare two of the archives (.tar.gz) available for the current directory')
 
+    ap.add_argument('--nuke', action='store_true', help='delete a state and archive')
+
     argcomplete.autocomplete(ap)
     args = ap.parse_args()
 
@@ -102,6 +104,8 @@ def main():
         extract_state(statearchive)
     elif args.check:
         check_state()
+    elif args.nuke:
+        nuke()
     else:
         check_last_state()
 
@@ -283,6 +287,21 @@ def compare_archives():
 
     my_fancy_diff(state1, state2, path1=path1, path2=path2)
 
+def nuke():
+    """ Remove an existing statefile and/or statearchive"""
+    FZF_FILE_OPTS = "--cycle --multi" 
+    try: 
+        selected = fzf.prompt(sorted([f.name for f in find_files(STATEDIR, suffix='.json')], reverse=True), f"{FZF_FILE_OPTS} --prompt=\"COMPARE❯ \"")
+    except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+        sys.exit(-1)
 
+    for statename in selected:
+        statefile = STATEDIR / statename
+        statearchive = statefile.with_suffix('.tar.gz')
+
+        statefile.unlink()
+        if statearchive.is_file():
+            statearchive.unlink()
+    
 if __name__ == "__main__":
     main()
