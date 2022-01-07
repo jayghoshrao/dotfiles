@@ -59,6 +59,7 @@ def main():
 
     ap.add_argument('-ls', '--list-states', action='store_true', help='list all the states (.json) available for the current directory')
     ap.add_argument('-la', '--list-archives', action='store_true', help='list all the archives (.tar.gz) available for the current directory')
+    ap.add_argument('-lf', '--list-files', action='store_true', help='list all the files that state can see in the current directory')
 
     ap.add_argument('-ca', '--compare-archives', action='store_true', help='compare two of the archives (.tar.gz) available for the current directory')
 
@@ -106,6 +107,8 @@ def main():
         check_state()
     elif args.nuke:
         nuke()
+    elif args.list_files:
+        list_files()
     else:
         check_last_state()
 
@@ -303,5 +306,10 @@ def nuke():
         if statearchive.is_file():
             statearchive.unlink()
     
+
+def list_files():
+    print('\n'.join([str(x) for x in find_files()]))
+
+
 if __name__ == "__main__":
     main()
