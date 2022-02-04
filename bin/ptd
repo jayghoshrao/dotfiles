@@ -34,6 +34,12 @@
 
 ## TODO: Bibfetch mode or no-query/no-fetch mode, or ONLY-META mode: Use only metadata to fetch bib? --quick-bib? --meta-bib?
 
+## Elsevier embeds unique hash in all downloaded pdfs: 
+## SOURCE: https://twitter.com/json_dirs/status/1486120144141123584 
+## HN: https://news.ycombinator.com/item?id=30082138
+## exiftool -all:all= <path.pdf> -o <output1.pdf>
+## qpdf --linearize <output1.pdf> <output2.pdf>
+
 CACHEDIR="${HOME}/.cache/ptd"
 mkdir -p "${CACHEDIR}"
 AUTOMODE="OFF"
