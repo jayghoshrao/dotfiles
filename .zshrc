@@ -383,11 +383,20 @@ alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=y
 # xdg-open:{{{
 xo()
 {
-	arg=""
-	for value in "$@"; do
-		arg="$arg$value"
-	done
-    nohup xdg-open "$arg" >/dev/null 2>&1 & disown
+	# arg=""
+	# for value in "$@"; do
+	# 	arg="$arg$value"
+	# done
+
+    if [[ "$1" =~ ":" ]];
+    then
+        EXT=${1##*.}
+        scp -rC "$1" "/tmp/remotefile.$EXT"
+        nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+    else
+        nohup xdg-open "$@" >/dev/null 2>&1 & disown
+    fi
+
 }
 #}}}
 # eXecute: {{{
@@ -749,8 +758,12 @@ alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 
 alias ne="nix-env"
 alias neq="nix-env -q"
+alias neqas="nix-env -qas"
 alias neia="nix-env -iA"
 alias neu="nix-env --uninstall"
+alias neu="nix-env --erase"
+
+alias an="archlinux-nix"
 
 # Requires bashcompinit
 eval "$(register-python-argcomplete state)"

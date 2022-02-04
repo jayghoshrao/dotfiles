@@ -108,6 +108,13 @@ return require('packer').startup(function(use)
     }
     use 'm-pilia/vim-ccls'
 
+    use {
+        'williamboman/nvim-lsp-installer',
+        config = function()
+            require 'cfg.plugins.lsp.installer'
+        end
+    }
+
     -- Telescope: It's dope
     use {
         -- Fuzzy finder

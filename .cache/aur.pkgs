@@ -29,7 +29,6 @@ gcalcli
 gdb-dashboard-git
 gita
 gitter-bin
-glow
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
 googler-git
@@ -90,6 +89,7 @@ python-pysmartdl
 python-rauth
 python-rofi
 python-scikit-image
+python-selenium
 python-spotipy-git
 python-umonitor-git
 python2-pip

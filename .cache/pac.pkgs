@@ -28,7 +28,6 @@ caprine
 catch2
 ccls
 chromium
-cmatrix
 code
 cowsay
 cpanminus
@@ -66,6 +65,7 @@ gifski
 gimagereader-gtk
 git-filter-repo
 github-cli
+glow
 gnome-calculator
 gnome-calendar
 gnome-chess
@@ -198,7 +198,6 @@ python-praw
 python-pyaml
 python-rich
 python-seaborn
-python-selenium
 python-virtualenv
 qt5-networkauth
 qt5-xcb-private-headers
@@ -245,7 +244,6 @@ thunar
 tig
 tigervnc
 tilix
-tlp
 tokei
 totem
 traceroute
