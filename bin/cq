@@ -27,6 +27,15 @@ set -euo pipefail
 
 prefix=""
 QTYPE="bibliographic"
+SCHOLAR_LINK_BASE="https://scholar.google.de/scholar?hl=en&as_sdt=0%2C5&q="
+
+# NOTE: %20 is space in html
+
+function htmlify_spaces(){
+    SPACED="$@"
+    HTMLED=${SPACED// /%20}
+    echo "$HTMLED"
+}
 
 function processQuery()
 {
@@ -99,11 +108,14 @@ function fetchFromQuery()
         echo -e "Link: $LINK"
 
         PROMPT=""
-        read -r -p "[b]rowse or [d]ownload?: " -e -i "$PROMPT" PROMPT
+        read -r -p "[b]rowse, [d]ownload, [g]oogle scholar?: " -e -i "$PROMPT" PROMPT
         if [[ "$PROMPT" == "b" ]]; then 
             nohup xdg-open "$LINK" >/dev/null 2>&1 & disown
         elif [[ "$PROMPT" == "d" ]]; then
             shdownload "$DOI"
+        elif [[ "$PROMPT" == "g" ]]; then
+            htmled_title=$(htmlify_spaces "$TITLE")
+            nohup xdg-open "$SCHOLAR_LINK_BASE$htmled_title" >/dev/null 2>&1 & disown
         fi
         
         NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
