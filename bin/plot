@@ -49,7 +49,7 @@ def readCadet(infile, unit, solution='outlet'):
 #     return [ x/data[-1] for x in data ]
 
 def normalize(data, refValue=None):
-    if not refValue:
+    if refValue == 'self':
         print("No reference value for normalization provided: Using max point of curve.")
         refValue = max(data)
     return [ x/float(refValue) for x in data ]
@@ -116,12 +116,12 @@ ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
 ap.add_argument("-ls", "--linestyles", nargs='*', help="linestyles = solid dashed ...")
 ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
 ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
-ap.add_argument("-n", "--normalize", action='store_true', help="normalize y data to the last value")
+ap.add_argument("-n", "--normalize", help="normalize y data to given value or 'self'")
 ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
 ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
 ap.add_argument("-s", "--separator", default=',', help="separator character")
-ap.add_argument("-f", "--fill", action='store_true', help="fill area under curve")
+ap.add_argument("-f", "--fill", type=float, help="fill area under curve")
 
 ap.add_argument("--color-cycle", type = int, default=7, help="Number of colors to cycle through for each line")
 
@@ -135,6 +135,8 @@ ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in
 
 ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
 ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
+ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
+ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
 
 ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
 ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
@@ -186,7 +188,7 @@ with plt.style.context(['science']):
             "legend.shadow": True,
             "legend.frameon": True })
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=args['fig_size'])
     ax.set_prop_cycle(custom_cycler)
 
     xs = []
@@ -199,7 +201,7 @@ with plt.style.context(['science']):
         else:
             x, y, xticks = readfile(filename, args['columns'], args['header'])
         if args['normalize']:
-            y = normalize(y)
+            y = normalize(y, args['normalize'])
 
         if args['xscale']:
             if x == []:
@@ -221,8 +223,8 @@ with plt.style.context(['science']):
                 line = ax.hist(y, bins=args['histogram'])
             else:
                 line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
-        if args['fill']:
-            ax.fill_between(x, y, 1, interpolate=True)
+        if isinstance(args['fill'], float):
+            ax.fill_between(x, y, args['fill'], interpolate=True, hatch='\\/.', alpha=0.2)
 
     if not args['no_legend']:
         legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
@@ -231,12 +233,15 @@ with plt.style.context(['science']):
     ax.set(xlabel=args['xlabel'])
     ax.set(ylabel=args['ylabel'])
 
+
     if args['xlog']:
         ax.set(xscale="log")
     if args['ylog']:
         ax.set(yscale="log")
 
+    ax.set_aspect(args['aspect'])
     ax.autoscale(tight=True)
+
 
     if args['xlims']:
         plt.xlim(args['xlims'])
