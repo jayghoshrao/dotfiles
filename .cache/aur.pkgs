@@ -4,7 +4,7 @@ acroread-fonts-systemwide
 adobe-base-14-fonts
 anime-downloader-git
 anki
-arcanist-stable
+arcanist-stable-git
 autojump
 bibata-cursor-theme
 brotab-git
@@ -118,7 +118,6 @@ spotify
 stockfish
 syncthing-gtk
 teams
-tectonic
 telegram-desktop-bin
 termite
 tidy-viewer

@@ -121,9 +121,13 @@ ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
 ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
 ap.add_argument("-s", "--separator", default=',', help="separator character")
-ap.add_argument("-f", "--fill", type=float, help="fill area under curve")
 
 ap.add_argument("--color-cycle", type = int, default=7, help="Number of colors to cycle through for each line")
+ap.add_argument("-f", "--fill", type=float, help="fill area between provided curve and horizontal baseline at given y value.")
+ap.add_argument("--fill-color", help="fill area color")
+ap.add_argument("--fill-alpha", default=0.2, type=float, help="Alpha for filled area")
+ap.add_argument("--hatch", default='xxx', help="hatch style for filled areas")
+ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewidth for filled areas")
 
 ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
 
@@ -224,7 +228,8 @@ with plt.style.context(['science']):
             else:
                 line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
         if isinstance(args['fill'], float):
-            ax.fill_between(x, y, args['fill'], interpolate=True, hatch='\\/.', alpha=0.2)
+            ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
+            plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
 
     if not args['no_legend']:
         legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
