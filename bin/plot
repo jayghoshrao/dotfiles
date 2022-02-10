@@ -25,7 +25,8 @@ import numpy as np
 # COLORS = ["#0c5da5","#ffcf70","#e08300","#bc4b51","#ac8cba","#474747","#225851"]
 # COLORS = plt.cm.viridis(np.linspace(0, 1,7))
 
-COLORS = plt.cm.get_cmap('tab10').colors
+
+qualitative_colormaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2', 'Set1', 'Set2', 'Set3', 'tab10', 'tab20', 'tab20b', 'tab20c']
 
 def cmap_colors_to_hex(cmap_colors): 
     # USAGE: cmap_colors_to_hex(plt.cm.tab10.colors)
@@ -140,7 +141,8 @@ ap.add_argument("--fill-alpha", default=0.2, type=float, help="Alpha for filled 
 ap.add_argument("--hatch", default='xxx', help="hatch style for filled areas")
 ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewidth for filled areas")
 
-ap.add_argument("--color-cycle-length", type = int, default=7, help="Number of colors to cycle through for each line")
+ap.add_argument("--color-cycle-length", type=int, help="Number of colors to cycle through for each line")
+ap.add_argument("-cmap", "--colormap", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use")
 
 ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
 
@@ -190,6 +192,7 @@ if not args['linewidths']:
 elif len(args['linewidths']) == 1:
     args['linewidths'] = args['linewidths'] * len(args['files'])
 
+COLORS = plt.cm.get_cmap(args['colormap']).colors
 custom_cycler = cycler('color', COLORS[:args['color_cycle_length']])
 
 with plt.style.context(['science']):
