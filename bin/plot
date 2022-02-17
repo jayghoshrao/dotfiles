@@ -18,6 +18,8 @@ from subprocess import run
 from pathlib import Path
 import numpy as np
 
+from matplotlib import ticker
+
 from scipy.interpolate import make_interp_spline, BSpline
 
 # SMOOTH: https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
@@ -165,6 +167,7 @@ ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
 ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
 
 ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
+ap.add_argument("--violin", action='store_true', help="Show a violin plot")
 
 ap.add_argument("-o", "--output", help="output file")
 ap.add_argument("-w", "--write", nargs='*', help="Write the CSV file (after applying rescaling if any)")
@@ -244,7 +247,7 @@ with plt.style.context(['science']):
         xs.append(x)
         ys.append(y)
 
-        if x != []:
+        if len(x) > 0: 
             if args['scatter']:
                 line = ax.scatter(x, y, label=label.replace('_', '-'))
             else:
@@ -252,11 +255,23 @@ with plt.style.context(['science']):
         else:
             if args['histogram']:
                 line = ax.hist(y, bins=args['histogram'])
+            elif args['violin']:
+                pass
             else:
                 line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
         if isinstance(args['fill'], float):
             ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
             plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
+
+    if args['violin']: 
+        ax.violinplot(ys)
+        positions = np.arange(len(args['labels'])) + 1
+        plt.xticks(positions, args['labels'])
+
+        # positions = np.arange(len(args['labels'])) + 1
+        # labels = args['labels']
+        # ax.xaxis.set_major_locator(ticker.FixedLocator(positions))
+        # ax.xaxis.set_major_formatter(ticker.FixedFormatter(labels))
 
     if not args['no_legend']:
         legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
@@ -264,7 +279,6 @@ with plt.style.context(['science']):
     ax.set(title=args['title'])
     ax.set(xlabel=args['xlabel'])
     ax.set(ylabel=args['ylabel'])
-
 
     if args['xlog']:
         ax.set(xscale="log")
