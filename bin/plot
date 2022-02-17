@@ -4,6 +4,7 @@
 # USAGE: ./plotChrom.py <file> <file> -o plot.pdf 
 
 # TODO: add option to specify plots as files with only one column each, with x axis defined separately
+# TODO: speed up for large files: file-read can be done via np.memmap for binary
 
 
 
@@ -163,6 +164,9 @@ ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a num
 ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
 ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
 
+ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
+ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
+
 ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
 ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
 
@@ -295,11 +299,19 @@ with plt.style.context(args['style']):
     ax.set_aspect(args['aspect'])
     ax.autoscale(tight=True)
 
-
     if args['xlims']:
         plt.xlim(args['xlims'])
     if args['ylims']:
         plt.ylim(args['ylims'])
+
+    if args['hlines']:
+        xlim = ax.get_xlim()
+        plt.hlines(args['hlines'], xlim[0], xlim[1])
+
+    if args['vlines']:
+        ylim = ax.get_ylim()
+        plt.vlines(args['vlines'], ylim[0], ylim[1])
+
     if args['output']:
         fig.savefig(args['output'], dpi=300)
     else:
