@@ -18,6 +18,8 @@ from subprocess import run
 from pathlib import Path
 import numpy as np
 
+from scipy.interpolate import make_interp_spline, BSpline
+
 # SMOOTH: https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
 # COLORS: https://coolors.co/0c5da5-ffcf70-e08300-bc4b51-ac8cba-474747-225851
 
@@ -152,6 +154,8 @@ ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around
 ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
 ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
 
+ap.add_argument("--smoothen", nargs='?', type=int, const=250, help="Cubic spline interpolation through provided data")
+
 ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
 ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
 ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
@@ -229,6 +233,13 @@ with plt.style.context(['science']):
             x = scale_axis(x, args['xscale'])
         if args['yscale']:
             y = scale_axis(y, args['yscale'])
+
+        if args['smoothen']: 
+            xnew = np.linspace(min(x), max(x), args['smoothen']) 
+            spl = make_interp_spline(x, y, k=3)  # type: BSpline
+            ynew = spl(xnew)
+            x = xnew
+            y = ynew
 
         xs.append(x)
         ys.append(y)

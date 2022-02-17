@@ -193,10 +193,8 @@ pyright
 python-deepdiff
 python-eyed3
 python-gitpython
-python-h5py
 python-i3ipc
 python-praw
-python-pyaml
 python-rich
 python-seaborn
 python-virtualenv
