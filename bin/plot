@@ -175,6 +175,8 @@ ap.add_argument("--split", action='store_true', help="Split the data into x and 
 
 ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
 
+ap.add_argument("--style", nargs='*', default=['science'], help="Read h5 files. --cadet <unit_num> <solution_path>")
+ 
 
 args = vars(ap.parse_args())
 
@@ -202,7 +204,7 @@ elif len(args['linewidths']) == 1:
 COLORS = plt.cm.get_cmap(args['colormap']).colors
 custom_cycler = cycler('color', COLORS[:args['color_cycle_length']])
 
-with plt.style.context(['science']):
+with plt.style.context(args['style']):
 
     # plt.rcParams.update({
     #     "font.family": "serif",   # specify font family here
