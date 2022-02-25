@@ -6,8 +6,8 @@ require('nvim-treesitter.configs').setup {
     additional_vim_regex_highlighting = true,
   },
   indent = {
-    enable = true,
-    disable = {"python"}
+    enable = false,
+    -- disable = {"python"}
   },
   playground = {
     enable = false,
