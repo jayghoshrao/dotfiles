@@ -25,6 +25,7 @@ map('n', '<space>k', ':lua require"dap".step_out()<CR>')
 map('n', '<space>l', ':lua require"dap".step_into()<CR>')
 map('n', '<space>j', ':lua require"dap".step_over()<CR>')
 map('n', '<space>c', ':lua require"dap".continue()<CR>')
+map('n', '<space>dc', ':lua require"dap".continue()<CR>')
 
 map('n', '<space>dh', ':lua require"dap".run_to_cursor()<CR>')
 map('n', '<space>dl', ':lua require"dap".run_last()<CR>')
@@ -33,6 +34,7 @@ map('n', '<space>dk', ':lua require"dap".up()<CR>')
 map('n', '<space>dj', ':lua require"dap".down()<CR>')
 
 map('n', '<space>dx', ':lua require"dap".terminate()<CR>')
+map('n', '<space>d_', ':lua require"dap".clear_breakpoints()<CR>')
 
 map('n', '<space>dr', ':lua require"dap".repl.toggle({}, "split")<CR><C-w>j')
 

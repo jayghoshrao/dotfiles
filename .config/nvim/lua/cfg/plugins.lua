@@ -390,6 +390,7 @@ return require('packer').startup(function(use)
                 windows = { indent = 1 },
             })
             require('cfg.utils').map('n', '<space>dd', '<cmd>lua require("dapui").toggle()<cr>')
+            require('cfg.utils').map('n', '<space>dD', '<cmd>lua require("dapui").close()<cr>')
         end
     }
 

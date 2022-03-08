@@ -14,6 +14,9 @@ map('n', '<leader>tc', [[<cmd>lua require("harpoon.cmd-ui").toggle_quick_menu()<
 
 map('n', '<space>1', [[<cmd>lua require("harpoon.ui").nav_file(1)<CR>]])
 map('n', '<space>2', [[<cmd>lua require("harpoon.ui").nav_file(2)<CR>]])
+map('n', '<space>3', [[<cmd>lua require("harpoon.ui").nav_file(3)<CR>]])
+map('n', '<space>4', [[<cmd>lua require("harpoon.ui").nav_file(4)<CR>]])
+
 -- map('n', '<C-n>', [[<cmd>lua require("harpoon.ui").nav_file(3)<CR>]])
 -- map('n', '<C-s>', [[<cmd>lua require("harpoon.ui").nav_file(4)<CR>]])
 
