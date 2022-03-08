@@ -260,7 +260,7 @@ with plt.style.context(args['style']):
 
         if len(x) > 0: 
             if args['scatter']:
-                line = ax.scatter(x, y, label=label.replace('_', '-'))
+                line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker)
             else:
                 line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
         else:
