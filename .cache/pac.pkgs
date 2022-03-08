@@ -36,6 +36,7 @@ cronie
 cryfs
 crypto++
 cscope
+ctags
 dash
 dconf-editor
 desmume
@@ -47,7 +48,6 @@ doxygen
 dune
 dunst
 eigen
-electron
 element-desktop
 eog
 evolution-ews

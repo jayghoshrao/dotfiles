@@ -336,7 +336,7 @@ alias zz="source $HOME/.zshrc"
 
 alias n="notes"
 alias nn="note"
-alias ns="notesearch"
+# alias ns="notesearch"
 alias fns="fnotesearch"
 
 alias nd="notes -d $HOME/Dropbox/DND"
@@ -536,7 +536,7 @@ ring() {
     time=$(echo $time | tr -d ':') 
     time=$time[1,4] ## Move to 'at' format
     # echo $time
-    echo "notify-send --urgency=critical 'Reminder' '$@'" | at $time
+    echo "notify-send --urgency=critical 'Reminder' $@" | at $time
 }
 # }}}
 # Dotfile management: {{{
@@ -756,14 +756,16 @@ alias mae="mamba env"
 alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 
+alias ne="nix-shell"
 alias ne="nix-env"
 alias neq="nix-env -q"
 alias neqas="nix-env -qas"
 alias neia="nix-env -iA"
 alias neu="nix-env --uninstall"
-alias neu="nix-env --erase"
+# alias neu="nix-env --erase"
 
 alias an="archlinux-nix"
 
-# Requires bashcompinit
-eval "$(register-python-argcomplete state)"
+function fml(){
+    module load $(fmod $@)
+}

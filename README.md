@@ -41,6 +41,12 @@ echo ".dots" >> $HOME/.gitignore
 
 For quick deployment of the essentials: `curl -fsSL https://git.io/JGBz8 | zsh`
 
+## Dependencies
+- TPM
+- It would seem that I need `build-essential` on Ubuntu, i.e. gcc/g++/make for some nvim plugins I have in my overly complicated setup.
+- xclip
+- file (might not be available on vanilla ubuntu)
+
 # The Big Picture
 
 My dev workflow is always evolving with me. This means using new tools and configurations every day. While this is no trouble on my local machine, keeping my dev environment on servers updated has been a pain.
@@ -76,4 +82,7 @@ zinit update --parallel
 nvim +PackerSync
 ```
 
-Note: Sometimes `zinit delete user/repo` and a shell restart will be required if specifications are changed in the .zshrc file
+Notes: 
+- Sometimes `zinit delete user/repo` and a shell restart will be required if specifications are changed in the .zshrc file
+- Neovim's packer compiles its config. So sometimes you'll have to do `:PackerCompile` to get things right. Mostly, I have autocmds setup to do this, but some edge cases don't trigger them
+- Neovim's packer might complain when installing plugins fails. Remove the plugin, PackerSync, then add, and PackerSync again should fix the issue

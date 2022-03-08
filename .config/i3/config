@@ -219,6 +219,7 @@ exec --no-startup-id owncloud &
 exec --no-startup-id nextcloud &
 exec --no-startup-id recollindex &
 exec --no-startup-id rocketchat-desktop & 
+exec --no-startup-id discord & 
 
 exec --no-startup-id mopidy &
 exec --no-startup-id mpd ~/.config/mpd/mpd.conf &

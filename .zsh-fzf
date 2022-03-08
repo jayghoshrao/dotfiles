@@ -11,6 +11,12 @@
 # 
 #  ~/.zshrc
 #  ~/.zsh-local
+#
+#
+#  TODO: Ideas on how an ideal fzf-based shell should work for me
+#       - DONE: fl: fuzzy locate any file/folder. File => open with peek, folder => cd
+#       - TODO: fh: same as fuzzy locate, but in the current directory
+#       - No app should require an argument, just like fl works
 
 ZSH_CACHE_DIR=~/.cache
 fzf-history-widget-accept() {
@@ -100,6 +106,7 @@ bindkey '^F' fzf_locate
 
 # }}}
 
+# TODO: Change to fj: fuzzy jump? 
 #cl - fuzzy cd from anywhere (auto){{{
 #ex: cf word1 word2 ... (even part of a file name)
 autoload cl
@@ -164,16 +171,16 @@ fdp() {
       get_parent_dirs $(dirname "$1")
     fi
   }
-  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux --tac)
+  local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux )
   cd "$DIR"
 }
 #}}}
 
 # cdf - cd into the directory of the selected file {{{
-cdf() {
+fcd() {
    local file
    local dir
-   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+   file=$(fd | fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
 }
 #}}}
 
