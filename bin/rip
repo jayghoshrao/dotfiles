@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# HN: https://news.ycombinator.com/item?id=30539620
+# GITHUB: https://github.com/alangibson/dontbeevil.rip
+
+curl -G -H 'Accept: text/plain' --url https://dontbeevil.rip/search --data-urlencode q="'$*'"
+
+

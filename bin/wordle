@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# SOURCE: https://gist.github.com/huytd/6a1a6a7b34a0d0abcac00b47e3d01513
+# HN: https://news.ycombinator.com/item?id=30174112
+#
+# NOTE: It's slightly buggy
+
+# words_allowed=($(grep '^\w\w\w\w\w$' /usr/share/dict/words_allowed | tr '[a-z]' '[A-Z]'))
+words_allowed=($(grep '^\w\w\w\w\w$' /usr/share/dict/american-english | tr '[a-z]' '[A-Z]'))
+words_answers=($(grep '^\w\w\w\w\w$' ~/.cache/wordle.answers.list | tr '[a-z]' '[A-Z]'))
+actual=${words_answers[$[$RANDOM % ${#words_answers[@]}]]}
+end=false
+guess_count=0
+max_guess=6
+if [[ $1 == "unlimit" ]]; then
+    max_guess=999999
+fi
+while [[ $end != true ]]; do
+    guess_count=$(( $guess_count + 1 ))
+    if [[ $guess_count -le $max_guess ]]; then
+        echo "Enter your guess ($guess_count / $max_guess):"
+        read guess
+        guess=$(echo $guess | tr '[a-z]' '[A-Z]')
+        if [[ " ${words_allowed[*]} " =~ " $guess " ]]; then
+            output=""
+            if [[ $actual == $guess ]]; then
+                echo "You guessed right!"
+                for ((i = 0; i < ${#actual}; i++)); do
+                    output+="\033[30;102m ${guess:$i:1} \033[0m"
+                done
+                printf "$output\n"
+                end=true
+            else
+                c_actual=$actual
+                for ((i = ${#actual}-1; i >= 0; i--)); do
+                    if [[ "${actual:$i:1}" != "${guess:$i:1}" ]]; then
+                        if [[ "$c_actual" == *"${guess:$i:1}"* ]]; then
+                            c_actual=$(echo $c_actual | sed "s/${guess:$i:1}//")
+                            output="\033[30;103m ${guess:$i:1} \033[0m$output"
+                        else
+                            output="\033[30;107m ${guess:$i:1} \033[0m$output"
+                        fi
+                    else
+                        output="\033[30;102m ${guess:$i:1} \033[0m$output"
+                        c_actual=$(echo $c_actual | sed "s/${guess:$i:1}//")
+                    fi
+                done
+                printf "$output\n"
+            fi
+        else
+            echo "Please enter a valid word with 5 letters!";
+            guess_count=$(( $guess_count - 1 ))
+        fi
+    else
+        echo "You lose! The word is:"
+        echo $actual
+        end=true
+    fi
+done

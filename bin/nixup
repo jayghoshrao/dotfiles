@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Script to start my nix setup
+# I don't want / to be weighed down with /nix, so I mount my store from ~
+
+sudo mount --bind /home/jayghoshter/nix /nix
+systemctl restart nix-daemon.service
+
+module load nix

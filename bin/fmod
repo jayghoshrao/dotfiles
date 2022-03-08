@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -euo pipefail
+
+LIST=""
+
+IFS=':' read -ra MPATH <<< "$MODULEPATH"
+for i in "${MPATH[@]}"; do
+    # TMP=$(fd -t f . "$i")
+    TMP=$(find -L "$i" -printf "%P\n")
+    LIST="$LIST"$'\n'"$TMP"
+done
+
+args=""
+for arg in "$@" ; 
+do
+    args="$args $arg"
+done
+
+MYMOD=$(echo "$LIST" | sed '/^$/d' | fzf -e -0 -1 -f "$args")
+
+echo "$MYMOD" | head -n 1
+# module load $MYMOD
