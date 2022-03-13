@@ -1,5 +1,6 @@
 acpi
 acpid
+aircrack-ng
 alacritty
 alsa-utils
 arandr
@@ -124,6 +125,7 @@ lightdm-webkit-theme-litarvan
 linux
 linux-lts
 lolcat
+lua-language-server
 luit
 lvtk
 lxappearance
@@ -147,7 +149,6 @@ ncdu
 ncmpcpp
 nemiver
 neomutt
-net-tools
 netctl
 netsurf
 network-manager-applet
