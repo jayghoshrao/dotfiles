@@ -24,6 +24,8 @@ autoload -U +X bashcompinit && bashcompinit
 
 ## NOTE: Uncomment in case compaudit complains of insecure directories
 # autoload -U +X compinit && compinit -i
+# Or just have the next line uncommented
+[ $HOST = "IBT918" ] || autoload -U +X compinit && compinit -i
 
 if [ $HOST = "IBT918" ]; then
     autoload -Uz compinit; compinit
@@ -78,7 +80,7 @@ zpt 0a lucid atload"_zsh_autosuggest_start"
 zp zsh-users/zsh-autosuggestions
 
 # ## Remove the the next line if compaudit complains of insecurity 
-zpt 0b atload'zpcompinit;zpcdreplay'
+[ $HOST = "IBT918" ] && zpt 0b atload'zpcompinit;zpcdreplay'
 # zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
 zp zdharma-continuum/fast-syntax-highlighting
 
