@@ -69,6 +69,7 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.fortls'
             -- require 'cfg.plugins.lsp.init'
             require 'cfg.plugins.lsp.json_ls'
+            require 'cfg.plugins.lsp.sumneko_lua'
             -- require 'cfg.plugins.lsp.lua_ls'
             -- require 'cfg.plugins.lsp.lua_types'
             require 'cfg.plugins.lsp.pyright'
