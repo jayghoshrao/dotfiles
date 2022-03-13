@@ -195,7 +195,12 @@ local function list_or_jump(action, title, opts)
   flattened_results = filter_out_libraries_from_lsp_items(flattened_results)
 
   if #flattened_results == 0 then
-    return
+    -- return
+    -- If no LSP results, look for the current word in tags
+    -- This is required for FORTRAN
+    -- TODO: Make it possible to list tags with telescope
+    local current_word = vim.fn.expand("<cword>")
+    vim.cmd ('tag ' .. current_word)
   elseif #flattened_results == 1 then
     vim.lsp.util.jump_to_location(flattened_results[1])
   else
