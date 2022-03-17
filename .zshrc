@@ -21,11 +21,8 @@ ARCH=$(uname -a | awk '{print $(NF-1)}')
 
 autoload -U +X bashcompinit && bashcompinit
 
-
 ## NOTE: Uncomment in case compaudit complains of insecure directories
 # autoload -U +X compinit && compinit -i
-# Or just have the next line uncommented
-[ $HOST = "IBT918" ] || autoload -U +X compinit && compinit -i
 
 if [ $HOST = "IBT918" ]; then
     autoload -Uz compinit; compinit
@@ -69,6 +66,10 @@ zinit snippet OMZL::directories.zsh
 zinit snippet OMZL::termsupport.zsh
 zinit snippet OMZL::completion.zsh
 zinit snippet OMZP::git
+
+## nix-shell with zsh
+# zinit snippet https://raw.githubusercontent.com/chisui/zsh-nix-shell/master/nix-shell.plugin.zsh
+zp chisui/zsh-nix-shell
 
 # Other OMZ options
 # zinit wait lucid for \ OMZL::git.zsh \ OMZL::clipboard.zsh \ OMZL::grep.zsh \ OMZL::history.zsh \ OMZL::spectrum.zsh \ OMZP::git \ OMZP::fzf 
@@ -762,12 +763,28 @@ alias ne="nix-shell"
 alias ne="nix-env"
 alias neq="nix-env -q"
 alias neqas="nix-env -qas"
+alias neqm="nix-env -qa --meta --json -A"
 alias neia="nix-env -iA"
 alias neu="nix-env --uninstall"
-# alias neu="nix-env --erase"
+alias znix="module load nix && nix-shell --command zsh"
+
+function nsd(){
+    nix show-derivation $(nix path-info --derivation "nixpkgs#$1")
+}
 
 alias an="archlinux-nix"
 
 function fml(){
     module load $(fmod $@)
 }
+
+## Use this to trace the libs loaded at runtime
+## LDTRACE ./main
+alias LDTRACE="LD_TRACE_LOADED_OBJECTS=1"
+
+function is_chroot(){
+    awk 'BEGIN{exit_code=1} $2 == "/" {exit_code=0} END{exit exit_code}' /proc/mounts
+    echo $?
+}
+
+alias h="home-manager"
