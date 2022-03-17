@@ -1,8 +1,6 @@
-abook
 acroread
 acroread-fonts-systemwide
 adobe-base-14-fonts
-anime-downloader-git
 anki
 arcanist-stable-git
 autojump
@@ -14,19 +12,14 @@ chromium-widevine
 conky-lua
 cozy-audiobooks
 cppman
-ddd
 dropbox
 elinks-git
 epson-inkjet-printer-201108w
 epson-inkjet-printer-escpr
 espeak
-ffsend
 figlet-fonts
 figlet-fonts-extra
 fltrdr
-fortran-language-server
-foxitreader
-gcalcli
 gdb-dashboard-git
 gita
 gitter-bin
@@ -37,7 +30,6 @@ gron
 grub2-theme-vimix-git
 gsfonts-type1
 gtklp
-hunter
 i3wsr
 ilastik-bin
 j4-dmenu-desktop
@@ -53,7 +45,6 @@ lxsession-git
 masterpdfeditor
 masterpdfeditor-free
 melonds
-microsoft-python-language-server
 minestein
 mongodb-bin
 mopidy-podcast
@@ -107,14 +98,9 @@ samsung-printers
 sc-im
 scholarref-git
 shantz-xwinwrap-bzr
-silo-google-keep
-silo-google-photos
-silo-whatsapp
-silos
 skypeforlinux-stable-bin
 snapd
 socli
-spaceship-prompt-git
 spotify
 stockfish
 syncthing-gtk
@@ -123,7 +109,6 @@ telegram-desktop-bin
 termite
 tidy-viewer
 titillium-fonts
-tmatrix-git
 transset-df
 ttf-alegreya
 ttf-alegreya-sans

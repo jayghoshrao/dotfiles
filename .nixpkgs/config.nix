@@ -1,4 +1,6 @@
 {
+    # allowUnfree = true;
+
     packageOverrides = pkgs: with pkgs; {
         gmsh = pkgs.gmsh.overrideAttrs (oldAttrs: rec {
                 cmakeFlags = [

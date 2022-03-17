@@ -42,6 +42,7 @@ dash
 dconf-editor
 desmume
 diff-so-fancy
+direnv
 discord
 docker
 dovecot
@@ -60,6 +61,7 @@ feh
 firefox
 font-manager
 fortune-mod
+fzf
 fzy
 gedit
 gifsicle
@@ -194,7 +196,10 @@ pyright
 python-deepdiff
 python-eyed3
 python-gitpython
+python-google-api-core
 python-i3ipc
+python-oauth2client
+python-parsedatetime
 python-praw
 python-rich
 python-seaborn
