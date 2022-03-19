@@ -1,13 +1,23 @@
-https://hnrss.org/frontpage tech
+"query:News:tags # \"news\""
+"query:Techstack:tags # \"techstack\""
+
+https://hnrss.org/frontpage tech hn
+
+# Programming blogs
 https://eli.thegreenplace.net/feeds/all.atom.xml blog programming
 https://fasterthanli.me/index.xml blog programming 
+
 https://www.reddit.com/r/unixporn.rss reddit 
 https://www.reddit.com/r/linux.rss reddit linux
 https://www.archlinux.org/feeds/news/ linux arch
-https://scicomp.stackexchange.com/feeds scicomp
-https://www.hpcwire.com/feed hpc
-https://www.reddit.com/r/HPC/.rss?format=xml hpc reddit
-https://insidehpc.com/feed hpc
+
+"query:HPC:tags # \"hpc\""
+https://scicomp.stackexchange.com/feeds scicomp hpc !hpc
+https://www.hpcwire.com/feed hpc !hpc
+https://www.reddit.com/r/HPC/.rss?format=xml hpc reddit !hpc
+https://insidehpc.com/feed hpc !hpc
+https://www.scientific-computing.com/feed/news.xml hpc !hpc
+
 http://www.vox.com/rss/index.xml blog
 https://xkcd.com/rss.xml comics
 https://waitbutwhy.com/feed blog
@@ -21,15 +31,22 @@ https://feeds.megaphone.fm/the-daily-show podcast news
 http://www.npr.org/rss/podcast.php?id=510298 podcast
 https://hackaday.com/blog/feed/ 
 
-# "query:Podcasts:tags # \"podcast\""
+# Techstack
+https://www.reddit.com/r/nix.rss reddit techstack !techstack
+https://www.reddit.com/r/nixos.rss reddit techstack !techstack
+https://www.reddit.com/r/neovim.rss reddit techstack !techstack
+https://www.reddit.com/r/vim.rss reddit techstack !techstack
 
-http://rss.dw.com/rdf/rss-en-all news world
-"query:News:tags # \"news\""
+# News
+http://rss.dw.com/rdf/rss-en-all news !news world
 https://www.youtube.com/feeds/videos.xml?channel_id=UCuyRsHZILrU7ZDIAbGASHdA !news news 
 https://www.reddit.com/r/india.rss reddit !news news india 
 http://www.thehindu.com/news/national/?service=rss !news news india
 http://feeds.feedburner.com/ndtvnews-top-stories !news news india
 https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms !news news india
+
+
+# "query:Podcasts:tags # \"podcast\""
 
 # "query:Youtube:tags # \"youtube\""
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCweFJojRAFuxyYxe4KHL8vw !youtube youtube Runesmith DND

@@ -19,7 +19,7 @@ external-url-viewer "urlextract.py"
 # external-url-viewer "fzf-urlscan"
 # external-url-viewer "urlview"
 
-articlelist-format "%4i %f %D| %t"
+articlelist-format "%4i %f %D| [%T] %t"
 
 # notify-always yes
 # notify-format "newsbeuter: %n unread articles within %f unread feeds"
@@ -52,12 +52,14 @@ macro h set browser "echo %u; notify-send -t 0 newsboat 'u: urlextract.py\n,a: m
 # macro m set browser "/usr/bin/mpv %u" open-in-browser
 # browser "[[ -n \"$( pgrep qutebrowser )\"  ]] && qutebrowser %u || elinks -M %u &> /dev/null "
 
+highlight articlelist "\\[.*\\]" color245 default 
+
 # solarized
 color background         default   default
 color listnormal         default   default
 color listnormal_unread  default   default
-color listfocus          black     cyan
-color listfocus_unread   black     cyan
+color listfocus          black     cyan bold
+color listfocus_unread   black     cyan bold
 color info               default   black
 color article            default   default
 
