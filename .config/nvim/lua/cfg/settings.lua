@@ -53,6 +53,16 @@ opt.showbreak = '↳ ' -- DOWNWARDS ARROW WITH TIP RIGHTWARDS (U+21B3, UTF-8: E2
 opt.fillchars = {
   eob = ' ', -- Suppress ~ at EndOfBuffer
   fold = ' ', -- Hide trailing folding characters
+
+  -- thicker borders between splits
+  horiz = '━',
+  horizup = '┻',
+  horizdown = '┳',
+  vert = '┃',
+  vertleft  = '┫',
+  verthoriz = '╋',
+  vertright = '┣',
+
 }
 
 opt.cursorline = true -- Highlight current line
@@ -125,7 +135,7 @@ opt.shada = { '!', "'1000", '<50', 's10', 'h' } -- Increase the shadafile size s
 
 -- Misc
 opt.backspace={ 'indent','eol','start' }
-opt.laststatus = 2
+opt.laststatus = 3
 opt.spell = false
 opt.hlsearch = false
 

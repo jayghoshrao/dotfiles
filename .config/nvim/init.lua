@@ -7,6 +7,7 @@
 --  [NOTE]: Hub for neovim plugins: https://neovimcraft.com
 
 -- Moving to LUA: https://cj.rs/blog/my-setup/nvim-0-5/
+-- TODO: Look at vim.defer_fn()
 
 local g = vim.g
 local cmd = vim.cmd
