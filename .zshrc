@@ -131,6 +131,9 @@ if [[ "$ARCH" == "x86_64" ]]; then
         # nix-user-chroot: 
         zpi from"gh-r" as"program" mv"nix-user-chroot-bin* -> nix-user-chroot" pick"nix-user-chroot" 
         zp load nix-community/nix-user-chroot
+
+        zpi from"gh-r" as"program" mv"lazygit* -> lazygit" pick"lazygit"
+        zp load jesseduffield/lazygit
         
         # if [ ! -d $HOME/local/miniconda3 ]; then
         #     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
