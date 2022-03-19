@@ -127,6 +127,10 @@ if [[ "$ARCH" == "x86_64" ]]; then
         # BTOP: 
         zpi from"gh-r" as"program" mv"btop* -> btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop"
         zp load aristocratos/btop
+
+        # nix-user-chroot: 
+        zpi from"gh-r" as"program" mv"nix-user-chroot-bin* -> nix-user-chroot" pick"nix-user-chroot" 
+        zp load nix-community/nix-user-chroot
         
         # if [ ! -d $HOME/local/miniconda3 ]; then
         #     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -139,6 +143,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
         #     wget https://gist.githubusercontent.com/jayghoshter/0c7cda4e23a223fb5a0e7c0262925464/raw/44b0598b60c5f848eec4f7f6ec3d9263c78d0db1/dev.conda.env.yaml
         #     mamba env create -n dev -f dev.conda.env.yaml
         # fi
+
     fi
 fi
 
@@ -797,3 +802,9 @@ function is_chroot(){
 }
 
 alias h="home-manager"
+alias hh="home-manager switch"
+
+alias news="newsboat"
+alias newsc="vim ~/.newsboat/config"
+alias newsu="vim ~/.newsboat/urls"
+

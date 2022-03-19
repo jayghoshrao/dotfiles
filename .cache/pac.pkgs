@@ -200,6 +200,7 @@ python-i3ipc
 python-oauth2client
 python-parsedatetime
 python-praw
+python-pynvim
 python-rich
 python-seaborn
 python-virtualenv
@@ -308,7 +309,6 @@ xournalpp
 xpdf
 xpra
 xscreensaver
-yaml-language-server
 yarn
 yq
 zsh-autosuggestions
