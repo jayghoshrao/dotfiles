@@ -30,13 +30,15 @@
     cachix
 
     neovim-nightly
+    tree-sitter
     neomutt
 
-    glibc
+    # glibc
     gmsh
     comma
     ffsend
 
+    yaml-language-server
     fortran-language-server
     python-language-server
   ];
