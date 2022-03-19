@@ -772,6 +772,15 @@ function nsd(){
     nix show-derivation $(nix path-info --derivation "nixpkgs#$1")
 }
 
+function nsp(){
+    storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath')
+    echo $storepath
+}
+
+function ned(){
+    nix edit 'nixpkgs#'$1
+}
+
 alias an="archlinux-nix"
 
 function fml(){
