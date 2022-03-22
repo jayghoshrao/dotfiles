@@ -9,10 +9,19 @@ ENJOY!
 	--night_color2: #3B4252;
 	--night_color3: #434C5E;
 	--night_color4: #4C566A;
+
+    /* --my-color: #a8beea; */
+    /* --my-color: #6b7995; */
+    /* --my-color: #8196c2; */
+    --my-color: #282828;
+	  --my-color: #586069;
+
 	
 	--snow_color1: #D8DEE9;
 	--snow_color2: #E5E9F0;
 	--snow_color3: #ECEFF4;
+
+
 	
 	--frost_color1: #8FBCBB;
 	--frost_color2: #88C0D0;
@@ -78,10 +87,10 @@ toolbox#navigator-toolbox  {
 }
 
 tab[selected="true"] .tab-content {
-	color: var(--snow_color3) !important;
+	color: var(--snow_color1) !important;
 }
 tab[selected="true"] .tab-background {
-	background: var(--night_color4) !important;
+	background: var(--my-color) !important;
 }
 
 .tabbrowser-tab::after, .tabbrowser-tab::before {
@@ -295,3 +304,11 @@ toolbar#nav-bar #search-container {
 #viewButton {
 	color: var(--frost_color3) !important;
 }
+
+
+/* /* vertical/tree tab friendly layout */ */
+/* /* best used with an extension like github.com/mbnuqw/sidebery */ */
+/* #TabsToolbar { visibility: collapse; } */
+/* #titlebar, #sidebar-header, #back-button, #forward-button { */
+/*     display: none; */
+/* } */
