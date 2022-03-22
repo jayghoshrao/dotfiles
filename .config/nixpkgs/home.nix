@@ -32,6 +32,7 @@
     neovim-nightly
     tree-sitter
     neomutt
+    rr
 
     # glibc
     gmsh
