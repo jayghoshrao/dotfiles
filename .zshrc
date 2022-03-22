@@ -806,6 +806,7 @@ function is_chroot(){
 
 alias h="home-manager"
 alias hh="home-manager switch"
+alias he="home-manager edit"
 
 alias news="newsboat"
 alias newsc="vim ~/.newsboat/config"
