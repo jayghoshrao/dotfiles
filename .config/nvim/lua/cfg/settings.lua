@@ -54,14 +54,14 @@ opt.fillchars = {
   eob = ' ', -- Suppress ~ at EndOfBuffer
   fold = ' ', -- Hide trailing folding characters
 
-  -- thicker borders between splits
-  horiz = '━',
-  horizup = '┻',
-  horizdown = '┳',
-  vert = '┃',
-  vertleft  = '┫',
-  verthoriz = '╋',
-  vertright = '┣',
+  -- -- thicker borders between splits
+  -- horiz = '━',
+  -- horizup = '┻',
+  -- horizdown = '┳',
+  -- vert = '┃',
+  -- vertleft  = '┫',
+  -- verthoriz = '╋',
+  -- vertright = '┣',
 
 }
 

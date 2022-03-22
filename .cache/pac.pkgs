@@ -104,7 +104,6 @@ hugo
 hyperfine
 imagescan
 inetutils
-inkscape
 inotify-tools
 intel-mkl-static
 intel-ucode
@@ -140,6 +139,7 @@ mgba-qt
 moreutils
 mpc
 mpd
+mpv-mpris
 msmtp
 mtpfs
 mupdf
