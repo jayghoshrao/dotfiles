@@ -48,16 +48,22 @@ end
 local function unload_all_modules()
     -- Lua patterns for the modules to unload
     local unload_modules = {
-        '^cfg.',
+        '^cfg',
     }
 
     for k, _ in pairs(package.loaded) do
+
+        -- print(k)
+        -- package.loaded[k] = nil
+
         for _, v in ipairs(unload_modules) do
             if k:match(v) then
                 package.loaded[k] = nil
+                -- print(k)
                 break
             end
         end
+
     end
 end
 

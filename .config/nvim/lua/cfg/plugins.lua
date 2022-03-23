@@ -529,6 +529,7 @@ return require('packer').startup(function(use)
                     section_separators = { left = '', right = ''},
                     disabled_filetypes = {},
                     always_divide_middle = true,
+                    globalstatus = true,
                 },
                 sections = {
                     lualine_a = {'mode'},
@@ -581,6 +582,8 @@ return require('packer').startup(function(use)
     use 'duane9/nvim-rg'
 
     use 'kdheepak/lazygit.nvim'
+
+    use 'LnL7/vim-nix'
 
 end)
 
