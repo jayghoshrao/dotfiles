@@ -3,10 +3,7 @@
 # depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
 # USAGE: ./plotChrom.py <file> <file> -o plot.pdf 
 
-# TODO: add option to specify plots as files with only one column each, with x axis defined separately
 # TODO: speed up for large files: file-read can be done via np.memmap for binary
-
-
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -123,116 +120,49 @@ def scale_axis(vec:list, scale_factor_or_file):
         vec = [ v * scale_factor for v in vec ]
     return vec
 
-ap = argparse.ArgumentParser()
-ap.add_argument("files", nargs='*', help="files to plot")
+def setup_main_axis(ax, args):
 
-ap.add_argument("-t", "--title", help="title")
-ap.add_argument("-x", "--xlabel", help="xlabel")
-ap.add_argument("-y", "--ylabel", help="ylabel")
-ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
-ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
-ap.add_argument("-ls", "--linestyles", nargs='*', help="linestyles = solid dashed ...")
-ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
-ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
-ap.add_argument("-n", "--normalize", help="normalize y data to given value or 'self'")
-ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
-ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
-ap.add_argument("-hg", "--histogram", type=int, help="histogram")
-ap.add_argument("-s", "--separator", default=',', help="separator character")
+    ax.set(title=args['title'])
+    ax.set(xlabel=args['xlabel'])
+    ax.set(ylabel=args['ylabel'])
 
-ap.add_argument("-f", "--fill", type=float, help="fill area between provided curve and horizontal baseline at given y value.")
-ap.add_argument("--fill-color", help="fill area color")
-ap.add_argument("--fill-alpha", default=0.2, type=float, help="Alpha for filled area")
-ap.add_argument("--hatch", default='xxx', help="hatch style for filled areas")
-ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewidth for filled areas")
+    if args['xlog']:
+        ax.set(xscale="log")
+    if args['ylog']:
+        ax.set(yscale="log")
 
-ap.add_argument("--color-cycle-length", type=int, help="Number of colors to cycle through for each line")
-ap.add_argument("-cmap", "--colormap", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use")
+    ax.set_aspect(args['aspect'])
+    ax.autoscale(tight=True)
 
-ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
+    if args['xlims']:
+        ax.set_xlim(args['xlims'])
+    if args['ylims']:
+        ax.set_ylim(args['ylims'])
 
-ap.add_argument("-nl", "--no-legend", action='store_true', help="don't show legend")
-ap.add_argument("--legend", nargs=3, default=['upper center', '0.5', '-0.2'], type=str, help="Legend settings: --legend <location> <bbox_to_anchor>")
-ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around legend")
-ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
-ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
 
-ap.add_argument("--smoothen", nargs='?', type=int, const=250, help="Cubic spline interpolation through provided data")
+def setup_twin_axis(ax, args):
+    """ Twin axis (parallel y axis) setup
+    """
+    
+    # if not args['no_legend']:
+    #     legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
 
-ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
-ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
-ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
-ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
+    ax.set(ylabel=args['y2label'])
 
-ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
-ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
+    if args['y2log']:
+        ax.set(yscale="log")
 
-ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
-ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
+    ax.set_aspect(args['aspect'])
+    ax.autoscale(tight=True)
 
-ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
-ap.add_argument("--violin", action='store_true', help="Show a violin plot")
+    if args['y2lims']:
+        ax.set_ylim(args['y2lims'])
 
-ap.add_argument("-o", "--output", help="output file")
-ap.add_argument("-w", "--write", nargs='*', help="Write the CSV file (after applying rescaling if any)")
-ap.add_argument("--split", action='store_true', help="Split the data into x and y.")
-
-ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
-
-ap.add_argument("--style", nargs='*', default=['science'], help="Read h5 files. --cadet <unit_num> <solution_path>")
- 
-
-args = vars(ap.parse_args())
-
-if not args['labels']:
-    args['labels'] = args['files']
-
-if not args['linestyles']:
-    args['linestyles'] = [ 'solid' ] * len(args['files'])
-    # args['linestyles'] = []
-elif len(args['linestyles']) < len(args['files']):
-    args['linestyles'] = list(islice(cycle(args['linestyles']), len(args['files'])))
-
-if not args['markers']:
-    args['markers'] = [ None ] * len(args['files'])
-    # args['markers'] = []
-elif len(args['markers']) == 1:
-    args['markers'] = args['markers'] * len(args['files'])
-
-if not args['linewidths']:
-    args['linewidths'] = [ 1 ] * len(args['files'])
-    # args['linewidths'] = []
-elif len(args['linewidths']) == 1:
-    args['linewidths'] = args['linewidths'] * len(args['files'])
-
-COLORS = plt.cm.get_cmap(args['colormap']).colors
-custom_cycler = cycler('color', COLORS[:args['color_cycle_length']])
-
-with plt.style.context(args['style']):
-
-    # plt.rcParams.update({
-    #     "font.family": ["serif"],  
-    #     "mathtext.fontset": "dejavuserif",  
-    #     "font.serif": ["DejaVu Serif"],  
-    #     "font.size":10})          
-
-    ## A way to override the default style
-    if args['legend_frameon']:
-        plt.rcParams.update({
-            "legend.shadow": True,
-            "legend.frameon": True })
-    else: 
-        plt.rcParams.update({
-            "legend.shadow": False,
-            "legend.frameon": False })
-
-    fig, ax = plt.subplots(figsize=args['fig_size'])
-    ax.set_prop_cycle(custom_cycler)
-
+def plot_things(files, ax, args):
     xs = []
     ys = []
-
-    for filename,label,linestyle,marker,linewidth in zip(args['files'], args['labels'], args['linestyles'], args['markers'], args['linewidths']):
+    lines = []
+    for filename,label,linestyle,marker,linewidth in zip(files, args['labels'], args['linestyles'], args['markers'], args['linewidths']):
         if args['cadet']:
             x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
             # print(x,y)
@@ -267,42 +197,169 @@ with plt.style.context(args['style']):
             if args['histogram']:
                 line = ax.hist(y, bins=args['histogram'])
             elif args['violin']:
-                pass
+                # pass
+                line = None
             else:
                 line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
         if isinstance(args['fill'], float):
             ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
             plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
 
+        lines.extend(line)
+
+
     if args['violin']: 
         ax.violinplot(ys)
         positions = np.arange(len(args['labels'])) + 1
         plt.xticks(positions, args['labels'])
-
         # positions = np.arange(len(args['labels'])) + 1
         # labels = args['labels']
         # ax.xaxis.set_major_locator(ticker.FixedLocator(positions))
         # ax.xaxis.set_major_formatter(ticker.FixedFormatter(labels))
 
-    if not args['no_legend']:
-        legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+    return lines
 
-    ax.set(title=args['title'])
-    ax.set(xlabel=args['xlabel'])
-    ax.set(ylabel=args['ylabel'])
 
-    if args['xlog']:
-        ax.set(xscale="log")
-    if args['ylog']:
-        ax.set(yscale="log")
+ap = argparse.ArgumentParser()
+ap.add_argument("files", nargs='*', help="files to plot")
 
-    ax.set_aspect(args['aspect'])
-    ax.autoscale(tight=True)
+ap.add_argument("-t", "--title", help="title")
+ap.add_argument("-x", "--xlabel", help="xlabel")
+ap.add_argument("-y", "--ylabel", help="ylabel")
+ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
+ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
+ap.add_argument("-ls", "--linestyles", nargs='*', help="linestyles = solid dashed ...")
+ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
+ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
+ap.add_argument("-n", "--normalize", help="normalize y data to given value or 'self'")
+ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
+ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
+ap.add_argument("-hg", "--histogram", type=int, help="histogram")
+ap.add_argument("-s", "--separator", default=',', help="separator character")
 
-    if args['xlims']:
-        plt.xlim(args['xlims'])
-    if args['ylims']:
-        plt.ylim(args['ylims'])
+ap.add_argument("-f", "--fill", type=float, help="fill area between provided curve and horizontal baseline at given y value.")
+ap.add_argument("--fill-color", help="fill area color")
+ap.add_argument("--fill-alpha", default=0.2, type=float, help="Alpha for filled area")
+ap.add_argument("--hatch", default='xxx', help="hatch style for filled areas")
+ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewidth for filled areas")
+
+ap.add_argument("--color-cycle-length", type=int, help="Number of colors to cycle through for each line")
+ap.add_argument("-cmap", "--colormap", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use")
+
+
+ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
+
+ap.add_argument("-nl", "--no-legend", action='store_true', help="don't show legend")
+ap.add_argument("--legend", nargs=3, default=['upper center', '0.5', '-0.2'], type=str, help="Legend settings: --legend <location> <bbox_to_anchor>")
+ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around legend")
+ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
+ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
+
+ap.add_argument("--smoothen", nargs='?', type=int, const=250, help="Cubic spline interpolation through provided data")
+
+ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
+ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
+ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
+ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
+
+ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
+ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
+
+ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
+ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
+
+ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
+ap.add_argument("--violin", action='store_true', help="Show a violin plot")
+
+ap.add_argument("-o", "--output", help="output file")
+ap.add_argument("-w", "--write", nargs='*', help="Write the CSV file (after applying rescaling if any)")
+ap.add_argument("--split", action='store_true', help="Split the data into x and y.")
+
+ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
+
+ap.add_argument("--style", nargs='*', default=['science'], help="Read h5 files. --cadet <unit_num> <solution_path>")
+
+ap.add_argument("--twinx", nargs='*', default = [], help="Files to plot on an alternate y axis")
+ap.add_argument("-y2", "--y2label", help="ylabel for second axis")
+ap.add_argument("-y2l", "--y2lims",nargs=2, type=float, help="y axis limits for second axis")
+ap.add_argument("--y2log", action='store_true', help="Y2 axis in log scale")
+ap.add_argument("-cmap2", "--colormap2", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use for second axis")
+# ap.add_argument("--color-cycle2-length", type=int, help="Number of colors to cycle through for each line")
+ 
+args = vars(ap.parse_args())
+
+n_total_files = len(args['files']) + len(args['twinx'])
+
+# NOTE: Using generators/iterators instead of lists allows us to use labels,
+# linestyles, markers and linewidths as a pool for both main and twin axes.
+# This way only some flags need to be duplicated.
+
+if not args['labels']:
+    args['labels'] = iter(args['files'] + args['twinx'])
+else: 
+    args['labels'] = iter(args['labels'])
+
+if not args['linestyles']:
+    args['linestyles'] = iter( [ 'solid' ] * n_total_files ) 
+    # args['linestyles'] = []
+elif len(args['linestyles']) < n_total_files:
+    args['linestyles'] = islice(cycle(args['linestyles']), n_total_files )
+else: 
+    args['linestyles'] = iter(args['linestyles'])
+
+if not args['markers']:
+    args['markers'] = iter([ None ] * n_total_files)
+    # args['markers'] = []
+elif len(args['markers']) == 1:
+    args['markers'] = iter(args['markers'] * n_total_files)
+else: 
+    args['markers'] = iter(args['markers'])
+
+if not args['linewidths']:
+    args['linewidths'] = iter([ 1 ] * n_total_files)
+    # args['linewidths'] = []
+elif len(args['linewidths']) == 1:
+    args['linewidths'] = iter(args['linewidths'] * n_total_files)
+else: 
+    args['linewidths'] = iter(args['linewidths'])
+
+COLORS = plt.cm.get_cmap(args['colormap']).colors[:args['color_cycle_length']]
+custom_cycler = cycler('color', COLORS)
+
+COLORS2 = COLORS[len(args['files']):] + COLORS[:len(args['files'])]
+custom_cycler2 = cycler('color', COLORS2)
+
+with plt.style.context(args['style']):
+
+
+    # plt.rcParams.update({
+    #     "font.family": ["serif"],  
+    #     "mathtext.fontset": "dejavuserif",  
+    #     "font.serif": ["DejaVu Serif"],  
+    #     "font.size":10})          
+
+    ## A way to override the default style
+    if args['legend_frameon']:
+        plt.rcParams.update({
+            "legend.shadow": True,
+            "legend.frameon": True })
+    else: 
+        plt.rcParams.update({
+            "legend.shadow": False,
+            "legend.frameon": False })
+
+    fig, ax = plt.subplots(figsize=args['fig_size'])
+    ax.set_prop_cycle(custom_cycler)
+
+    setup_main_axis(ax, args)
+    lines = plot_things(args['files'], ax, args)
+
+    lines2=[]
+    if args['twinx']:
+        ax2 = ax.twinx()
+        ax2.set_prop_cycle(custom_cycler2)
+        setup_twin_axis(ax2, args)
+        lines2 = plot_things(args['twinx'], ax2, args)
 
     if args['hlines']:
         xlim = ax.get_xlim()
@@ -311,6 +368,29 @@ with plt.style.context(args['style']):
     if args['vlines']:
         ylim = ax.get_ylim()
         plt.vlines(args['vlines'], ylim[0], ylim[1])
+
+    if not args['no_legend']:
+        all_lines = lines + lines2 
+        all_labels = [l.get_label() for l in all_lines]
+        ax.legend(all_lines, all_labels, loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+
+    # # TODO: Abstractify. This is a hack
+    # # -y2, y2l, 
+    # # y2marker, label etc
+    # if args['twinx']:
+    #     # NOTE: No scaling or processing of any kind
+    #     for filename in args['twinx']:
+    #         x, y, xticks = readfile(filename, args['columns'], args['header'])
+    #         if args['smoothen']: 
+    #             xnew = np.linspace(min(x), max(x), args['smoothen']) 
+    #             spl = make_interp_spline(x, y, k=3)  # type: BSpline
+    #             ynew = spl(xnew)
+    #             x = xnew
+    #             y = ynew
+    #         ax2.plot(x,y)
+    #     if args['y2lims']:
+    #         ax2.set_ylim(args['y2lims'])
+    #     ax2.set(ylabel=args['y2label'])
 
     if args['output']:
         fig.savefig(args['output'], dpi=300)
@@ -333,3 +413,4 @@ with plt.style.context(args['style']):
             with open(filename + '.y', 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(y))
+

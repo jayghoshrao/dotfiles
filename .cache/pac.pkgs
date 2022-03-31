@@ -45,6 +45,7 @@ diff-so-fancy
 direnv
 discord
 docker
+docker-compose
 dovecot
 doxygen
 dune
@@ -116,7 +117,6 @@ julia
 jupyterlab
 keychain
 khal
-kitty
 krita
 kvantum-theme-materia
 lapacke
