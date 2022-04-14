@@ -23,10 +23,10 @@ fltrdr
 gdb-dashboard-git
 gita
 gitter-bin
+gnome-documents
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
 googler-git
-gron
 grub2-theme-vimix-git
 gsfonts-type1
 gtklp
@@ -51,6 +51,7 @@ mopidy-podcast
 mutt-ics
 nanoboyadvance-git
 ncspot-git
+nemiver
 nerd-fonts-victor-mono
 nodejs-mermaid-git
 pam-gnupg
@@ -122,7 +123,6 @@ uftp
 urlview
 v4l2ucp
 vcpkg-git
-visidata
 vitables
 vlc-plugin-ytdl-git
 whatsapp-for-linux

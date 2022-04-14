@@ -1,9 +1,20 @@
 #!/bin/python3
 
 # depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
-# USAGE: ./plotChrom.py <file> <file> -o plot.pdf 
+# USAGE: ./plot <file> <file> -o plot.pdf 
 
 # TODO: speed up for large files: file-read can be done via np.memmap for binary
+
+""" Name TBD: plotipy, plotti, plote, ploot, plawt, plaut, pluto
+
+Takes in CSV files with X-Y info (or just Y info) and plots it.
+
+- Files: with/without header, separator character
+- Axes: axis label, limits, log-scale
+- Plot types: Line, Scatter, Violin, Histogram, horizontal and vertical lines
+- Configurable: Labels, linewidth, linestyles, markers, legend, fill
+- Transformations: xscale, yscale, normalization, smoothen
+"""
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -64,12 +75,16 @@ def readCadet(infile, unit, solution='outlet'):
 #     return [ x/data[-1] for x in data ]
 
 def normalize(data, refValue=None):
+    """ Normalize array to either max value or given refValue
+    """
     if refValue == 'self':
         print("No reference value for normalization provided: Using max point of curve.")
         refValue = max(data)
     return [ x/float(refValue) for x in data ]
 
 def readArray(data_path):
+    """ Read single column plain text data files 
+    """
     values =[]
     with open(data_path, newline='') as csvfile:
         for line in csvfile:
@@ -77,6 +92,8 @@ def readArray(data_path):
     return values
 
 def readfile(data_path, columns, header=False):
+    """ Read x-y CSV-style files
+    """
     if ':' in data_path:
         run(['scp', '-rC', data_path, '/tmp/plotting.csv'])
         data_path = '/tmp/plotting.csv'
@@ -112,6 +129,8 @@ def readfile(data_path, columns, header=False):
     return x, y, xticks
 
 def scale_axis(vec:list, scale_factor_or_file):
+    """ Scale either the x or y axis of a given plot line
+    """
     if Path(scale_factor_or_file).expanduser().exists():
         scale_factors = readArray(scale_factor_or_file)
         vec = [ v*s for v,s in zip(vec, scale_factors)]
@@ -121,6 +140,8 @@ def scale_axis(vec:list, scale_factor_or_file):
     return vec
 
 def setup_main_axis(ax, args):
+    """ Main axis and plot setup
+    """
 
     ax.set(title=args['title'])
     ax.set(xlabel=args['xlabel'])
@@ -139,14 +160,13 @@ def setup_main_axis(ax, args):
     if args['ylims']:
         ax.set_ylim(args['ylims'])
 
+    if args['scitick']: 
+        ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
+
 
 def setup_twin_axis(ax, args):
     """ Twin axis (parallel y axis) setup
     """
-    
-    # if not args['no_legend']:
-    #     legend = ax.legend(loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
-
     ax.set(ylabel=args['y2label'])
 
     if args['y2log']:
@@ -158,7 +178,13 @@ def setup_twin_axis(ax, args):
     if args['y2lims']:
         ax.set_ylim(args['y2lims'])
 
+    if args['scitick2']: 
+        ax.ticklabel_format(style='sci', axis='both', scilimits=(0,0))
+
 def plot_things(files, ax, args):
+    """ High level plotter 
+    Reads files, transforms, plots
+    """
     xs = []
     ys = []
     lines = []
@@ -168,9 +194,13 @@ def plot_things(files, ax, args):
             # print(x,y)
         else:
             x, y, xticks = readfile(filename, args['columns'], args['header'])
+
         if args['normalize']:
             y = normalize(y, args['normalize'])
+        if args['normalize_x']:
+            x = normalize(x, args['normalize_x'])
 
+        ## TODO: Allow this to be specified per plot line
         if args['xscale']:
             if x == []:
                 x = [1] * len(y)
@@ -191,8 +221,10 @@ def plot_things(files, ax, args):
         if len(x) > 0: 
             if args['scatter']:
                 line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker)
+                lines.append(line)
             else:
                 line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+                lines.extend(line)
         else:
             if args['histogram']:
                 line = ax.hist(y, bins=args['histogram'])
@@ -201,11 +233,11 @@ def plot_things(files, ax, args):
                 line = None
             else:
                 line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+                lines.extend(line)
         if isinstance(args['fill'], float):
             ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
             plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
 
-        lines.extend(line)
 
 
     if args['violin']: 
@@ -226,12 +258,17 @@ ap.add_argument("files", nargs='*', help="files to plot")
 ap.add_argument("-t", "--title", help="title")
 ap.add_argument("-x", "--xlabel", help="xlabel")
 ap.add_argument("-y", "--ylabel", help="ylabel")
+ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
+ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
 ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
 ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
+
+ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
+ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
+
 ap.add_argument("-ls", "--linestyles", nargs='*', help="linestyles = solid dashed ...")
 ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
 ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
-ap.add_argument("-n", "--normalize", help="normalize y data to given value or 'self'")
 ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
 ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
@@ -246,7 +283,6 @@ ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewi
 ap.add_argument("--color-cycle-length", type=int, help="Number of colors to cycle through for each line")
 ap.add_argument("-cmap", "--colormap", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use")
 
-
 ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
 
 ap.add_argument("-nl", "--no-legend", action='store_true', help="don't show legend")
@@ -257,10 +293,11 @@ ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in
 
 ap.add_argument("--smoothen", nargs='?', type=int, const=250, help="Cubic spline interpolation through provided data")
 
+ap.add_argument("-n", "--normalize", nargs='?', const='self', help="normalize y data to given value or 'self'")
+ap.add_argument("-nx", "--normalize-x", nargs='?', const='self', help="normalize y data to given value or 'self'")
 ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
 ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
-ap.add_argument("-a", "--aspect", default='auto', help="Set the aspect ratio for the plot")
-ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, help="Set the figure size for the plot")
+
 
 ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
 ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
@@ -277,7 +314,7 @@ ap.add_argument("--split", action='store_true', help="Split the data into x and 
 
 ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
 
-ap.add_argument("--style", nargs='*', default=['science'], help="Read h5 files. --cadet <unit_num> <solution_path>")
+ap.add_argument("--style", nargs='*', default=['science'], help="Change the plotting style with SciencePlots")
 
 ap.add_argument("--twinx", nargs='*', default = [], help="Files to plot on an alternate y axis")
 ap.add_argument("-y2", "--y2label", help="ylabel for second axis")
@@ -373,24 +410,6 @@ with plt.style.context(args['style']):
         all_lines = lines + lines2 
         all_labels = [l.get_label() for l in all_lines]
         ax.legend(all_lines, all_labels, loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
-
-    # # TODO: Abstractify. This is a hack
-    # # -y2, y2l, 
-    # # y2marker, label etc
-    # if args['twinx']:
-    #     # NOTE: No scaling or processing of any kind
-    #     for filename in args['twinx']:
-    #         x, y, xticks = readfile(filename, args['columns'], args['header'])
-    #         if args['smoothen']: 
-    #             xnew = np.linspace(min(x), max(x), args['smoothen']) 
-    #             spl = make_interp_spline(x, y, k=3)  # type: BSpline
-    #             ynew = spl(xnew)
-    #             x = xnew
-    #             y = ynew
-    #         ax2.plot(x,y)
-    #     if args['y2lims']:
-    #         ax2.set_ylim(args['y2lims'])
-    #     ax2.set(ylabel=args['y2label'])
 
     if args['output']:
         fig.savefig(args['output'], dpi=300)

@@ -17,7 +17,6 @@ bind
 bison
 blueman
 bluez-utils
-boost
 borg
 bpytop
 brasero
@@ -28,6 +27,7 @@ calibre
 caprine
 catch2
 ccls
+cgal
 chromium
 code
 cowsay
@@ -50,7 +50,7 @@ dovecot
 doxygen
 dune
 dunst
-eigen
+electron
 element-desktop
 eog
 evolution-ews
@@ -71,11 +71,11 @@ gimagereader-gtk
 git-filter-repo
 github-cli
 glow
+gnome-bluetooth
 gnome-calculator
 gnome-calendar
 gnome-chess
 gnome-contacts
-gnome-documents
 gnome-font-viewer
 gnome-logs
 gnome-maps
@@ -91,6 +91,7 @@ gnome-tweaks
 gnome-weather
 gocr
 gparted
+gron
 gstreamer-vaapi
 gtop
 gufw
@@ -114,7 +115,6 @@ irssi
 isync
 jp2a
 julia
-jupyterlab
 keychain
 khal
 krita
@@ -149,7 +149,6 @@ nano
 nautilus
 ncdu
 ncmpcpp
-nemiver
 netctl
 netsurf
 network-manager-applet
@@ -200,8 +199,8 @@ python-i3ipc
 python-oauth2client
 python-parsedatetime
 python-praw
-python-pynvim
 python-rich
+python-scikit-learn
 python-seaborn
 python-virtualenv
 qt5-networkauth
@@ -274,6 +273,7 @@ vbam-wx
 vi
 vimiv
 virt-manager
+visidata
 vscode-json-languageserver
 whois
 wkhtmltopdf
@@ -309,7 +309,6 @@ xournalpp
 xpdf
 xpra
 xscreensaver
-yarn
 yq
 zsh-autosuggestions
 zsh-history-substring-search
