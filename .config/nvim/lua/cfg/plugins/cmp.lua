@@ -24,8 +24,10 @@ cmp.setup {
     { name = 'buffer' },
   },
 
-  documentation = {
-    winhighlight = 'NormalFloat:CmpDocumentation',
+  window = {
+      documentation = {
+          winhighlight = 'NormalFloat:CmpDocumentation',
+      }
   },
 
   experimental = {

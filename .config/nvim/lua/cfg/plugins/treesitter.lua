@@ -35,7 +35,7 @@ require('nvim-treesitter.configs').setup {
     'python',
     'html',
     'lua',
-    'yaml',
+    -- 'yaml',
     'css',
     'bash',
     'c',
@@ -52,6 +52,7 @@ require('nvim-treesitter.configs').setup {
     'vim',
     'bibtex',
     'http',
-    'markdown'
+    'markdown',
+    'nix'
   },
 }
