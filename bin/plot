@@ -270,7 +270,7 @@ def plot_things(files, ax, args):
         # ax.xaxis.set_major_locator(ticker.FixedLocator(positions))
         # ax.xaxis.set_major_formatter(ticker.FixedFormatter(labels))
 
-    return lines
+    return xs, ys, lines
 
 
 ap = argparse.ArgumentParser()
@@ -446,14 +446,14 @@ with plt.style.context(args['style']):
         plt.xticks(xtx, xtl)
 
     setup_main_axis(ax, args)
-    lines = plot_things(args['files'], ax, args)
+    xs, ys, lines = plot_things(args['files'], ax, args)
 
     lines2=[]
     if args['twinx']:
         ax2 = ax.twinx()
         ax2.set_prop_cycle(custom_cycler2)
         setup_twin_axis(ax2, args)
-        lines2 = plot_things(args['twinx'], ax2, args)
+        xs2, ys2, lines2 = plot_things(args['twinx'], ax2, args)
 
     if args['hlines']:
         xlim = ax.get_xlim()
