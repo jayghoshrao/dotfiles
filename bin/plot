@@ -91,7 +91,7 @@ def readArray(data_path):
             values.append(float(line.strip()))
     return values
 
-def readfile(data_path, columns, header=False):
+def readfile(data_path, columns, header=False, xticksColumn=0):
     """ Read x-y CSV-style files
     """
     if ':' in data_path:
@@ -100,7 +100,6 @@ def readfile(data_path, columns, header=False):
 
     x = []
     y = []
-    xticksFromFile= None
     xticks = []
     # columns = [0, 1]
     delimiter = ' '
@@ -123,8 +122,8 @@ def readfile(data_path, columns, header=False):
                 # if columns[0] != -1:
                 #     x.append(float(data_line[columns[0]]))
                 # y.append(float(data_line[columns[1]]))
-                if xticksFromFile:
-                    xticks.append(float(data_line[columns[xticksFromFile]]))
+                if xticksColumn is not None: 
+                    xticks.append(float(data_line[xticksColumn]))
 
     return x, y, xticks
 
@@ -193,7 +192,7 @@ def plot_things(files, ax, args):
             x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
             # print(x,y)
         else:
-            x, y, xticks = readfile(filename, args['columns'], args['header'])
+            x, y, xticks = readfile(filename, args['columns'], args['header'], xticksColumn=args['xticks_column'])
 
         if args['normalize']:
             y = normalize(y, args['normalize'])
@@ -263,6 +262,7 @@ ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, he
 ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
 ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
 
+ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
 ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
 ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
 
