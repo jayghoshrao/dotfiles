@@ -305,6 +305,8 @@ ap.add_argument("-mfc", "--marker-face-colors", nargs='*', help="marker face col
 ap.add_argument("-mec", "--marker-edge-colors", nargs='*', help="marker edge colors")
 
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
+
+ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
 ap.add_argument("-s", "--separator", default=',', help="separator character")
 
 ap.add_argument("-f", "--fill", type=float, help="fill area between provided curve and horizontal baseline at given y value.")
