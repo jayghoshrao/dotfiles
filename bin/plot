@@ -284,6 +284,9 @@ ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, he
 ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
 ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
 
+ap.add_argument("-rx", "--reverse-x", action='store_true', help="reverse x axis direction")
+ap.add_argument("-ry", "--reverse-y", action='store_true', help="reverse y axis direction")
+
 ap.add_argument("-xtx", "--xticks", nargs='*', type=float, help="x axis tick positions")
 ap.add_argument("-xtl", "--xtick-labels", nargs='*', help="x axis tick labels")
 
@@ -467,6 +470,14 @@ with plt.style.context(args['style']):
         all_lines = lines + lines2 
         all_labels = [l.get_label() for l in all_lines]
         ax.legend(all_lines, all_labels, loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+
+    if args['reverse_x']: 
+        xlim = ax.get_xlim()
+        ax.set_xlim((xlim[1], xlim[0]))
+
+    if args['reverse_y']: 
+        ylim = ax.get_ylim()
+        ax.set_ylim((ylim[1], ylim[0]))
 
     if args['output']:
         fig.savefig(args['output'], dpi=300)
