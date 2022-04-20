@@ -269,6 +269,9 @@ ap.add_argument("-fs", "--fig-size", nargs=2, default=[4.0, 3.0], type=float, he
 ap.add_argument("-xl", "--xlims",nargs=2, type=float, help="x axis limits")
 ap.add_argument("-yl", "--ylims",nargs=2, type=float, help="y axis limits")
 
+ap.add_argument("-xtx", "--xticks", nargs='*', type=float, help="x axis tick positions")
+ap.add_argument("-xtl", "--xtick-labels", nargs='*', help="x axis tick labels")
+
 ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
 ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
 ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
@@ -413,6 +416,16 @@ with plt.style.context(args['style']):
 
     fig, ax = plt.subplots(figsize=args['fig_size'])
     ax.set_prop_cycle(custom_cycler)
+
+    xtx, xtl = plt.xticks()
+
+    if args['xticks']:
+        xtx = args['xticks']
+    if args['xtick_labels']:
+        xtl = args['xtick_labels']
+
+    if args['xticks'] or args['xtick_labels']: 
+        plt.xticks(xtx, xtl)
 
     setup_main_axis(ax, args)
     lines = plot_things(args['files'], ax, args)
