@@ -187,6 +187,9 @@ def plot_things(files, ax, args):
     xs = []
     ys = []
     lines = []
+
+    bar_count = 0
+
     for filename,label,linestyle,marker,mfc,linewidth,zorder in zip(files, 
                                                                 args['labels'], 
                                                                 args['linestyles'], 
@@ -228,6 +231,18 @@ def plot_things(files, ax, args):
             if args['scatter']:
                 line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker)
                 lines.append(line)
+            elif args['bar']: 
+                ## INPROGRESS: Assumes x column in files is 1..n, and matches in all provided input files
+                indices = list(range(1,len(x)+1))
+                num_files = len(files)
+                width = args['bar_width']
+                shiftwidth = (num_files -1 )* width / 2.0 
+                position = [ bar_count * width - shiftwidth + i for i in indices]
+                line = ax.bar(position,y, width=width, label=label.replace('_', '-'))
+                lines.append(line)
+                bar_count = bar_count + 1
+                if args['xticks_column'] is not None: 
+                    plt.xticks(indices,xticks)
             else:
                 line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, markerfacecolor=mfc, linestyle=linestyle, linewidth=linewidth, zorder=zorder)
                 lines.extend(line)
@@ -273,6 +288,8 @@ ap.add_argument("-xtx", "--xticks", nargs='*', type=float, help="x axis tick pos
 ap.add_argument("-xtl", "--xtick-labels", nargs='*', help="x axis tick labels")
 
 ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
+ap.add_argument("--bar-width", type=float, default=0.25, help="Width of bar in bar charts")
+
 ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
 ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
 
@@ -320,6 +337,7 @@ ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
 
 ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
 ap.add_argument("--violin", action='store_true', help="Show a violin plot")
+ap.add_argument("--bar", action='store_true', help="Show a bar plot")
 
 ap.add_argument("-o", "--output", help="output file")
 ap.add_argument("-w", "--write", nargs='*', help="Write the CSV file (after applying rescaling if any)")
