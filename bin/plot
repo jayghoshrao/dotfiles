@@ -187,7 +187,14 @@ def plot_things(files, ax, args):
     xs = []
     ys = []
     lines = []
-    for filename,label,linestyle,marker,linewidth in zip(files, args['labels'], args['linestyles'], args['markers'], args['linewidths']):
+    for filename,label,linestyle,marker,mfc,linewidth,zorder in zip(files, 
+                                                                args['labels'], 
+                                                                args['linestyles'], 
+                                                                args['markers'], 
+                                                                args['marker_face_colors'],
+                                                                args['linewidths'], 
+                                                                args['zorder']
+                                                                ):
         if args['cadet']:
             x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
             # print(x,y)
@@ -222,7 +229,7 @@ def plot_things(files, ax, args):
                 line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker)
                 lines.append(line)
             else:
-                line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+                line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, markerfacecolor=mfc, linestyle=linestyle, linewidth=linewidth, zorder=zorder)
                 lines.extend(line)
         else:
             if args['histogram']:
@@ -268,9 +275,12 @@ ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific
 
 ap.add_argument("-ls", "--linestyles", nargs='*', help="linestyles = solid dashed ...")
 ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
-ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
 ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
-ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
+ap.add_argument("-z", "--zorder", nargs='*', type=int, help="zorder for each plot")
+ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
+ap.add_argument("-mfc", "--marker-face-colors", nargs='*', help="marker face colors")
+ap.add_argument("-mec", "--marker-edge-colors", nargs='*', help="marker edge colors")
+
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
 ap.add_argument("-s", "--separator", default=',', help="separator character")
 
@@ -360,11 +370,27 @@ elif len(args['linewidths']) == 1:
 else: 
     args['linewidths'] = iter(args['linewidths'])
 
+if not args['zorder']:
+    args['zorder'] = iter(range(1,n_total_files+1))
+    # args['zorder'] = []
+elif len(args['zorder']) == 1:
+    args['zorder'] = iter(args['zorder'] * n_total_files)
+else:
+    args['zorder'] = iter(args['zorder'])
+
+
 COLORS = plt.cm.get_cmap(args['colormap']).colors[:args['color_cycle_length']]
 custom_cycler = cycler('color', COLORS)
 
 COLORS2 = COLORS[len(args['files']):] + COLORS[:len(args['files'])]
 custom_cycler2 = cycler('color', COLORS2)
+
+if not args['marker_face_colors']:
+    args['marker_face_colors'] = iter(COLORS)
+elif len(args['marker_face_colors']) == 1:
+    args['marker_face_colors'] = iter(args['marker_face_colors'] * n_total_files)
+else:
+    args['marker_face_colors'] = iter(args['marker_face_colors'])
 
 with plt.style.context(args['style']):
 
