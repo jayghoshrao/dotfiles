@@ -19,23 +19,19 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
+  # nixpkgs.overlays = [];
 
   home.packages = with pkgs; [ 
     nix-direnv
     cachix
 
-    neovim-nightly
-    tree-sitter
+    vscode-extensions.ms-vscode.cpptools
+
     neomutt
     rr
 
     # glibc
-    gmsh
+    gmsh_with_libs
     comma
     ffsend
 
