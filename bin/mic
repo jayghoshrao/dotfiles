@@ -1,0 +1,128 @@
+#!/usr/bin/bash
+
+
+function listen() {
+    local firstRun=0
+
+    # Listen for changes and immediately create new output for the bar.
+    # This is faster than having the script on an interval.
+    pactl subscribe 2>/dev/null | {
+        while true; do
+            {
+                # If this is the first time just continue and print the current
+                # state. Otherwise wait for events. This is to prevent the
+                # module being empty until an event occurs.
+                if [ $firstRun -eq 0 ]; then
+                    firstRun=1
+                else
+                    read -r event || break
+                    # Avoid double events
+                    echo "$event"
+                    if ! echo "$event" | grep -e "on card" -e "on source" -e "on server"; then
+                        continue
+                    fi
+                fi
+            } &>/dev/null
+
+            if [[ "$1" == "current" ]] || [[ "$1" == "default" ]] ; then 
+                output_current
+            elif [[ "$1" == "all" ]] ; then
+                output_all
+            else
+                output_all
+            fi
+        done
+    }
+}
+
+function output_current() {
+    # Get active audio source index
+    CURRENT_SOURCE=$(pactl info | grep "Default Source" | cut -f3 -d" ")
+
+    # List lines in pactl after the source name match and pick mute status
+    MUTED=$(pactl list sources | grep -A 10 $CURRENT_SOURCE | grep "Mute: yes")
+
+    if [ -n "$MUTED" ]; then
+        echo "" ;
+    else
+        echo "" ;
+    fi
+}
+
+function output_all() {
+
+    ALL_SOURCES=$(pactl list short sources | awk '{print $2}')
+    # MUTED_ARRAY_INV=( )
+    SUM=0
+    while IFS= read -r line ; do
+        MUTED=$(pactl list sources | grep -A 10 $line | grep "Mute: yes")
+        # NOTE: Expects that the result of the $? operation is either 0 or 1
+        SUM=$((SUM + $?))
+    done <<< "$ALL_SOURCES"
+
+    # If SUM == sizeof(ALL_SOURCES): everything is on
+    # If SUM == 0: everything is off
+    
+    N_SOURCES=$(echo "$ALL_SOURCES" | wc -l)
+    
+    if [[ $SUM == 0 ]] ; then
+        echo "" ; 
+    elif [[ $SUM == $N_SOURCES ]] ; then
+        echo "" ;
+    else
+        echo "" ;
+    fi
+
+}
+
+function mute_all() {
+    ALL_SOURCES=$(pactl list short sources | awk '{print $2}')
+    # MUTED_ARRAY_INV=( )
+    SUM=0
+
+    flag=$1
+    [ -z $flag ] && flag="toggle"
+
+    while IFS= read -r line ; do
+        pactl set-source-mute "$line" $flag
+    done <<< "$ALL_SOURCES"
+}
+
+function mute_current() {
+    # Get active audio source index
+    CURRENT_SOURCE=$(pactl info | grep "Default Source" | cut -f3 -d" ")
+
+    flag=$1
+    [ -z $flag ] && flag="toggle"
+
+    pactl set-source-mute "$CURRENT_SOURCE" $flag
+}
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -l|--listen)
+            listen "$2"
+            shift # past value
+            shift
+            ;;
+        -ma|--mute-all)
+            mute_all $2
+            shift
+            shift
+            ;;
+        -m|--mute)
+            mute_current $2
+            shift
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters

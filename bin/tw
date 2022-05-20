@@ -1,0 +1,7 @@
+#!/bin/bash
+
+WINDOW=$(tmux list-windows -F "#{window_index}: #{window_name} - #{window_panes} panes" | fzf -0 -1 | cut -d ':' -f1)
+
+if [[ -n $WINDOW ]] ; then 
+    tmux select-window -t $WINDOW
+fi

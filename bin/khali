@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+## INPROGRESS: 
+
+cal=$(khal printcalendars | fzf --prompt="calendar ❯")
+echo "calendar: $cal"
+
+read -rep "start datetime: " sdti
+sdt=$(date -d "$sdti" '+%d/%m/%Y %H:%M')
+echo "start: $sdt"
+
+read -rep "end datetime/delta: " edt_delta
+read -rep "summary: " summary
+read -rep "location: " loc
+read -rep "timezone: " -i "Europe/Berlin" tz
+read -rep "description: " description
+read -rep "repeat: " repeat
+
+[ -n "$description" ] && description=":: $description"
+[ -n "$repeat" ] && repeat="-r $repeat"
+
+echo khal new \
+    -a "$cal" \
+    -l "$loc" \
+    $repeat \
+    $sdt $edt_delta $tz \
+    "$summary" \
+    "$description"
+
+read -rep "okay? [y/n]: " -i "y" okay
+
+[ "$okay" != 'y' ] && exit
+
+khal new \
+    -a "$cal" \
+    -l "$loc" \
+    $repeat \
+    $sdt $edt_delta $tz \
+    "$summary" \
+    "$description"

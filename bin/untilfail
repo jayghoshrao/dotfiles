@@ -1,0 +1,6 @@
+#!/bin/bash
+
+## Runs the command provided until it fails
+## Useful to find segfaults in parallel processing
+
+while "$@"; do :; done
