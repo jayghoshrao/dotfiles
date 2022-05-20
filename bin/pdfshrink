@@ -45,18 +45,19 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-
-gs -q -dNOPAUSE -dBATCH -dSAFER        \
-   -sDEVICE=pdfwrite                   \
-   -dCompatibilityLevel=1.4            \
-   -dPDFSETTINGS=/ebook                \
-   -dEmbedAllFonts=true                \
-   -dSubsetFonts=true                  \
-   -dColorImageDownsampleType=/Bicubic \
-   -dColorImageResolution=$reso        \
-   -dGrayImageDownsampleType=/Bicubic  \
-   -dGrayImageResolution=$reso         \
-   -dMonoImageDownsampleType=/Bicubic  \
-   -dMonoImageResolution=$reso         \
-   -sOutputFile="$2"                   \
-   "$1"
+for file in "$@" ; do 
+    gs -q -dNOPAUSE -dBATCH -dSAFER        \
+       -sDEVICE=pdfwrite                   \
+       -dCompatibilityLevel=1.4            \
+       -dPDFSETTINGS=/ebook                \
+       -dEmbedAllFonts=true                \
+       -dSubsetFonts=true                  \
+       -dColorImageDownsampleType=/Bicubic \
+       -dColorImageResolution=$reso        \
+       -dGrayImageDownsampleType=/Bicubic  \
+       -dGrayImageResolution=$reso         \
+       -dMonoImageDownsampleType=/Bicubic  \
+       -dMonoImageResolution=$reso         \
+       -sOutputFile="${file%%.pdf}""_shrunk.pdf"   \
+       "$file"
+done 

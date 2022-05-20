@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PORT=8087
+SERVER=ibt012
+
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
@@ -9,6 +12,16 @@ do
         -a|--all)
             declare -a POSITIONAL=("jayghoshter" "jayghoshrao" "rwth" "cats" "modsim")
             shift # past value
+            ;;
+        -p|--port)
+            PORT=$2
+            shift
+            shift
+            ;;
+        -s|--server)
+            SERVER=$2
+            shift
+            shift
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
@@ -22,8 +35,7 @@ function sync()
 {
     # echo "$1"
     if [[ "$1" == "modsim" ]] || [[ "$1" == "modsim-fuse" ]]; then
-        # ssh -qTfnN2 -D 8086 ibt014 && tsocks mbsync -q "$1"
-        ssh -qTfnN2 -D 8087 ibt012 && tsocks mbsync -q "$1"
+        ssh -qTYfnN2 -D $PORT $SERVER && tsocks mbsync -q "$1"
     else
         mbsync -q "$1"
     fi

@@ -6,4 +6,5 @@
 sudo mount --bind /home/jayghoshter/nix /nix
 systemctl restart nix-daemon.service
 
-module load nix
+echo "nix-env configured"
+echo "run 'module load nix' to enable nix on a given shell"

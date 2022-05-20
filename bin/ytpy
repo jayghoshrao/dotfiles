@@ -17,7 +17,7 @@ import argparse
 ## get youtube api key v3 from environment variable
 key=os.getenv('YOUTUBE_API_KEY')
 
-print(key)
+# print(key)
 
 base_api_url="https://www.googleapis.com/youtube/v3/"
 base_watch_url="https://youtube.com/watch?v="
