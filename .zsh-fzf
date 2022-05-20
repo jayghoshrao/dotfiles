@@ -242,7 +242,7 @@ fzf-locate-widget() {
   fi
   zle redisplay
 }
-zle     -N    fzf-locate-widget
+zle -N fzf-locate-widget
 # bindkey '\ei' fzf-locate-widget
 bindkey '^o' fzf-locate-widget
 
@@ -286,10 +286,10 @@ function fsend() {
     export FZF_DEFAULT_COMMAND='fd .'
 
     files=$(fzf -m --reverse -q "$1")
-    [ -z "$files" ] && exit
+    [ -z "$files" ] && return
 
     host=$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf)
-    [ -z "$host" ] && exit
+    [ -z "$host" ] && return
 
     host=$host":sent"
 

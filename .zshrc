@@ -13,6 +13,7 @@
 #
 #  Might wanna add `export XDG_CURRENT_DESKTOP=GNOME` to /etc/profile on fresh installs
 #  TODO: Install LMOD automatically if it doesn't exist
+#  https://ianthehenry.com/posts/zsh-autoquoter/
 
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
@@ -327,7 +328,7 @@ export LESS="-iR"
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;e:-!&evince $nnn*;j:jump'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}
@@ -403,7 +404,12 @@ xo()
     then
         EXT=${1##*.}
         scp -rC "$1" "/tmp/remotefile.$EXT"
-        nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+        if [[ $? -eq 0 ]] ; then 
+            nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+        else
+            >&2 echo "file not found!"
+            return -1
+        fi
     else
         nohup xdg-open "$@" >/dev/null 2>&1 & disown
     fi
@@ -766,6 +772,7 @@ alias mae="mamba env"
 
 alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
+alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 
 alias ne="nix-shell"
 alias ne="nix-env"
@@ -807,8 +814,15 @@ function is_chroot(){
 alias h="home-manager"
 alias hh="home-manager switch"
 alias he="home-manager edit"
+alias hg="home-manager generations"
 
 alias news="newsboat"
 alias newsc="vim ~/.newsboat/config"
 alias newsu="vim ~/.newsboat/urls"
 
+alias sst="ssh -O stop"
+
+function ssr() { 
+    ssh -O stop "$1"
+    ssh "$1"
+}

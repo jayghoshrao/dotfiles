@@ -322,6 +322,8 @@ bindsym  XF86AudioMute         exec  "amixer  -D  pulse  set       Master  Playb
 bindsym  $mod+plus  exec  "amixer  -q  sset   Master,0  10%+    unmute"
 bindsym  $mod+minus  exec  "amixer  -q  sset   Master,0  10%-    unmute"
 bindsym  $mod+m exec  "amixer  -D  pulse  set       Master  Playback  Switch  toggle"
+bindsym  $mod+shift+m exec "$SCRIPTS/mic -m toggle"
+bindsym  $mod+$alt+m exec "$SCRIPTS/mic -ma 1"
 
 bindsym XF86AudioPrev exec $SCRIPTS/musickeys.sh prev
 bindsym XF86AudioPlay exec $SCRIPTS/musickeys.sh toggle
@@ -493,7 +495,7 @@ bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop"
 bindsym F4 exec $SCRIPTS/transparency.sh
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | $SCRIPTS/filer                
-bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
+# bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
 bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
 

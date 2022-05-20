@@ -1,35 +1,30 @@
 "query:News:tags # \"news\""
 "query:Techstack:tags # \"techstack\""
+"query:HPC:tags # \"hpc\""
+"query:Podcasts:tags # \"podcast\""
+"query:Blogs:tags # \"blog\""
 
 https://hnrss.org/frontpage tech hn
+http://www.vox.com/rss/index.xml blog
+https://xkcd.com/rss.xml comics
+https://waitbutwhy.com/feed blog
+https://www.lesswrong.com/feed.xml?view=curated-rss
 
-# Programming blogs
-https://eli.thegreenplace.net/feeds/all.atom.xml blog programming
-https://fasterthanli.me/index.xml blog programming 
-
+https://hackaday.com/blog/feed/ 
 https://www.reddit.com/r/unixporn.rss reddit 
 https://www.reddit.com/r/linux.rss reddit linux
 https://www.archlinux.org/feeds/news/ linux arch
 
-"query:HPC:tags # \"hpc\""
+# # Programming blogs
+# https://eli.thegreenplace.net/feeds/all.atom.xml blog programming
+# https://fasterthanli.me/index.xml blog programming 
+
+# HPC
 https://scicomp.stackexchange.com/feeds scicomp hpc !hpc
 https://www.hpcwire.com/feed hpc !hpc
 https://www.reddit.com/r/HPC/.rss?format=xml hpc reddit !hpc
 https://insidehpc.com/feed hpc !hpc
 https://www.scientific-computing.com/feed/news.xml hpc !hpc
-
-http://www.vox.com/rss/index.xml blog
-https://xkcd.com/rss.xml comics
-https://waitbutwhy.com/feed blog
-http://feeds.feedburner.com/OpenCulture
-https://www.lesswrong.com/feed.xml?view=curated-rss
-https://feeds.simplecast.com/OzDH_At2
-http://seenunseen.ivm.libsynpro.com/rss podcast india
-http://nightvale.libsyn.com/rss podcast
-https://feeds.megaphone.fm/sciencevs podcast
-https://feeds.megaphone.fm/the-daily-show podcast news
-http://www.npr.org/rss/podcast.php?id=510298 podcast
-https://hackaday.com/blog/feed/ 
 
 # Techstack
 https://www.reddit.com/r/nix.rss reddit techstack !techstack
@@ -45,8 +40,16 @@ http://www.thehindu.com/news/national/?service=rss !news news india
 http://feeds.feedburner.com/ndtvnews-top-stories !news news india
 https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms !news news india
 
+# Podcasts
+http://seenunseen.ivm.libsynpro.com/rss podcast india !podcast
+http://nightvale.libsyn.com/rss podcast !podcast
+https://feeds.megaphone.fm/sciencevs podcast !podcast
+https://feeds.megaphone.fm/the-daily-show podcast news !podcast
+http://www.npr.org/rss/podcast.php?id=510298 podcast !podcast
 
-# "query:Podcasts:tags # \"podcast\""
+# Blogs
+https://rachelbythebay.com/w/atom.xml !blog blog
+
 
 # "query:Youtube:tags # \"youtube\""
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCweFJojRAFuxyYxe4KHL8vw !youtube youtube Runesmith DND

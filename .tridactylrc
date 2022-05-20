@@ -1,6 +1,6 @@
 " General Settings
 set configversion 2.0
-set update.lastchecktime 1610079039400
+set update.lastchecktime 1649403144400
 set update.nag true
 set update.nagwait 7
 set update.lastnaggedversion 1.14.0
@@ -49,10 +49,22 @@ set searchurls.osm https://www.openstreetmap.org/search?query=
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=
 set searchurls.gentoo_wiki https://wiki.gentoo.org/index.php?title=Special%3ASearch&profile=default&fulltext=Search&search=
 set searchurls.qwant https://www.qwant.com/?q=
+set searchurls.mso https://rwth.zoom.us/j/97725900365?pwd=QnRFbkI1YnBSN0xPSExSb2VYb2lwdz09
+set searchurls.gl http://www.google.com/search?q=%s&btnI=I%27m+Feeling+Lucky
+set searchurls.mar https://search.marginalia.nu/search?query=
+set searchurls.gh https://github.com/search?q=%s
 set searchurls.ddg https://duckduckgo.com/?q=
+set searchurls.rs https://redditle.com/search?q=
+set searchurls.pt https://phabricator.cats.rwth-aachen.de/T
+set searchurls.pd https://phabricator.cats.rwth-aachen.de/D
 set newtab about:blank
+set editorcmd termite -r _float -c ~/.config/i3/termite.sprd.cfg -e 'nvim +Goyo %f'
+set searchurl.pd https://phabricator.cats.rwth-aachen.de/D
 
 " Binds
+bind gnM tabopen https://faq.i3wm.org/question/5429/stay-in-mode-only-while-key-is-pressed.1.html
+bind goM open https://faq.i3wm.org/question/5429/stay-in-mode-only-while-key-is-pressed.1.html
+bind gwM winopen https://faq.i3wm.org/question/5429/stay-in-mode-only-while-key-is-pressed.1.html
 bind h tabprev
 bind l tabnext
 bind <A-p> pin
@@ -151,9 +163,9 @@ bind ;# hint -#
 bind ;v hint -W mpvsafe
 bind ;w hint -w
 bind ;t hint -W tabopen
-bind ;O hint -W fillcmdline_notrail open 
-bind ;W hint -W fillcmdline_notrail winopen 
-bind ;T hint -W fillcmdline_notrail tabopen 
+bind ;O hint -W fillcmdline_notrail open
+bind ;W hint -W fillcmdline_notrail winopen
+bind ;T hint -W fillcmdline_notrail tabopen
 bind ;z hint -z
 bind ;m composite hint -pipe img src | js -p tri.excmds.open('images.google.com/searchbyimage?image_url=' + JS_ARG)
 bind ;M composite hint -pipe img src | jsb -p tri.excmds.tabopen('images.google.com/searchbyimage?image_url=' + JS_ARG)
@@ -199,6 +211,17 @@ bind ;K hint -K
 bind ;x hint -F e => { const pos = tri.dom.getAbsoluteCentre(e); tri.excmds.exclaim_quiet("xdotool mousemove --sync " + pos.x + " " + pos.y + "; xdotool click 1")}
 bind ;X hint -F e => { const pos = tri.dom.getAbsoluteCentre(e); tri.excmds.exclaim_quiet("xdotool mousemove --sync " + pos.x + " " + pos.y + "; xdotool keydown ctrl+shift; xdotool click 1; xdotool keyup ctrl+shift")}
 bind ;Y hint -cF img i => tri.excmds.yankimage(tri.urlutils.getAbsoluteURL(i.src))
+bind yo clipboard yankorg
+bind ga tabaudio
+bind gn4 tabopen about:blank
+bind go4 open about:blank
+bind gw4 winopen about:blank
+bind gnm tabopen https://www.youtube.com/playlist?list=WL
+bind gom open https://www.youtube.com/playlist?list=WL
+bind gwm winopen https://www.youtube.com/playlist?list=WL
+bind gnY tabopen https://nextcloud.jayghoshrao.xyz/login
+bind goY open https://nextcloud.jayghoshrao.xyz/login
+bind gwY winopen https://nextcloud.jayghoshrao.xyz/login
 
 " Aliases
 command alias command
@@ -256,7 +279,7 @@ alias man help
 alias !js fillcmdline_tmp 3000 !js is deprecated. Please use js instead
 alias !jsb fillcmdline_tmp 3000 !jsb is deprecated. Please use jsb instead
 alias get_current_url js document.location.href
-alias current_url composite get_current_url | fillcmdline_notrail 
+alias current_url composite get_current_url | fillcmdline_notrail
 alias stop js window.stop()
 alias zo zoom
 alias installnative nativeinstall
@@ -274,6 +297,7 @@ alias tabclosealltoright tabcloseallto right
 alias tabclosealltoleft tabcloseallto left
 alias reibadailty jumble
 alias pocket js -s ~/bin/pocket-bookmarklet.js
+alias saveas! saveas --cleanup --overwrite
 
 " For syntax highlighting see https://github.com/tridactyl/vim-tridactyl
 " vim: set filetype=tridactyl
