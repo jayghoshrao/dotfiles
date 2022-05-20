@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+## NOTE: Only counts $HOME/.config directory
+
+. "$(dirname "$0")"/.nnn-plugin-helper
+
+function preFlightCheck()
+{
+    TOOLS=(autojump fzf)
+
+    exitFlag=0;
+
+    for TOOL in ${TOOLS[@]}; do 
+        if [ -x "$(command -v $TOOL )" ]; then
+            echo -ne "> Found $TOOL!      \r"
+        else 
+            echo "ERR: $TOOL doesn't exist."
+            exitFlag=1;
+        fi
+    done
+
+    if ((exitFlag == 1)); then
+        echo "Please install prerequisites!"
+        exit
+    fi
+}
+
+
+nnn_cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --reverse --inline-info)" 
+
