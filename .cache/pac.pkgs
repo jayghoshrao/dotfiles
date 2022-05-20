@@ -12,7 +12,6 @@ awesome-terminal-fonts
 b43-fwcutter
 baobab
 bash-language-server
-beets
 bind
 bison
 blueman
@@ -96,6 +95,7 @@ gstreamer-vaapi
 gtop
 gufw
 gutenprint
+guvcview
 haveged
 hddtemp
 hplip
@@ -274,10 +274,12 @@ vi
 vimiv
 virt-manager
 visidata
+vlc
 vscode-json-languageserver
 whois
 wkhtmltopdf
 wmctrl
+xca
 xcape
 xdg-user-dirs-gtk
 xdo
