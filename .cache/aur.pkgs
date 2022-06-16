@@ -8,6 +8,7 @@ autotrace
 bibata-cursor-theme
 brotab-git
 c2esp
+calcure
 chromium-widevine
 conky-lua
 cozy-audiobooks
@@ -68,7 +69,6 @@ pdftag
 perl-devel-overloadinfo
 perl-getopt-long-descriptive
 pmount
-polybar
 proton
 pulseaudio-control
 pup-git
@@ -85,7 +85,6 @@ python-selenium
 python-spotipy-git
 python-umonitor-git
 python2-pip
-qgnomeplatform
 qjoypad
 qt5-styleplugins
 qt5-webengine-widevine
@@ -93,11 +92,13 @@ r8152-dkms
 remmina-plugin-rdesktop
 ripgrep-all-bin
 rocketchat-client-bin
+rs-git
 rtv
 samsung-printers
 sc-im
 scholarref-git
 shantz-xwinwrap-bzr
+sioyek
 skypeforlinux-stable-bin
 snapd
 socli

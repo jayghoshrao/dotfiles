@@ -183,6 +183,7 @@ picard
 pinta
 pkgfile
 playerctl
+polybar
 powerline-fonts
 powertop
 prettyping
@@ -203,6 +204,7 @@ python-rich
 python-scikit-learn
 python-seaborn
 python-virtualenv
+qgnomeplatform-qt5
 qt5-networkauth
 qt5-xcb-private-headers
 qt5ct
@@ -217,7 +219,6 @@ rofi-calc
 rofi-pass
 scdoc
 screenfetch
-shellcheck
 shfmt
 sox
 speedtest-cli

@@ -5,5 +5,5 @@ shift
 
 for arg in "$@"
 do
-    paste -d ',' "$times" "$arg" > "$arg""_withtime.csv"
+    paste -d ',' "$times" "$arg" > "new_""$arg"
 done
