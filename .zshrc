@@ -328,7 +328,7 @@ export LESS="-iR"
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;e:-!&evince $nnn*;j:jump;a:autojump'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;e:-!&evince $nnn*;j:jump;a:autojump;x:-!&xdg-open $nnn*'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}
@@ -361,7 +361,7 @@ alias fu="findup.py"
 
 # alias -g ff="fuzscope | filer"
 alias -g ff="fuzscope | peek"
-alias -g G='| grep -i'  ## Global alias
+alias -g G='| grep -i --color'  ## Global alias
 alias -g F='| fzf'  ## Global alias
 alias -g X='>/dev/null 2>&1 & disown'
 alias -g T='|& tee'
