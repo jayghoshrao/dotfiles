@@ -74,7 +74,8 @@ def get_search(query, qtype='video' ):
 
 
 def play_video(videoId, playcmd):
-        os.system(playcmd + ' ' + base_watch_url + videoId)
+    print(base_watch_url + videoId)
+    os.system(playcmd + ' ' + base_watch_url + videoId)
 
 def search_and_resolve(query, args, playcmd):
     search_res = get_search(query, args['type'])
