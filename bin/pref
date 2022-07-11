@@ -12,7 +12,8 @@ IMAGEFILE='/tmp/screenshot'
 
 echo "file: $IMAGEFILE"
 
-OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f'| vipe ) 
+# OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f'| vipe ) 
+OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f') 
 
 [ -z "$OUT" ] || echo -e "$OUT" | getdoi -o 
 

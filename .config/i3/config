@@ -493,6 +493,7 @@ bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
 bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
 bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
 bindsym F4 exec $SCRIPTS/transparency.sh
+bindsym --release F10 exec --no-startup-id $SCRIPTS/pref 
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | $SCRIPTS/filer                
 # bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
