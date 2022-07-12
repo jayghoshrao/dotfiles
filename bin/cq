@@ -69,6 +69,36 @@ function shdownload()
     # curl --silent -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36" $url
 }
 
+
+function getIndex(){
+
+    if [[ $FIRST == true ]]; then 
+        NUM=0
+    else 
+        NUM=$(echo "$1" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+    fi
+
+    echo "$NUM"
+}
+
+function resolveAction()
+{
+    if [[ -z "$PROMPT" ]]; then 
+        read -r -p "[b]rowse, [d]ownload, [g]oogle scholar?: " -e -i "$PROMPT" PROMPT
+    fi
+
+    if [[ "$PROMPT" == "b" ]]; then 
+        nohup xdg-open "$LINK" >/dev/null 2>&1 & disown
+    elif [[ "$PROMPT" == "d" ]]; then
+        shdownload "$DOI"
+    elif [[ "$PROMPT" == "g" ]]; then
+        htmled_title=$(htmlify_spaces "$TITLE")
+        nohup xdg-open "$SCHOLAR_LINK_BASE$htmled_title" >/dev/null 2>&1 & disown
+    fi
+
+}
+
+
 function fetchFromQuery()
 {
     FIELD="$1"
@@ -89,7 +119,9 @@ function fetchFromQuery()
     # exit
 
     QRESULTS=$(curl -H "User-Agent: ptd (mailto:jayghoshter@gmail.com)" -sX GET "$URL")
-    NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+    # NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+    NUM=$(getIndex "$QRESULTS")
+
     # if [ ! -z "$NUM" ]; then 
     while [ -n "$NUM" ]; do
         # DATACMD='echo "$QRESULTS" | jq -r ".message.items[$NUM]"'
@@ -107,18 +139,15 @@ function fetchFromQuery()
         echo -e "Title: $TITLE"
         echo -e "Link: $LINK"
 
-        PROMPT=""
-        read -r -p "[b]rowse, [d]ownload, [g]oogle scholar?: " -e -i "$PROMPT" PROMPT
-        if [[ "$PROMPT" == "b" ]]; then 
-            nohup xdg-open "$LINK" >/dev/null 2>&1 & disown
-        elif [[ "$PROMPT" == "d" ]]; then
-            shdownload "$DOI"
-        elif [[ "$PROMPT" == "g" ]]; then
-            htmled_title=$(htmlify_spaces "$TITLE")
-            nohup xdg-open "$SCHOLAR_LINK_BASE$htmled_title" >/dev/null 2>&1 & disown
-        fi
+        resolveAction
         
-        NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+        # NUM=$(echo "$QRESULTS" | jq -r '.message.items[] | [.issued."date-parts"[0][0], .author[0].family, .title[0]] | @csv' | awk '{ print NR-1, ",", $0 }'  | fzf | awk '{print $1}')
+        if [[ $SINGLERUN == true ]]; then
+            NUM=""
+        else
+            NUM=$(getIndex "$QRESULTS")
+        fi
+
         
     done
 }
@@ -128,6 +157,9 @@ SORT=""
 FILTER=""
 ROWS=""
 POSITIONAL=()
+FIRST=false
+SINGLERUN=false
+PROMPT=""
 while [[ $# -gt 0 ]]
 do
     key="$1"
@@ -166,6 +198,19 @@ do
             ;;
         -o|--order)
             ORDER="$2"
+            shift
+            shift
+            ;;
+        --first)
+            FIRST=true
+            shift
+            ;;
+        --singlerun)
+            SINGLERUN=true
+            shift
+            ;;
+        -p|--prompt)
+            PROMPT="$2"
             shift
             shift
             ;;
