@@ -38,6 +38,7 @@ import unicodedata
 import subprocess
 import sys
 from rich.console import Console
+import requests
 
 fzf = FzfPrompt()
 console = Console()
@@ -103,6 +104,7 @@ def main():
     ap.add_argument("-d", "--delete", action='store_true', default=False, help="delete existing tags")
     ap.add_argument("-f", "--folder", action='store_true', default=False, help="start in folder mode")
     ap.add_argument("-p", "--print", action='store_true', default=False, help="print existing tags")
+    ap.add_argument("--bib", action='store_true', default=False, help="fetch bibliography")
     ap.add_argument("-c", "--cli-append", nargs='*', help="start in folder mode")
     ap.add_argument("-r", "--reverse", action='store_true', default=False, help="sort in reverse order")
     ap.add_argument("FILES", nargs='*', help="files")
@@ -179,10 +181,22 @@ def main():
                     pdf_file.Info.Keywords = ', '.join(tags).strip()
                     PdfWriter(current_file, trailer=pdf_file).write()
 
+                # INPROGRESS:
+                if args['bib']:
+                    # curl -sLH "Accept: text/bibliography; style=bibtex" http://dx.doi.org/$DOI
+                    doi = get_doi(current_file)
+                    url = f"http://dx.doi.org/{doi}"
+                    print(url)
+                    headers = {"Accept": "text/bibliography; style=bibtex"}
+                    res = requests.get(url, headers=headers)
+                    print(res.content.decode('utf-8'))
+                    input()
+
                 if args['print']:
                     # print(current_file + ': ', ','.join(tags))
                     console.print(current_file, style="bold red")
                     console.print(', '.join(tags) + "\n", style="yellow")
+                    input()
 
             if args['folder']:
                 selected_files, index = select_files(args, index+1)
@@ -205,6 +219,12 @@ def main():
                 #     tags_files.update({tag: tfiles})
 
             # print(tags_files)
+
+def get_doi(current_file): 
+    pdf_file = PdfReader(current_file)
+    doi_link = pdf_file.Info.Subject.strip('()<>')
+    print("pdfInfo DOI link:", doi_link)
+    return doi_link.removeprefix('https://dx.doi.org/')
 
 def get_tags(current_file):
     pdf_file = PdfReader(current_file)
