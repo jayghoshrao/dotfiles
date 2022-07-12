@@ -22,6 +22,7 @@
 ## DONE: extract and fetch mechanism for PII, Arxiv, Scholar
 
 ## FIXME: null-null-null.pdf
+## FIXME: Don't overwrite existing files
 
 ## TODO: I should technically also check the status of the message returned from the API to verify things. Maybe in the next python rewrite. 
 ## DONE: recursive mode will require file path handling: use bash instead?: See ptdr, wrapper script
@@ -141,9 +142,10 @@ function processPages()
     FILENAME="$1"
     PDFPAGES=$(pdftotext -f 1 -l 3 "$FILENAME" - )
     # CONTEXT=$(echo "$PDFPAGES" | grep -Pi   '10.\d{4,9}/[A-Z0-9./:;()-]+')
-    DOI=$(echo "$PDFPAGES" | grep -Pio '10.\d{4,9}/[A-Z0-9./:;()-]+' | head -n 1)
+    DOI=$(echo "$PDFPAGES" | grep -Pio '10.\d{4,9}/[A-Z0-9./:;()-_]+' | head -n 1)
     PII=$(echo "$PDFPAGES" | grep -Pio '[S,B][0-9()-/]*' | head -n 1)
-    ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}v?\d?' | head -n 1)
+    # ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}v?\d?' | head -n 1)
+    ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}' | head -n 1)
 
     if [ -n "$DOI" ]; then
         echo "== context =="
@@ -153,7 +155,7 @@ function processPages()
         processJSON "$DATA"
     elif [ -n "$ARXIV" ]; then
         echo "== context =="
-        echo "$PDFPAGES" | grep -Pio '\d{4}.\d{4}v?\d?' | head -n 1
+        echo "$PDFPAGES" | grep -Pio '\d{4}.\d{4}' | head -n 1
         [[ "$AUTOMODE" != "ON" ]] && read -p "Continue [Enter] / Fix ARXIV:" -e -i "$ARXIV" ARXIV
         [ -n "$ARXIV" ] && DATA=$(fetchFromArxiv "$ARXIV" "$FILENAME")
         processXML "$DATA"
@@ -187,7 +189,7 @@ function processQuery()
     zathura "$FILENAME" > /dev/null 2>&1 & PDF_PID="$!"
     sleep 1
     PDFPAGES=$(pdftotext -f 1 -l 3 "$FILENAME" - )
-    QTITLE=$(echo "$PDFPAGES" | vipe)
+    QTITLE=$(echo "$PDFPAGES" | vipe | tr '–:.-' ' ')
 
     if [ -n "$QTITLE" ]; then
         QTITLE=$(tr ' ' '+' <<< $QTITLE)
