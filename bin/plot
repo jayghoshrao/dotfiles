@@ -301,6 +301,14 @@ def plot_things(files, ax, args):
             ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
             plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
 
+        if args['annotate_pointwise_from_xticks_column']: 
+            x_pad = args['annotate_pointwise_from_xticks_column'][0]
+            y_pad = args['annotate_pointwise_from_xticks_column'][1]
+            x_delta = x[0] * x_pad
+            y_delta = y[0] * y_pad
+            for ia, annot in enumerate(xticks): 
+                ax.annotate(annot, (x[ia] + x_delta, y[ia] + y_delta))
+
 
 
     if args['violin']: 
@@ -336,6 +344,8 @@ ap.add_argument("-ytl", "--ytick-labels", nargs='*', help="y axis tick labels")
 
 ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
 ap.add_argument("--bar-width", type=float, default=0.25, help="Width of bar in bar charts")
+
+ap.add_argument("-apfxc", "--annotate-pointwise-from-xticks-column", nargs=2, type=float, help="Use --xticks-column column from input file to annotate points. arg values are for padding")
 
 ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
 ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
