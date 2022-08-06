@@ -21,6 +21,7 @@ function _G.TexSettings()
     -- silent = true })
   -- vim.api.nvim_buf_set_keymap( 0, 'n', '-', [[:<C-u>lua require'lir.actions'.up()<CR>]], { noremap = true, silent = true })
   bufmap('n', '<leader>z', [[:!nohup zathura '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
+  bufmap('n', '<leader>s', [[:!nohup sioyek '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
   bufmap('n', '<leader>c', [[:!pdflatex '%' <CR>]], {silent = true})
   bufmap('n', '<leader>t', [[:!tectonic '%' <CR>]], {silent = true})
 end
@@ -30,6 +31,7 @@ function _G.MarkdownSettings()
   bufmap('n', '<leader>c', [[:AsyncRun pandoc -t pdf --filter=mermaid-filter -o '%<.pdf' '%'<CR>]])
   bufmap('n', '<leader>b', [[:AsyncRun pandoc -t beamer --filter=mermaid-filter -o '%<.pdf' '%'<CR>]])
   bufmap('n', '<leader>z', [[:!nohup zathura '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
+  bufmap('n', '<leader>s', [[:!nohup sioyek '%<.pdf' > /dev/null 2>&1 & disown<CR><CR>]], {silent = true})
 end
 
 M = {}
