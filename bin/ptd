@@ -189,7 +189,7 @@ function processQuery()
     zathura "$FILENAME" > /dev/null 2>&1 & PDF_PID="$!"
     sleep 1
     PDFPAGES=$(pdftotext -f 1 -l 3 "$FILENAME" - )
-    QTITLE=$(echo "$PDFPAGES" | vipe | tr '–:.-' ' ')
+    QTITLE=$(echo "$PDFPAGES" | vipe | tr '–:.?,-' ' ')
 
     if [ -n "$QTITLE" ]; then
         QTITLE=$(tr ' ' '+' <<< $QTITLE)
