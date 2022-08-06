@@ -217,6 +217,12 @@ def plot_things(files, ax, args):
         if args['yscale']:
             y = scale_axis(y, args['yscale'])
 
+        ## Unlike --xlog and --ylog, these actually scale the data
+        if args['xlogify']: 
+            x = np.log10(x)
+        if args['ylogify']: 
+            y = np.log10(y)
+
         if args['smoothen']: 
             xsmooth = np.linspace(min(x), max(x), args['smoothen_npoints']) 
             x_new = np.array(x)
@@ -345,6 +351,9 @@ ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lin
 
 ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
 ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
+
+ap.add_argument("--xlogify", action='store_true', help="Plot log of x axis data")
+ap.add_argument("--ylogify", action='store_true', help="Plot log of y axis data")
 
 ap.add_argument("--scatter", action='store_true', help="Show a scatter plot")
 ap.add_argument("--violin", action='store_true', help="Show a violin plot")
