@@ -20,7 +20,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from cycler import cycler
 # import csv
-from itertools import cycle, islice
+from itertools import cycle, islice, repeat
 import sys
 import argparse
 from subprocess import run
@@ -190,11 +190,12 @@ def plot_things(files, ax, args):
 
     bar_count = 0
 
-    for filename,label,linestyle,marker,mfc,linewidth,zorder in zip(files, 
+    for filename,label,linestyle,marker,mfc,mec,linewidth,zorder in zip(files, 
                                                                 args['labels'], 
                                                                 args['linestyles'], 
                                                                 args['markers'], 
                                                                 args['marker_face_colors'],
+                                                                args['marker_edge_colors'],
                                                                 args['linewidths'], 
                                                                 args['zorder']
                                                                 ):
@@ -240,7 +241,7 @@ def plot_things(files, ax, args):
 
         if len(x) > 0: 
             if args['scatter']:
-                line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker)
+                line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker, c=mfc, edgecolors=mec)
                 lines.append(line)
             elif args['bar']: 
                 ## INPROGRESS: Assumes x column in files is 1..n, and matches in all provided input files
@@ -435,11 +436,18 @@ if args['line_color_indices2']:
 custom_cycler2 = cycler('color', COLORS2)
 
 if not args['marker_face_colors']:
-    args['marker_face_colors'] = iter(COLORS)
+    args['marker_face_colors'] = cycle(COLORS)
 elif len(args['marker_face_colors']) == 1:
     args['marker_face_colors'] = iter(args['marker_face_colors'] * n_total_files)
 else:
     args['marker_face_colors'] = iter(args['marker_face_colors'])
+
+if not args['marker_edge_colors']:
+    args['marker_edge_colors'] = cycle(COLORS)
+elif len(args['marker_edge_colors']) == 1:
+    args['marker_edge_colors'] = iter(args['marker_edge_colors'] * n_total_files)
+else:
+    args['marker_edge_colors'] = iter(args['marker_edge_colors'])
 
 with plt.style.context(args['style']):
 
