@@ -218,11 +218,16 @@ def plot_things(files, ax, args):
             y = scale_axis(y, args['yscale'])
 
         if args['smoothen']: 
-            xnew = np.linspace(min(x), max(x), args['smoothen']) 
-            spl = make_interp_spline(x, y, k=3)  # type: BSpline
-            ynew = spl(xnew)
-            x = xnew
-            y = ynew
+            xsmooth = np.linspace(min(x), max(x), args['smoothen_npoints']) 
+            x_new = np.array(x)
+            y_new = np.array(y)
+            ordering = x_new.argsort()
+            x_new = x_new[ordering]
+            y_new = y_new[ordering]
+            spl = make_interp_spline(x_new, y_new, k=args['smoothen'])  # type: BSpline
+            ysmooth = spl(xsmooth)
+            x = xsmooth
+            y = ysmooth
 
         xs.append(x)
         ys.append(y)
@@ -326,7 +331,8 @@ ap.add_argument("--legend-frameon", action='store_true', help="Draw frame around
 ap.add_argument("--legend-size", default='medium', help="Legend font size:int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}")
 ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in legend")
 
-ap.add_argument("--smoothen", nargs='?', type=int, const=250, help="Cubic spline interpolation through provided data")
+ap.add_argument("--smoothen", nargs='?', type=int, const=3, help="(Cubic) spline interpolation through provided data. --smoothen <order>, with default order=3")
+ap.add_argument("--smoothen-npoints", default=250, type=int, help="Number of points to use for --smoothen interpolation")
 
 ap.add_argument("-n", "--normalize", nargs='?', const='self', help="normalize y data to given value or 'self'")
 ap.add_argument("-nx", "--normalize-x", nargs='?', const='self', help="normalize y data to given value or 'self'")
