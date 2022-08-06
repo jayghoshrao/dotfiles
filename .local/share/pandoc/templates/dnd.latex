@@ -5,12 +5,12 @@
 % Example input file: https://t.co/Jl73l6p8rA
 % Example output file: https://t.co/udpLlvml8X
 
-\documentclass{dndbook}
+\documentclass[twocolumn]{dndbook}
  
 \providecommand{\note}{\textsf}
-\renewcommand{\large}{\normalsize}
-\renewcommand{\huge}{\normalsize}
-\renewcommand{\Huge}{\normalsize}
+% \renewcommand{\large}{\normalsize}
+% \renewcommand{\huge}{\normalsize}
+% \renewcommand{\Huge}{\normalsize}
 
 % % optionally, change all figures to margin figures (Caleb McDaniel)
 % $if(marginfigures)$
@@ -24,6 +24,7 @@
 
 % ams
 \usepackage{amssymb,amsmath}
+\usepackage{fontawesome}
 
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
@@ -92,6 +93,11 @@ $endif$
  
 % lipsum
 \usepackage{lipsum}
+
+
+\newcommand{\dndrolls}[1]{% \repeat already defined
+    \foreach \n in {1,...,#1}{\ \faCircleO}
+}
  
 % These commands are used to pretty-print LaTeX commands
 \newcommand{\doccmd}[1]{\texttt{\textbackslash#1}}% command name -- adds backslash automatically
