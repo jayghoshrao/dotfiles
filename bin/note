@@ -25,7 +25,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 cd "$DIR" || exit
 
 EDITOR=nvim
-FLAGS=+ZenMode
+# FLAGS=+ZenMode
 
-"$EDITOR" "$FLAGS" "$@".md
+"$EDITOR" "$@".md
 
