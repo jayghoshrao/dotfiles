@@ -372,12 +372,16 @@ bindsym $mod+Escape mode "$mode_system"
 # # }}}
 
 # MODE: System Utils: {{{
-set $mode_utils [s]creenshot | [S]nip
+set $mode_utils [s]creenshot | [S]nip | [o]cr | [d]oi
 mode "$mode_utils"
 {
     bindsym s exec --no-startup-id scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`', mode "default"
 
     bindsym --release shift+S exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`', mode "default"
+
+    bindsym --release o exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | xclip -selection clipboard -i', mode "default"
+
+    bindsym --release d exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
 	# back to normal: Enter or Escape
 	bindsym Return mode "default"
@@ -492,10 +496,11 @@ bindsym $mod+shift+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i
 bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
 bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
 bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
-bindsym F4 exec $SCRIPTS/transparency.sh
-bindsym --release F10 exec --no-startup-id $SCRIPTS/pref 
+# bindsym F4 exec $SCRIPTS/transparency.sh
+bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
+bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
-bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | $SCRIPTS/filer                
+bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i sioyek {}
 # bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
 bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
@@ -579,6 +584,8 @@ bindsym $mod+d mode "$mode_deskenv"
 # Dunst controls
 bindsym $alt+period exec --no-startup-id dunstctl history-pop &
 bindsym Control+period exec --no-startup-id dunstctl close &
+
+
 
 ## NOTE: Deactivates lxappearance
 # exec --no-startup-id /usr/lib/gsd-xsettings
