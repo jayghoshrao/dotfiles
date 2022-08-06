@@ -28,13 +28,13 @@ catch2
 ccls
 cgal
 chromium
+cmatrix
 code
 cowsay
 cpanminus
 cpupower
 cronie
 cryfs
-crypto++
 cscope
 ctags
 dash
@@ -107,7 +107,7 @@ hyperfine
 imagescan
 inetutils
 inotify-tools
-intel-mkl-static
+intel-oneapi-mkl
 intel-ucode
 ipw2100-fw
 ipw2200-fw
@@ -121,6 +121,7 @@ krita
 kvantum-theme-materia
 lapacke
 lazygit
+libsixel
 licenses
 lightdm-webkit-theme-litarvan
 linux
@@ -131,7 +132,6 @@ luit
 lvtk
 lxappearance
 magic-wormhole
-man-db
 man-pages
 materia-gtk-theme
 meld
@@ -199,11 +199,10 @@ python-google-api-core
 python-i3ipc
 python-oauth2client
 python-parsedatetime
+python-poetry
 python-praw
-python-rich
 python-scikit-learn
 python-seaborn
-python-virtualenv
 qgnomeplatform-qt5
 qt5-networkauth
 qt5-xcb-private-headers
