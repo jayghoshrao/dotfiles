@@ -16,6 +16,8 @@ Takes in CSV files with X-Y info (or just Y info) and plots it.
 - Transformations: xscale, yscale, normalization, smoothen
 """
 
+from scipy.interpolate import interp1d
+from sklearn.linear_model import LinearRegression
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from cycler import cycler
@@ -44,6 +46,34 @@ qualitative_colormaps = ['Pastel1', 'Pastel2', 'Paired', 'Accent', 'Dark2', 'Set
 def cmap_colors_to_hex(cmap_colors): 
     # USAGE: cmap_colors_to_hex(plt.cm.tab10.colors)
     return list(map(lambda x: mpl.colors.rgb2hex(x), cmap_colors))
+
+def abline(ax, slope, intercept, ls='dashed', lw=1):
+    """Plot a line from slope and intercept"""
+    axes = plt.gca()
+    x_vals = np.array(axes.get_xlim())
+    y_vals = intercept + slope * x_vals
+    ax.plot(x_vals, y_vals, ls=ls, lw=lw, c='gray')
+
+def extrapolate(x0, y0, x, kind='linear'): 
+    f = interp1d(x0, y0, kind=kind, fill_value='extrapolate')
+    return f(x)
+
+def error(x0, y0, x, y, mode=2, normalize=True):
+    """
+    Calculate the norm error of x,y with respect to x0,y0
+    """
+
+    f = interp1d(x0, y0, fill_value='extrapolate')
+    y0new = f(x)
+    dy = [ (n1 - n2) for n1, n2 in zip(y, y0new) ]
+
+    result = np.linalg.norm(dy, ord=mode)
+
+    if normalize:
+        denom = np.linalg.norm(y0, ord=mode)
+        result = result/denom
+
+    return result 
 
 def readCSV(data_path):
     time= []
@@ -301,6 +331,8 @@ ap.add_argument("-ry", "--reverse-y", action='store_true', help="reverse y axis 
 
 ap.add_argument("-xtx", "--xticks", nargs='*', type=float, help="x axis tick positions")
 ap.add_argument("-xtl", "--xtick-labels", nargs='*', help="x axis tick labels")
+ap.add_argument("-ytx", "--yticks", nargs='*', type=float, help="y axis tick positions")
+ap.add_argument("-ytl", "--ytick-labels", nargs='*', help="y axis tick labels")
 
 ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
 ap.add_argument("--bar-width", type=float, default=0.25, help="Width of bar in bar charts")
@@ -352,6 +384,12 @@ ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a num
 
 ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
 ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
+ap.add_argument("--line", nargs=2, type=float, action='append', help="Add line with <slope> and <intercept>")
+ap.add_argument("--fit-lines", action='store_true', help="Fit a linear regression through given set of datapoints")
+
+ap.add_argument("--error", help="Calculate RMSE for data with this file as reference")
+
+ap.add_argument("--extrapolate", nargs='?', const='linear', help="extrapolate the given curve")
 
 ap.add_argument("--xlog", action='store_true', help="X axis in log scale")
 ap.add_argument("--ylog", action='store_true', help="Y axis in log scale")
@@ -481,6 +519,17 @@ with plt.style.context(args['style']):
     if args['xticks'] or args['xtick_labels']: 
         plt.xticks(xtx, xtl)
 
+    yty, ytl = plt.yticks()
+
+    if args['yticks']:
+        yty = args['yticks']
+    if args['ytick_labels']:
+        ytl = args['ytick_labels']
+
+    if args['yticks'] or args['ytick_labels']: 
+        plt.yticks(yty, ytl)
+
+
     setup_main_axis(ax, args)
     xs, ys, lines = plot_things(args['files'], ax, args)
 
@@ -491,13 +540,51 @@ with plt.style.context(args['style']):
         setup_twin_axis(ax2, args)
         xs2, ys2, lines2 = plot_things(args['twinx'], ax2, args)
 
+    if args['fit_lines']: 
+        ## TODO: Move it somewhere better
+        for x,y,filename in zip(xs, ys, args['files']): 
+            X = np.array(x).reshape(-1,1)
+            Y = np.array(y)
+
+            model = LinearRegression()
+            model.fit(X, Y)
+
+            score = model.score(X,Y)
+            abline(ax, model.coef_, model.intercept_, lw=2, ls='dashed')
+            print(f"{filename}: R2={score} | m={model.coef_} | c={model.intercept_}")
+
+    if args['error']: 
+        x0, y0, _ = readfile(args['error'])
+        print(f"Reference file: {args['error']}")
+        errors = []
+        for x,y,filename in zip(xs, ys, args['files']): 
+            value = error(x0,y0,x,y)
+            errors.append(value)
+            print(f"{filename}: error = {value}")
+
+        # figbar, axbar = plt.subplots(figsize=args['fig_size'])
+        # axbar.plot(range(len(errors)), errors)
+
+    ## TODO: Connect with --smoothen
+    if args['extrapolate']:
+        xlim = ax.get_xlim()
+        xsmooth = np.linspace(xlim[0], xlim[1], 250) 
+        for x,y,filename in zip(xs, ys, args['files']): 
+            ysmooth = extrapolate(x,y,xsmooth, kind=args['extrapolate'])
+            plt.plot(xsmooth, ysmooth, label=f"{args['extrapolate']} extrapolation")
+
+    ## TODO: update style for these
     if args['hlines']:
         xlim = ax.get_xlim()
-        plt.hlines(args['hlines'], xlim[0], xlim[1])
+        ax.hlines(args['hlines'], xlim[0], xlim[1])
 
     if args['vlines']:
         ylim = ax.get_ylim()
-        plt.vlines(args['vlines'], ylim[0], ylim[1])
+        ax.vlines(args['vlines'], ylim[0], ylim[1])
+
+    if args['line']: 
+        for line in args['line']: 
+            abline(line[0], line[1])
 
     if not args['no_legend']:
         all_lines = lines + lines2 
