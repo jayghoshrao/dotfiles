@@ -315,6 +315,9 @@ ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
 ap.add_argument("-mfc", "--marker-face-colors", nargs='*', help="marker face colors")
 ap.add_argument("-mec", "--marker-edge-colors", nargs='*', help="marker edge colors")
 
+ap.add_argument("-lci", "--line-color-indices", nargs='*', type=int, help="Indices to line colors. Can specify two curves have the same color by repeating the index.")
+ap.add_argument("-lci2", "--line-color-indices2", nargs='*', type=int, help="Indices to line colors. Can specify two curves have the same color by repeating the index.")
+
 ap.add_argument("-hg", "--histogram", type=int, help="histogram")
 
 ap.add_argument("-c", "--columns", nargs='*', default = [0,1], type = int, help="columns to plot as x, y. (Partially implemented)")
@@ -421,9 +424,14 @@ else:
 
 
 COLORS = plt.cm.get_cmap(args['colormap']).colors[:args['color_cycle_length']]
+if args['line_color_indices']: 
+    COLORS = [ COLORS[i] for i in args['line_color_indices']]
 custom_cycler = cycler('color', COLORS)
 
 COLORS2 = COLORS[len(args['files']):] + COLORS[:len(args['files'])]
+# COLORS2 = plt.cm.get_cmap(args['colormap']).colors[:args['color_cycle_length']]
+if args['line_color_indices2']: 
+    COLORS2 = [ COLORS2[i] for i in args['line_color_indices2']]
 custom_cycler2 = cycler('color', COLORS2)
 
 if not args['marker_face_colors']:
