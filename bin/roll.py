@@ -8,6 +8,7 @@ from functools import partial
 import enum
 
 ## TODO: Make multiroll return a list instead of printing
+## TODO: Debug mode to print out order of operations. What happens with 1d6x50+2d6x10 or similar ? 
 
 class Mode(enum.Enum):
     DISADVANTAGE = -1
@@ -29,8 +30,9 @@ class Mode(enum.Enum):
 
 def multiroll(string:str, silent:bool=False, mode:Mode=Mode.NORMAL):
     """
-    Accepts advanced multiple rolls separated by '|'
+    Accepts advanced multiple rolls separated by '|'. ';' separates comments
         - ad20 | +5 | 1d3
+
     """
 
     string = string.split(';')[0]
@@ -98,9 +100,12 @@ def roll(string:str, **kwargs):
         return rollsum
     elif '/' in string:
         splitstring = string.split('/')
-        return roller(splitstring[0])/roller(splitstring[1])
+        return roller(splitstring[0])//roller(splitstring[1])
     elif '*' in string:
         splitstring = string.split('*')
+        return roller(splitstring[0])*roller(splitstring[1])
+    elif 'x' in string:
+        splitstring = string.split('x')
         return roller(splitstring[0])*roller(splitstring[1])
     elif '-' in string:
         splitstring = string.split('-')
