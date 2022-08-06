@@ -596,10 +596,6 @@ with plt.style.context(args['style']):
         for line in args['line']: 
             abline(line[0], line[1])
 
-    if not args['no_legend']:
-        all_lines = lines + lines2 
-        all_labels = [l.get_label() for l in all_lines]
-        ax.legend(all_lines, all_labels, loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
 
     if args['reverse_x']: 
         xlim = ax.get_xlim()
@@ -610,8 +606,21 @@ with plt.style.context(args['style']):
         ax.set_ylim((ylim[1], ylim[0]))
 
     if args['output']:
+
+        if not args['no_legend']:
+            all_lines = lines + lines2 
+            all_labels = [l.get_label() for l in all_lines]
+            ax.legend(all_lines, all_labels, loc=args['legend'][0], bbox_to_anchor=(float(args['legend'][1]),float(args['legend'][2])), shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+
         fig.savefig(args['output'], dpi=300)
+
     else:
+
+        if not args['no_legend']:
+            all_lines = lines + lines2 
+            all_labels = [l.get_label() for l in all_lines]
+            ax.legend(all_lines, all_labels, loc="upper left", shadow=True, fontsize=args['legend_size'], ncol=args['legend_ncol'])
+
         plt.show()
 
     if args['write']:
