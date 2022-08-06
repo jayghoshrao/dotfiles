@@ -91,7 +91,7 @@ def readArray(data_path):
             values.append(float(line.strip()))
     return values
 
-def readfile(data_path, columns, header=False, xticksColumn=0):
+def readfile(data_path, columns=[0,1], header=False, xticksColumn=0):
     """ Read x-y CSV-style files
     """
     if ':' in data_path:
