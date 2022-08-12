@@ -36,6 +36,7 @@ cpupower
 cronie
 cryfs
 cscope
+csvkit
 ctags
 dash
 dconf-editor
@@ -161,6 +162,7 @@ nfs-utils
 nix
 nmap
 nnn
+ocaml-csexp
 ocaml-topkg
 ocamlbuild
 offlineimap
@@ -198,7 +200,6 @@ python-gitpython
 python-google-api-core
 python-i3ipc
 python-oauth2client
-python-parsedatetime
 python-poetry
 python-praw
 python-scikit-learn
@@ -279,6 +280,7 @@ vscode-json-languageserver
 whois
 wkhtmltopdf
 wmctrl
+wxwidgets-qt5
 xca
 xcape
 xdg-user-dirs-gtk

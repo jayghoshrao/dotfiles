@@ -8,8 +8,10 @@ function M.AsyncRunQuickFixToggle()
     print("status: " .. g.asyncrun_status)
     if g.asyncrun_status == 'failure' then
         cmd [[call asyncrun#quickfix_toggle(10,1)]]
+        os.execute("mpv ~/local/share/sounds/8bit-error.mp3 &> /dev/null")
     else
         cmd [[call asyncrun#quickfix_toggle(10,0)]]
+        os.execute("mpv ~/local/share/sounds/correct.mp3 &> /dev/null")
     end
 end
 
