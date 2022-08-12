@@ -22,11 +22,12 @@ ARCH=$(uname -a | awk '{print $(NF-1)}')
 
 autoload -U +X bashcompinit && bashcompinit
 
-## NOTE: Uncomment in case compaudit complains of insecure directories
+# # NOTE: Uncomment in case compaudit complains of insecure directories
+# # Probably best to unset FPATH in bash before calling zsh in case of a nested call
 # autoload -U +X compinit && compinit -i
+autoload -Uz compinit; compinit
 
 if [ $HOST = "IBT918" ]; then
-    autoload -Uz compinit; compinit
     compdef '_files -W $NOTES_DIR' note
     compdef '_files -W $NOTES_DIR' notes
     compdef '_files -W ~/bin/' se
@@ -328,7 +329,7 @@ export LESS="-iR"
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;e:-!&evince $nnn*;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:diffs;e:-!&evince $nnn*;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*'
 export LC_COLLATE="C" ## dot files clumped together
 
 ## Exports: }}}
@@ -367,6 +368,9 @@ alias -g X='>/dev/null 2>&1 & disown'
 alias -g T='|& tee'
 alias -g TL='|& tee out.log'
 alias -g L='| less'
+alias -g C='| xclip -i -selection clipboard'
+alias -g V='| vipe'
+alias -g R='rep'
 
 alias d='dirs -v | head -10'
 
@@ -826,3 +830,8 @@ function ssr() {
     ssh -O stop "$1"
     ssh "$1"
 }
+
+function rep(){
+    repeat "$1" { echo "$2" }
+}
+
