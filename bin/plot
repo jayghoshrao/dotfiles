@@ -373,7 +373,7 @@ ap.add_argument("--hatch", default='xxx', help="hatch style for filled areas")
 ap.add_argument("--hatch-linewidth", type=float, default=0.5, help="hatch linewidth for filled areas")
 
 ap.add_argument("--color-cycle-length", type=int, help="Number of colors to cycle through for each line")
-ap.add_argument("-cmap", "--colormap", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use")
+ap.add_argument("-cmap", "--colormap", default='tab10', help="Matplotlib colormap to use")
 
 ap.add_argument("--header", action='store_true', help="CSV file contains header labels")
 
@@ -472,7 +472,14 @@ else:
     args['zorder'] = iter(args['zorder'])
 
 
-COLORS = plt.cm.get_cmap(args['colormap']).colors[:args['color_cycle_length']]
+cmap = mpl.cm.get_cmap(name=args['colormap'])
+if 'colors' in cmap.__dict__: 
+    COLORS = cmap.colors[:args['color_cycle_length']]
+    print("Discrete colormap")
+else: 
+    COLORS = [cmap(1.*i/(n_total_files-1)) for i in range(n_total_files)]
+    print("Continuous colormap")
+
 if args['line_color_indices']: 
     COLORS = [ COLORS[i] for i in args['line_color_indices']]
 custom_cycler = cycler('color', COLORS)

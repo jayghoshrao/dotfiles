@@ -160,6 +160,7 @@ newsboat
 nextcloud-client
 nfs-utils
 nix
+nlopt
 nmap
 nnn
 ocaml-csexp
@@ -251,6 +252,7 @@ tig
 tigervnc
 tilix
 tokei
+tor
 totem
 traceroute
 translate-shell
@@ -314,6 +316,7 @@ xpdf
 xpra
 xscreensaver
 yq
+zellij
 zsh-autosuggestions
 zsh-history-substring-search
 zsh-syntax-highlighting
