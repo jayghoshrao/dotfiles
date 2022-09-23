@@ -7,6 +7,7 @@ arandr
 arc-gtk-theme
 asp
 at
+audacity
 autorandr
 awesome-terminal-fonts
 b43-fwcutter
@@ -50,7 +51,6 @@ dovecot
 doxygen
 dune
 dunst
-electron
 element-desktop
 eog
 evolution-ews
@@ -110,8 +110,6 @@ inetutils
 inotify-tools
 intel-oneapi-mkl
 intel-ucode
-ipw2100-fw
-ipw2200-fw
 irssi
 isync
 jp2a
@@ -138,6 +136,7 @@ materia-gtk-theme
 meld
 mgba-qt
 moreutils
+mp3wrap
 mpc
 mpd
 mpv-mpris
@@ -159,6 +158,7 @@ networkmanager-pptp
 newsboat
 nextcloud-client
 nfs-utils
+nim
 nix
 nlopt
 nmap
@@ -196,13 +196,13 @@ pulsemixer
 pv
 pyright
 python-deepdiff
-python-eyed3
 python-gitpython
+python-gnupg
 python-google-api-core
 python-i3ipc
 python-oauth2client
-python-poetry
 python-praw
+python-rich
 python-scikit-learn
 python-seaborn
 qgnomeplatform-qt5
@@ -218,6 +218,7 @@ redshift
 reflector
 rofi-calc
 rofi-pass
+rust-analyzer
 scdoc
 screenfetch
 shfmt
@@ -242,6 +243,7 @@ texlive-fontsextra
 texlive-formatsextra
 texlive-games
 texlive-humanities
+texlive-langgreek
 texlive-music
 texlive-pstricks
 texlive-publishers

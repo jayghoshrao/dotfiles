@@ -67,6 +67,7 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.cc_ls'
             require 'cfg.plugins.lsp.docker_ls'
             require 'cfg.plugins.lsp.fortls'
+            require 'cfg.plugins.lsp.rust_analyzer'
             -- require 'cfg.plugins.lsp.init'
             require 'cfg.plugins.lsp.json_ls'
             require 'cfg.plugins.lsp.sumneko_lua'

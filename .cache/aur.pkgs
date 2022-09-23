@@ -16,6 +16,7 @@ elinks-git
 epson-inkjet-printer-201108w
 epson-inkjet-printer-escpr
 espeak
+evcxr_repl
 figlet-fonts
 figlet-fonts-extra
 fltrdr
@@ -31,13 +32,14 @@ gsfonts-type1
 gtklp
 i3wsr
 ilastik-bin
+ipw2100-fw
+ipw2200-fw
 j4-dmenu-desktop
 jdk
 kyocera-utax-ta
 libvarnam-ibus-git
 libxlsxwriter
 light-locker-settings
-lightly-qt
 lmod
 lxsession-git
 masterpdfeditor
@@ -73,6 +75,7 @@ pup-git
 py3status-github-notifications
 python-bibtexparser
 python-cmapy
+python-eyed3
 python-i3-py
 python-pulsectl
 python-pysmartdl
@@ -84,7 +87,6 @@ python-spotipy-git
 python-umonitor-git
 python2-pip
 qjoypad
-qt5-styleplugins
 qt5-webengine-widevine
 r8152-dkms
 remmina-plugin-rdesktop
