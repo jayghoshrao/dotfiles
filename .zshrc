@@ -128,7 +128,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
 
         # BTOP: 
         zpi from"gh-r" as"program" mv"btop* -> btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop"
-        zp load aristocratos/btop
+        zp aristocratos/btop
 
         # nix-user-chroot: 
         zpi from"gh-r" as"program" mv"nix-user-chroot-bin* -> nix-user-chroot" pick"nix-user-chroot" 
@@ -832,6 +832,6 @@ function ssr() {
 }
 
 function rep(){
-    repeat "$1" { echo "$2" }
+    repeat "$1" { echo "${@:2}" }
 }
 
