@@ -10,6 +10,6 @@ REV=$(curl -fsSl "https://api.github.com/repos/$OWNER/$REPO/branches/$BRANCH" | 
 URL="https://github.com/$OWNER/$REPO/archive/$REV.tar.gz"
 SHA256=$(nix-prefetch-url --unpack "https://github.com/$OWNER/$REPO/archive/$REV.tar.gz")
 
-echo "name = nixpkgs-unstable-$(date +%Y-%m-%d)"
-echo "url = $URL"
-echo "sha256 = $SHA256"
+echo "name = \"nixpkgs-unstable-$(date +%Y-%m-%d)"\"";"
+echo "url = \"$URL"\"";"
+echo "sha256 = \"$SHA256"\"";"
