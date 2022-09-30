@@ -28,7 +28,7 @@
     vscode-extensions.ms-vscode.cpptools
 
     neomutt
-    rr
+    # rr
 
     # glibc
     gmsh_with_libs
