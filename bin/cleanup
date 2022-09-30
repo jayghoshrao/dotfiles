@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# pacman/AUR cleanup
+yay -Scc
+
+# conda cleanup
+if command -v conda &> /dev/null
+then
+    conda clean --all
+fi
+
+# TODO: Nix

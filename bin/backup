@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# RESOURCE: https://unix.stackexchange.com/questions/265026/rsyncs-read-only-file-system-30-error
+
+function die(){
+    echo "ERROR: $@" 
+    exit
+}
+
+DEFAULT_DIRS=(Nextcloud Dropbox Pictures scratch raspi .config .fonts .mutt .screenlayout .ssh .terminfo .local/share/mail )
+EXCLUDES=(Dropbox/.dropbox.cache)
+UUID=2b4a6eaf-c88a-4430-9a4f-ce96c03e8f6c
+MIRRORFLAGS=()
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        --dry-run)
+            MIRRORFLAGS+=("--dry-run")
+            shift # past value
+            ;;
+        --delete)
+            MIRRORFLAGS+=("--delete")
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+HDDJSON=$(lsblk -fs --json | jq -r --arg uuid "$UUID" '.blockdevices[] | select(.uuid==$uuid)')
+
+[ -z "$HDDJSON" ] && die "HDD not detected"
+echo "$HDDJSON" | jq '.'
+
+name=$(echo "$HDDJSON" | jq -r .name)
+mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
+
+if [ "$mountpoint0" = "null" ]; then
+    echo "HDD not mounted. Mounting to /media/$name"
+    pmount /dev/$name
+fi
+
+cd $HOME
+
+# Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
+# the backup disk located at /media/$name in the Backup folder
+mirror ${MIRRORFLAGS[*]} -r $name /media/$name/Backup -t $name -e ${EXCLUDES[*]} -- ${*:-${DEFAULT_DIRS[*]}}

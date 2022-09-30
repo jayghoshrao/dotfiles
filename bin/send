@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+subcommand="$1"
+shift
+files="$@"
+
+ffsend "$subcommand" "${files[@]}" --host 'https://send.jayghoshrao.xyz' 

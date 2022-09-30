@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+## nsh: global nix devShell using project flakes
+
+projects_dir=$HOME/templates/nix-flakes
+
+project=$(ls "$projects_dir" | fzf)
+
+[ -z $project ] && return
+
+fullpath=$projects_dir/$project
+nix develop --impure "$fullpath" --command zsh

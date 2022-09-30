@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+## Print the given column of the csvfile as list (pythonic)
+# Usage: ,awkarr <col> <csvfile>
+
+column=$1
+shift
+
+awk -F ',' -v COL=$column '{print $COL}' "$@" | tr -s '\r\n' ',' | sed -e 's/,$//'

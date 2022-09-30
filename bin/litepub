@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+STORE=$HOME/.cache/litepub
+PDF=$(basename "$1")
+EPUB="$STORE/${PDF%%.pdf}.epub"
+
+echo "$PDF"
+echo "$EPUB"
+
+if [[ ! -f "$EPUB" ]]; then 
+    ebook-convert "$1" "$EPUB"
+fi
+
+ebook-viewer "$EPUB"

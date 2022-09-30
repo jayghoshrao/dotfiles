@@ -186,7 +186,7 @@ def main():
                     # curl -sLH "Accept: text/bibliography; style=bibtex" http://dx.doi.org/$DOI
                     doi = get_doi(current_file)
                     url = f"http://dx.doi.org/{doi}"
-                    print(url)
+                    # print(url)
                     headers = {"Accept": "text/bibliography; style=bibtex"}
                     res = requests.get(url, headers=headers)
                     print(res.content.decode('utf-8'))
@@ -223,7 +223,7 @@ def main():
 def get_doi(current_file): 
     pdf_file = PdfReader(current_file)
     doi_link = pdf_file.Info.Subject.strip('()<>')
-    print("pdfInfo DOI link:", doi_link)
+    # print("pdfInfo DOI link:", doi_link)
     return doi_link.removeprefix('https://dx.doi.org/')
 
 def get_tags(current_file):

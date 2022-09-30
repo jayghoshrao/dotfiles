@@ -1,0 +1,8 @@
+ext:
+  pdf:
+  - zathura
+  - sioyek
+  - evince
+  - okular
+  - masterpdfeditor4
+  - masterpdfeditor5

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+column=$1
+shift
+
+for file in "$@"; do
+    awk -F ',' -v OFS=',' -v COL=$column '{sum+=$COL} END {print sum}' "$file"
+done

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+
+## $1 can be either a slash separated date in Y/m/d or 'last', 'week', 'month'
+[ -z "$1" ] && exit
+
+DATE_DASH=$(date '+%Y-%m-%d')
+
+sudo mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist."$DATE_DASH"
+
+cat > /etc/pacman.d/mirrorlist << EOFMARKER
+##                                                                              
+## Arch Linux repository mirrorlist                                             
+## Generated on $DATE_DASH
+##
+Server=https://archive.archlinux.org/repos/$1/\$repo/os/\$arch
+EOFMARKER
+
+sudo pacman -Syyuu

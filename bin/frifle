@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# prerequisites: ranger
+# frifle: FZF fuzed with ranger's rifle to open files more easily
+# Uses a custom config file located at ~/bin/rifle.conf
+
+out=$(rifle -c ~/bin/rifle.conf -l "$@" | fzf | cut -d ':' -f1)
+[ -n "$out" ] && rifle -c ~/bin/rifle.conf -p "$out" "$@" 
+
