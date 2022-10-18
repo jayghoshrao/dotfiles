@@ -54,7 +54,6 @@ dunst
 element-desktop
 eog
 evolution-ews
-exa
 exfat-utils
 extra-cmake-modules
 fd
@@ -99,6 +98,7 @@ gutenprint
 guvcview
 haveged
 hddtemp
+helix
 hplip
 hq
 htop
@@ -162,7 +162,6 @@ nfs-utils
 nim
 nix
 nlopt
-nmap
 nnn
 ocaml-csexp
 ocaml-topkg
@@ -213,7 +212,6 @@ qt5ct
 qtox
 qutebrowser
 qxmledit
-ranger
 recoll
 redshift
 reflector
@@ -249,9 +247,7 @@ texlive-music
 texlive-pstricks
 texlive-publishers
 texlive-science
-the_silver_searcher
 thunar
-tig
 tigervnc
 tilix
 tokei

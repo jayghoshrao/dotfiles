@@ -105,10 +105,17 @@ if [[ "$ARCH" == "x86_64" ]]; then
         # RIPGREP:
         zpi from"gh-r" as"program" mv"ripgrep* -> ripgrep" pick"ripgrep/rg"
         zp BurntSushi/ripgrep
+
+        # # AUTOJUMP
+        # zi ice \
+        #   as"program" \
+        #   atclone"./install.py" \
+        #   atpull"%atclone" 
+        # zi light wting/autojump
         
         # NEOVIM: 
-        zpi from"gh-r" as"program" bpick"*appimage*" ver"stable" mv"nvim* -> nvim" pick"nvim"
-        zp neovim/neovim
+        zpi from"gh-r" as"program" ver"stable" mv"nvim* -> nvim" pick"nvim/bin/nvim"
+        zp load neovim/neovim
       
         # FD: 
         zpi as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
