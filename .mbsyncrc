@@ -46,7 +46,7 @@ IMAPAccount jayghoshrao
 # Address to connect to
 Host imap.gmail.com
 User jayghosh.rao@gmail.com
-PassCmd "pass google-jayghoshrao | head -n 1"
+PassCmd "pass mutt-jayghoshrao | head -n 1"
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 #
@@ -85,8 +85,8 @@ SyncState *
 ##########################################
 
 IMAPStore modsim-remote
-Host ibtwebmail.fz-juelich.de
-User rao
+Host webmail.fz-juelich.de
+User j.rao
 PassCmd "pass mutt-modsim | head -n 1"
 SSLType STARTTLS
 AuthMechs PLAIN
@@ -95,8 +95,8 @@ CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 MaildirStore modsim-local
 SubFolders Verbatim
-Path ~/.local/share/mail/modsim/
-Inbox ~/.local/share/mail/modsim/INBOX
+Path ~/.local/share/mail/modsim-migrated/
+Inbox ~/.local/share/mail/modsim-migrated/INBOX
 
 Channel modsim
 Far :modsim-remote:
