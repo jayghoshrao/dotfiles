@@ -69,6 +69,8 @@ zinit snippet OMZL::termsupport.zsh
 zinit snippet OMZL::completion.zsh
 zinit snippet OMZP::git
 
+zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
+
 ## nix-shell with zsh
 # zinit snippet https://raw.githubusercontent.com/chisui/zsh-nix-shell/master/nix-shell.plugin.zsh
 zp chisui/zsh-nix-shell
