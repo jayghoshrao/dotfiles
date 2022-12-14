@@ -7,7 +7,7 @@ function die(){
     exit
 }
 
-DEFAULT_DIRS=(Nextcloud Dropbox Pictures scratch raspi .config .fonts .mutt .screenlayout .ssh .terminfo .local/share/mail )
+DEFAULT_DIRS=(Nextcloud Dropbox Pictures scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg)
 EXCLUDES=(Dropbox/.dropbox.cache)
 UUID=2b4a6eaf-c88a-4430-9a4f-ce96c03e8f6c
 MIRRORFLAGS=()
