@@ -98,6 +98,8 @@ function mute_current() {
     pactl set-source-mute "$CURRENT_SOURCE" $flag
 }
 
+[ -z "$1" ] && output_all && exit
+
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
