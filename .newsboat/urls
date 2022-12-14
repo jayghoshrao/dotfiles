@@ -1,8 +1,12 @@
+# vim: set ft=cfg
 "query:News:tags # \"news\""
 "query:Techstack:tags # \"techstack\""
 "query:HPC:tags # \"hpc\""
 "query:Podcasts:tags # \"podcast\""
 "query:Blogs:tags # \"blog\""
+"query:Releases:tags # \"releases\""
+"query:DockerHub:tags # \"dockerhub\""
+# "query:Containers:tags # \"containers\""
 
 https://hnrss.org/frontpage tech hn
 http://www.vox.com/rss/index.xml blog
@@ -50,6 +54,21 @@ http://www.npr.org/rss/podcast.php?id=510298 podcast !podcast
 # Blogs
 https://rachelbythebay.com/w/atom.xml !blog blog
 
+# Releases
+https://github.com/hay-kot/mealie/releases.atom !releases releases
+https://github.com/neovim/neovim/releases.atom !releases releases
+https://github.com/tmux/tmux/releases.atom !releases releases
+https://github.com/zsh-users/zsh/tags.atom !releases releases
+https://github.com/NixOS/nix/tags.atom !releases releases
+
+# Dockerhub containers
+# See RSS-Bridge
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterhub&repo=jupyterhub&format=Atom !dockerhub dockerhub
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterlab&repo=jupyterlab&format=Atom !dockerhub dockerhub
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=nextcloud&format=Atom !dockerhub dockerhub
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=swag&format=Atom !dockerhub dockerhub
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=zadam&repo=trilium&format=Atom !dockerhub dockerhub
+http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=hkotel&repo=mealie&format=Atom !dockerhub dockerhub
 
 # "query:Youtube:tags # \"youtube\""
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCweFJojRAFuxyYxe4KHL8vw !youtube youtube Runesmith DND
