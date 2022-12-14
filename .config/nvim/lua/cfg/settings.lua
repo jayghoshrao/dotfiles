@@ -120,7 +120,7 @@ opt.suffixesadd = { '.md', '.js', '.ts', '.tsx' } -- File extensions not require
 
 -- Backups
 opt.backup = true
-opt.backupdir = { '~/.vim-tmp', '~/.tmp', '~/tmp', '/var/tmp', '/tmp' }
+opt.backupdir = { '~/.vim-tmp', '~/.tmp', '~/tmp', '/tmp' }
 opt.backupskip = { '/tmp/*', '/private/tmp/*' }
 opt.writebackup = true
 

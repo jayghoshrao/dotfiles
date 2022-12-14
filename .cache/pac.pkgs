@@ -7,7 +7,6 @@ arandr
 arc-gtk-theme
 asp
 at
-audacity
 autorandr
 awesome-terminal-fonts
 b43-fwcutter
@@ -89,6 +88,7 @@ gnome-system-monitor
 gnome-tweaks
 gnome-weather
 gocr
+goimapnotify
 gparted
 gron
 gstreamer-vaapi
@@ -108,10 +108,10 @@ hyperfine
 imagescan
 inetutils
 inotify-tools
-intel-oneapi-mkl
 intel-ucode
 irssi
 isync
+j4-dmenu-desktop
 jp2a
 julia
 keychain
@@ -163,6 +163,7 @@ nim
 nix
 nlopt
 nnn
+notmuch
 ocaml-csexp
 ocaml-topkg
 ocamlbuild
@@ -202,7 +203,6 @@ python-google-api-core
 python-i3ipc
 python-oauth2client
 python-praw
-python-rich
 python-scikit-learn
 python-seaborn
 qgnomeplatform-qt5
@@ -248,6 +248,7 @@ texlive-pstricks
 texlive-publishers
 texlive-science
 thunar
+thunderbird
 tigervnc
 tilix
 tokei
@@ -279,7 +280,6 @@ visidata
 vlc
 vscode-json-languageserver
 whois
-wkhtmltopdf
 wmctrl
 wxwidgets-qt5
 xca

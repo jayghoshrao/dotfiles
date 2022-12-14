@@ -111,16 +111,16 @@ return require('packer').startup(function(use)
     use 'm-pilia/vim-ccls'
 
     use {
-        'williamboman/nvim-lsp-installer',
+        'williamboman/mason.nvim',
         config = function()
-            require 'cfg.plugins.lsp.installer'
+            require 'cfg.plugins.lsp.mason'
         end
     }
 
     -- Telescope: It's dope
     use {
         -- Fuzzy finder
-        'nvim-telescope/telescope.nvim',
+        'nvim-telescope/telescope.nvim', tag='0.1.0',
         config = function()
             require 'cfg.plugins.telescope'
         end,
@@ -612,6 +612,16 @@ return require('packer').startup(function(use)
     use 'LnL7/vim-nix'
 
     use 'edluffy/hologram.nvim'
+
+
+    use 
+    {
+        'goerz/jupytext.vim',
+        -- config = function()
+        --     vim.g.jupytext_filetype_map = {md = 'vimwiki'}
+        -- end
+    }
+    vim.g.jupytext_filetype_map = {md = 'vimwiki'}
 
 end)
 

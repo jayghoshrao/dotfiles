@@ -21,8 +21,9 @@ figlet-fonts
 figlet-fonts-extra
 fltrdr
 gdb-dashboard-git
+gdm-settings
+gdm-tools
 gita
-gitter-bin
 gnome-documents
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
@@ -31,10 +32,8 @@ grub2-theme-vimix-git
 gsfonts-type1
 gtklp
 i3wsr
-ilastik-bin
 ipw2100-fw
 ipw2200-fw
-j4-dmenu-desktop
 jdk
 kyocera-utax-ta
 libvarnam-ibus-git
@@ -115,6 +114,7 @@ termite
 tidy-viewer
 titillium-fonts
 transset-df
+trilium-bin
 ttf-alegreya
 ttf-alegreya-sans
 ttf-impallari-amiko-devanagari
@@ -131,6 +131,7 @@ vcpkg-git
 vitables
 whatsapp-for-linux
 whatsapp-nativefier
+wkhtmltopdf
 wpa_actiond
 xboxdrv
 xminesweeper
