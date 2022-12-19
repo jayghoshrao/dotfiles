@@ -28,13 +28,6 @@ local cmd = vim.cmd
 -- https://github.com/d0c-s4vage/lookatme  -- presentation!
 -- https://github.com/ngscheurich/iris.nvim
 
-
--- -- Automatically install packer.nvim
--- local install_path = fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
--- if fn.empty(fn.glob(install_path)) > 0 then
---     cmd('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
--- end
-
 local ensure_packer = function()
   local fn = vim.fn
   local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -300,7 +293,7 @@ return require('packer').startup(function(use)
             require('nordic').colorscheme({
                 -- Underline style used for spelling
                 -- Options: 'none', 'underline', 'undercurl'
-                underline_option = 'none',
+                underline_option = 'undercurl',
                 -- Italics for certain keywords such as constructors, 
                 -- functions,
                 -- labels and namespaces
@@ -336,29 +329,17 @@ return require('packer').startup(function(use)
     --
 
     -- Conditional loading of plugins helps avoid issues on some server setups
-
     -- GitHub: Better pull requests and issues.
     if vim.fn.executable('gh') == 1 then
         use 'pwntester/octo.nvim'
     end
 
-    -- -- Debugger: Woah!
-    -- if vim.fn.has('python3') == 1 then
-    --     use {
-    --         'puremourning/vimspector',
-    --         config = function()
-    --             require 'cfg.plugins.vimspector'
-    --         end
-    --     }
-    -- end
-    --
     use {'mfussenegger/nvim-dap',
         config = function()
             require'cfg.plugins.dap'
         end,
         -- lunajson for a custom launch function. See dap.lua
         rocks = 'lunajson'
-
     }
 
     use {
@@ -440,56 +421,7 @@ return require('packer').startup(function(use)
     use {
         "folke/zen-mode.nvim",
         config = function()
-            require("zen-mode").setup {
-                window = {
-                    backdrop = 1, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
-                    -- height and width can be:
-                    -- * an absolute number of cells when > 1
-                    -- * a percentage of the width / height of the editor when <= 1
-                    -- * a function that returns the width or the height
-                    width = 120, -- width of the Zen window
-                    height = 1, -- height of the Zen window
-                    -- by default, no options are changed for the Zen window
-                    -- uncomment any of the options below, or add other vim.wo options you want to apply
-                    options = {
-                        -- signcolumn = "no", -- disable signcolumn
-                        number = false, -- disable number column
-                        -- relativenumber = false, -- disable relative numbers
-                        -- cursorline = false, -- disable cursorline
-                        -- cursorcolumn = false, -- disable cursor column
-                        -- foldcolumn = "0", -- disable fold column
-                        -- list = false, -- disable whitespace characters
-                    },
-                },
-                plugins = {
-                    -- disable some global vim options (vim.o...)
-                    -- comment the lines to not apply the options
-                    options = {
-                        enabled = true,
-                        ruler = false, -- disables the ruler text in the cmd line area
-                        showcmd = false, -- disables the command in the last line of the screen
-                    },
-                    twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
-                    gitsigns = { enabled = false }, -- disables git signs
-                    tmux = { enabled = false }, -- disables the tmux statusline
-                    -- this will change the font size on kitty when in zen mode
-                    -- to make this work, you need to set the following kitty options:
-                    -- - allow_remote_control socket-only
-                    -- - listen_on unix:/tmp/kitty
-                    kitty = {
-                        enabled = false,
-                        font = "+4", -- font size increment
-                    },
-                },
-                -- callback where you can add custom code when the Zen window opens
-                on_open = function(win)
-                end,
-                -- callback where you can add custom code when the Zen window closes
-                on_close = function()
-                end,
-            }
-            local map = require('cfg.utils').map
-            map('n', '<leader>z', ':ZenMode<cr>')
+            require 'cfg.plugins.zen-mode'        
         end
     }
 
