@@ -2,7 +2,6 @@ local vim = vim
 local fn = vim.fn
 local cmd = vim.cmd
 
-
 -- TODO: Check
 -- https://github.com/onsails/diaglist.nvim
 -- https://github.com/nvim-telescope/telescope-vimspector.nvim
