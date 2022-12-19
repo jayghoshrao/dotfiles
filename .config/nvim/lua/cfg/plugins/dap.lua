@@ -49,10 +49,13 @@ map('n', '<space>d?', ':lua local widgets=require"dap.ui.widgets";widgets.center
 map('n', '<space>da', ':lua require("dap.ext.vscode").load_launchjs()<CR>')
 map('n', '<space>dn', ':lua require("cfg.plugins.dap").launch()<CR>')
 
+local mason_dap_bin = vim.fn.stdpath "data" .. "/mason/bin" 
+
 -- DAP: CPP
 dap.adapters.cppdbg = {
   type = 'executable',
-  command = '/home/jayghoshter/DAP/extension/debugAdapters/bin/OpenDebugAD7',
+  -- command = '/home/jayghoshter/DAP/extension/debugAdapters/bin/OpenDebugAD7',
+  command = mason_dap_bin .. '/OpenDebugAD7',
 }
 
 dap.configurations.cpp = {
@@ -66,20 +69,12 @@ dap.configurations.cpp = {
     cwd = '${workspaceFolder}',
     stopOnEntry = true,
   },
-  -- {
-  --   name = 'Attach to gdbserver :1234',
-  --   type = 'cppdbg',
-  --   request = 'launch',
-  --   MIMode = 'gdb',
-  --   miDebuggerServerAddress = 'localhost:1234',
-  --   miDebuggerPath = '/usr/bin/gdb',
-  --   cwd = '${workspaceFolder}',
-  --   program = function()
-  --     return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-  --   end,
-  -- },
 }
 
+-- If you want to use this for Rust and C, add something like this:
+
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rust = dap.configurations.cpp
 dap.configurations.fortran = dap.configurations.cpp
 
 -- Read and launch DAP based on config directly
@@ -93,21 +88,5 @@ function M.launch()
     local cfg = require("lunajson").decode(jsonString)
     dap.run(cfg.configurations[1])
 end
-
--- local function attachToRemote()
---   print("attaching")
---   dap.run({
---       type = 'node2',
---       request = 'attach',
---       address = "127.0.0.1",
---       port = 9229,
---       localRoot = vim.fn.getcwd(),
---       remoteRoot = "/home/vcap/app",
---       sourceMaps = true,
---       protocol = 'inspector',
---       skipFiles = {'<node_internals>/**/*.js'},
---       })
--- end
---
 
 return M

@@ -59,12 +59,14 @@ return require('packer').startup(function(use)
         },
     }
 
+    -- install and initialize before nvim-lspconfig
     use {
         'williamboman/mason.nvim',
-        'williamboman/mason-lspconfig.nvim',
+        -- 'williamboman/mason-lspconfig.nvim',
+        -- "jayp0521/mason-nvim-dap.nvim",
         config = function()
             require 'cfg.plugins.mason'
-        end
+        end,
     }
 
     -- LSP Config and Completion
@@ -76,11 +78,8 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.docker_ls'
             require 'cfg.plugins.lsp.fortls'
             require 'cfg.plugins.lsp.rust_analyzer'
-            -- require 'cfg.plugins.lsp.init'
             require 'cfg.plugins.lsp.json_ls'
             require 'cfg.plugins.lsp.sumneko_lua'
-            -- require 'cfg.plugins.lsp.lua_ls'
-            -- require 'cfg.plugins.lsp.lua_types'
             require 'cfg.plugins.lsp.pyright'
             require 'cfg.plugins.lsp.texlab'
             require 'cfg.plugins.lsp.yaml_ls'
