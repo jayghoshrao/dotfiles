@@ -59,6 +59,14 @@ return require('packer').startup(function(use)
         },
     }
 
+    use {
+        'williamboman/mason.nvim',
+        'williamboman/mason-lspconfig.nvim',
+        config = function()
+            require 'cfg.plugins.mason'
+        end
+    }
+
     -- LSP Config and Completion
     use {
         'neovim/nvim-lspconfig', -- Built-in LSP configurations
@@ -110,12 +118,6 @@ return require('packer').startup(function(use)
     }
     use 'm-pilia/vim-ccls'
 
-    use {
-        'williamboman/mason.nvim',
-        config = function()
-            require 'cfg.plugins.lsp.mason'
-        end
-    }
 
     -- Telescope: It's dope
     use {
