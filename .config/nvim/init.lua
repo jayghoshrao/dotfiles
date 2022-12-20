@@ -1,13 +1,4 @@
--- People to follow for neovim plugin development:
---    - Junegunn Choi
---    - TJ DeVries
---    - Folke
---    - The Primeagen
---
---  [NOTE]: Hub for neovim plugins: https://neovimcraft.com
-
--- Moving to LUA: https://cj.rs/blog/my-setup/nvim-0-5/
--- TODO: Look at vim.defer_fn()
+require 'impatient'
 
 local g = vim.g
 local cmd = vim.cmd
@@ -38,3 +29,5 @@ require 'cfg.abbreviations'
 -- require 'cfg.file_info'
 -- require 'cfg.terminal'
 
+-- -- REFERENCES:
+-- https://github.com/JoosepAlviste/dotfiles/tree/master/config/nvim

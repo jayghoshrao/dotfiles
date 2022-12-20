@@ -1,11 +1,18 @@
 local group = vim.api.nvim_create_augroup('Setup', {})
 
+-- -- Automatically compile packer when saving the plugins' file
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+--   group = group,
+--   pattern = 'plugins.lua',
+--   command = 'source <afile> | PackerCompile',
+--   -- command = 'Reload | PackerSync'
+-- })
+
 -- Automatically compile packer when saving the plugins' file
 vim.api.nvim_create_autocmd('BufWritePost', {
   group = group,
-  pattern = 'plugins.lua',
-  -- command = 'source <afile> | PackerCompile',
-  command = 'Reload | PackerSync'
+  pattern = '*/.config/nvim/**',
+  command = 'PackerCompile'
 })
 
 -- Highlight text after yanking

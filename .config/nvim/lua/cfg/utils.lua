@@ -153,6 +153,26 @@ function M.is_npm_package_installed(package)
   return false
 end
 
+function M.toggle_quickfix()
+    for _, win in pairs(vim.fn.getwininfo()) do
+        if win.quickfix == 1 then
+            vim.cmd('cclose')
+            return
+        end
+    end
+    vim.cmd('copen')
+end
+
+function M.toggle_loclist()
+    for _, win in pairs(vim.fn.getwininfo()) do
+        if win.loclist == 1 then
+            vim.cmd('lclose')
+            return
+        end
+    end
+    vim.cmd('lopen')
+end
+
 -- Useful function for debugging
 -- Print the given items
 function _G.P(...)

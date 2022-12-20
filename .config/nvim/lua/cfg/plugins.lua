@@ -1,31 +1,27 @@
-local vim = vim
-local fn = vim.fn
-local cmd = vim.cmd
+-- local vim = vim
 
--- TODO: Check
--- https://github.com/onsails/diaglist.nvim
--- https://github.com/nvim-telescope/telescope-vimspector.nvim
--- https://github.com/junegunn/vim-peekaboo
--- https://github.com/rhysd/clever-f.vim
--- https://github.com/ggandor/lightspeed.nvim -- vim-sneak successor
--- https://github.com/ray-x/lsp_signature.nvim
+-- TODO: Look into lsp-zero. Integrates all LSP config and uses mason
+
+-- -- WORKFLOW:
 -- https://github.com/ThePrimeagen/git-worktree.nvim
 -- https://github.com/stefandtw/quickfix-reflector.vim
--- telescope-dap
--- https://github.com/chipsenkbeil/distant.nvim
+-- https://github.com/chipsenkbeil/distant.nvim -- remote edits
+-- https://github.com/ahmedkhalf/project.nvim
 
--- TODO: MANUALS
+-- -- MANUALS:
 -- https://github.com/sunaku/vim-dasht
 -- https://github.com/rhysd/devdocs.vim
 
+-- -- UTILITY:
 -- https://github.com/b3nj5m1n/kommentary
--- https://github.com/alpertuna/vim-header
--- https://github.com/ahmedkhalf/project.nvim
--- https://github.com/gelguy/wilder.nvim
+-- https://github.com/gelguy/wilder.nvim -- wildmenu addon. Might not need it with nvim-cmp
 
--- https://github.com/ibhagwan/fzf-lua
+-- -- MISC:
+-- https://github.com/ibhagwan/fzf-lua -- Telescope alternative
 -- https://github.com/d0c-s4vage/lookatme  -- presentation!
--- https://github.com/ngscheurich/iris.nvim
+-- https://github.com/ngscheurich/iris.nvim -- color helper
+-- use 'LnL7/vim-nix' -- probably not required, but potentially useful
+-- https://github.com/junegunn/vim-peekaboo -- See register context
 
 local ensure_packer = function()
   local fn = vim.fn
@@ -40,7 +36,6 @@ end
 
 local packer_bootstrap = ensure_packer()
 
-
 --- startup and add configure plugins
 -- packer.startup(function()
 return require('packer').startup(function(use)
@@ -52,7 +47,8 @@ return require('packer').startup(function(use)
     -- Advanced highlighting
     use {
         'nvim-treesitter/nvim-treesitter',
-        
+        tag='v0.8.1',
+        run = ':TSUpdate',
         config = function()
             require 'cfg.plugins.treesitter'
         end,
@@ -90,23 +86,24 @@ return require('packer').startup(function(use)
         end,
         requires = {
             {
-                'hrsh7th/vim-vsnip', -- Snippets
+                'L3MON4D3/LuaSnip',
                 config = function()
-                    require 'cfg.plugins.vsnip'
+                    require 'cfg.plugins.luasnip'
                 end,
                 requires = 'https://github.com/rafamadriz/friendly-snippets'
             },
             {
                 'hrsh7th/nvim-cmp',
+                config = function()
+                    require 'cfg.plugins.cmp'
+                end,
                 requires = {
                     'hrsh7th/cmp-nvim-lsp',
                     'hrsh7th/cmp-buffer',
                     'hrsh7th/cmp-path',
-                    'hrsh7th/cmp-vsnip',
+                    'saadparwaiz1/cmp_luasnip',
+                    -- 'petertriho/cmp-git',
                 },
-                config = function()
-                    require 'cfg.plugins.cmp'
-                end,
             },
             -- {
             --     'jose-elias-alvarez/null-ls.nvim',
@@ -121,6 +118,15 @@ return require('packer').startup(function(use)
     }
     use 'm-pilia/vim-ccls'
 
+    use {
+        'onsails/diaglist.nvim',
+        config = function()
+            require("diaglist").init({
+                debug = false,
+                debounce_ms = 150,
+            })
+        end
+    }
 
     -- Telescope: It's dope
     use {
@@ -171,7 +177,7 @@ return require('packer').startup(function(use)
 
     -- Language- and Filetype-specific:
     use {
-        'lervag/vimtex', 
+        'lervag/vimtex',
         ft = {
             'vimwiki',
             'markdown',
@@ -179,7 +185,7 @@ return require('packer').startup(function(use)
         }
     }
 
-    use 'mboughaba/i3config.vim'           
+    use 'mboughaba/i3config.vim'
 
     use {
         'vim-pandoc/vim-pandoc',
@@ -202,7 +208,7 @@ return require('packer').startup(function(use)
         ft = {'markdown', 'vimwiki', 'pandoc'}
     }
 
-    -- NOTE: doesn't work everywhere since vimwiki 
+    -- NOTE: doesn't work everywhere since vimwiki
     -- is only used for certain filetypes
     use {
         'ElPiloto/telescope-vimwiki.nvim',
@@ -216,21 +222,21 @@ return require('packer').startup(function(use)
 
     -- General:
     use 'lambdalisue/suda.vim'
-    use 'tommcdo/vim-lion'                                       
+    use 'tommcdo/vim-lion'
 
     -- Vim object extensions
     -- 1. Indent object
     use 'michaeljsmith/vim-indent-object'
     --  2. [n]ext, [,], and user dI' to delete inner without space
-    use 'wellle/targets.vim'               
+    use 'wellle/targets.vim'
     -- use 'vim-scripts/argtextobj.vim'
 
     -- Explore and Pick!
     --
-    use { 
-        'mcchrish/nnn.vim', 
-        config = function()    
-            require'cfg.plugins.nnn'    
+    use {
+        'mcchrish/nnn.vim',
+        config = function()
+            require'cfg.plugins.nnn'
         end
 
     }
@@ -271,14 +277,12 @@ return require('packer').startup(function(use)
     }
 
     use {
-        'numToStr/Comment.nvim',
-        config = function()
-            require('Comment').setup {
-                pre_hook = function()
-                    return require('ts_context_commentstring.internal').calculate_commentstring()
-                end,
-            }
-        end,
+      'numToStr/Comment.nvim',
+      config = function()
+        require('Comment').setup {
+          pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+        }
+      end,
     }
 
     -- Colorschemes
@@ -293,13 +297,13 @@ return require('packer').startup(function(use)
                 -- Underline style used for spelling
                 -- Options: 'none', 'underline', 'undercurl'
                 underline_option = 'undercurl',
-                -- Italics for certain keywords such as constructors, 
+                -- Italics for certain keywords such as constructors,
                 -- functions,
                 -- labels and namespaces
                 italic = true,
                 -- Italic styled comments
                 italic_comments = true,
-                -- Minimal mode: different choice of colors for Tabs and 
+                -- Minimal mode: different choice of colors for Tabs and
                 -- StatusLine
                 minimal_mode = false
             })
@@ -412,7 +416,7 @@ return require('packer').startup(function(use)
     use {
         'ThePrimeagen/harpoon',
         config = function()
-            require'cfg.plugins.harpoon'        
+            require'cfg.plugins.harpoon'
         end
     }
 
@@ -420,18 +424,14 @@ return require('packer').startup(function(use)
     use {
         "folke/zen-mode.nvim",
         config = function()
-            require 'cfg.plugins.zen-mode'        
+            require 'cfg.plugins.zen-mode'
         end
     }
 
     use {
         "folke/twilight.nvim",
         config = function()
-            require("twilight").setup {
-                -- your configuration comes here
-                -- or leave it empty to use the default settings
-                -- refer to the configuration section below
-            }
+            require("twilight").setup {}
         end
     }
 
@@ -440,7 +440,7 @@ return require('packer').startup(function(use)
         requires = {
             {
                 'skywind3000/asyncrun.vim',
-                config = function() 
+                config = function()
                     require 'cfg.plugins.async'
                 end
             }
@@ -467,7 +467,7 @@ return require('packer').startup(function(use)
             require("which-key").setup {
             }
         end
-    }      
+    }
 
     use {
         "cuducos/yaml.nvim",
@@ -501,19 +501,28 @@ return require('packer').startup(function(use)
         end
     }
 
-    use 'LnL7/vim-nix'
 
-    use 'edluffy/hologram.nvim'
-
-
-    use 
-    {
+    use {
         'goerz/jupytext.vim',
         -- config = function()
         --     vim.g.jupytext_filetype_map = {md = 'vimwiki'}
         -- end
     }
     vim.g.jupytext_filetype_map = {md = 'vimwiki'}
+
+    -- REPLs for nvim
+    -- use {'hkupty/iron.nvim', tag = "v3.0"}
+
+    use { 'ray-x/lsp_signature.nvim', config=function() require'lsp_signature'.setup() end }
+    use 'lewis6991/impatient.nvim'
+
+    use {"akinsho/toggleterm.nvim", tag = '*', 
+        config = function()
+            require("toggleterm").setup({
+                open_mapping=[[<C-q>]],
+                direction = 'float',
+            })
+        end}
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins

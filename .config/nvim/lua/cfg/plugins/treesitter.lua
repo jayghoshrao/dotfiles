@@ -3,10 +3,10 @@ require('nvim-treesitter.configs').setup {
   highlight = {
     enable = true,
     use_languagetree = true,
-    additional_vim_regex_highlighting = true,
+    additional_vim_regex_highlighting = false,
   },
   indent = {
-    enable = false,
+    enable = true,
     -- disable = {"python"}
   },
   playground = {
@@ -15,10 +15,17 @@ require('nvim-treesitter.configs').setup {
     updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
     persist_queries = false, -- Whether the query persists across vim sessions
   },
+  autotag={
+      enable=true,
+  },
   autopairs = {
     enable = true,
   },
   context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
+  },
+  matchup = {
     enable = true,
   },
   incremental_selection = {
@@ -31,28 +38,29 @@ require('nvim-treesitter.configs').setup {
           },
   },
   ensure_installed = {
-    'json',
-    'python',
-    'html',
-    'lua',
-    -- 'yaml',
-    'css',
     'bash',
+    'bibtex',
     'c',
-    'cpp',
-    'toml',
     'cmake',
     'comment',
+    'cpp',
+    'css',
     'dockerfile',
     'fortran',
+    'html',
+    'http',
+    'json',
     'json5',
     'latex',
     'llvm',
-    'rust',
-    'vim',
-    'bibtex',
-    'http',
+    'lua',
     'markdown',
-    'nix'
+    'markdown_inline',
+    'nix',
+    'python',
+    'rust',
+    'toml',
+    'vim',
+    'yaml',
   },
 }

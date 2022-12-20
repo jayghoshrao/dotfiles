@@ -1,9 +1,9 @@
 -- Utility commands for reloading the configuration and restarting LSP
 vim.api.nvim_create_user_command('Restart', function()
-  require('j.utils').restart()
+  require('cfg.utils').restart()
 end, {})
 vim.api.nvim_create_user_command('Reload', function()
-  require('j.utils').reload()
+  require('cfg.utils').reload()
 end, {})
 
 -- gdb helper

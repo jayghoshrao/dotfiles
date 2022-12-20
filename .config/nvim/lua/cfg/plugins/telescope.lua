@@ -1,18 +1,22 @@
-local actions = require 'telescope.actions'
 local finders = require('telescope.finders')
+local actions = require 'telescope.actions'
+local builtin = require 'telescope.builtin'
+-- local extensions = require 'telescope.extensions'
+-- local layout_strategies = require 'telescope.pickers.layout_strategies'
+-- local custom_pickers = require 'cfg.plugins.telescope_custom_pickers'
 
 local map = require('cfg.utils').map
 
-map('n', '<space>o', [[<cmd>lua require'telescope.builtin'.find_files()<cr>]])
-map('n', '<space>p', [[<cmd>lua require'telescope.builtin'.git_files()<cr>]])
-map('n', '<space>f', [[<cmd>lua require'telescope.builtin'.live_grep()<cr>]])
+map('n', '<space>o', builtin.find_files)
+map('n', '<space>p', builtin.git_files)
+map('n', '<space>f', builtin.live_grep)
 
-map('n', '<space>b', [[<cmd>lua require'telescope.builtin'.buffers()<cr>]])
-map('n', '<space>h', [[<cmd>lua require'telescope.builtin'.help_tags()<cr>]])
-map('n', '<space>e', [[<cmd>lua require'telescope.builtin'.current_buffer_fuzzy_find()<cr>]])
-map('n', '<space>;', [[<cmd>lua require'telescope.builtin'.command_history()<cr>]])
-map('n', '<space>/', [[<cmd>lua require'telescope.builtin'.search_history()<cr>]])
-map('n', '<space>t', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
+map('n', '<space>b', builtin.buffers)
+map('n', '<space>h', builtin.help_tags)
+map('n', '<space>e', builtin.current_buffer_fuzzy_find)
+map('n', '<space>;', builtin.command_history)
+map('n', '<space>/', builtin.search_history)
+map('n', '<space>t', builtin.builtin)
 
 -- Unused
 -- map('n', '<space>m', [[<cmd>lua require'telescope.builtin'.marks()<cr>]])
@@ -20,32 +24,31 @@ map('n', '<space>t', [[<cmd>lua require'telescope.builtin'.builtin()<cr>]])
 
 local opts = { noremap = true, silent = true }
 
--- TODO: This or lsp references?
-map('n', 'gr', [[<cmd>lua require'telescope.builtin'.lsp_references()<cr>]], opts)
-map('n', '<space>gs', [[<cmd>lua require'telescope.builtin'.git_status()<cr>]], opts)
+map('n', 'gr', builtin.lsp_references, opts)
+map('n', '<space>gs', builtin.git_status, opts)
+map('n', '<space>gc', builtin.git_commits)
 
 -- map('n', '<leader>fr', [[<cmd>lua require'telescope.builtin'.oldfiles()<cr>]])
 -- map('n', '', [[<cmd>lua require'telescope.builtin'.quickfix()<cr>]])
 -- map('n', '<leader>fx', [[<cmd>lua require'telescope.builtin'.git_status()<cr>]])
 
-map('n', '<space>gc', [[<cmd>lua require'telescope.builtin'.git_commits()<cr>]])
 map('n', '<space>gi', [[<cmd>lua require'telescope'.extensions.gh.issues()<cr>]])
 map('n', '<space>gp', [[<cmd>lua require'telescope'.extensions.gh.pull_request()<cr>]])
 map('n', '<space>gg', [[<cmd>lua require'telescope'.extensions.gh.gist()<cr>]])
 map('n', '<space>gr', [[<cmd>lua require'telescope'.extensions.gh.run()<cr>]])
 
 require('telescope').setup {
-  defaults = {
-    prompt_prefix = ' ❯ ',
-    selection_caret = '❯ ',
-    mappings = {
-      i = {
-        ['<esc>'] = actions.close,
+    defaults = {
+        prompt_prefix = ' ❯ ',
+        selection_caret = '❯ ',
+        mappings = {
+            i = {
+                ['<esc>'] = actions.close,
 
-        ['<C-q>'] = actions.send_to_qflist,
+                ['<C-q>'] = actions.send_to_qflist,
 
-        ['<c-j>'] = actions.move_selection_next,
-        ['<c-k>'] = actions.move_selection_previous,
+                ['<c-j>'] = actions.move_selection_next,
+                ['<c-k>'] = actions.move_selection_previous,
 
                 ['<s-up>'] = actions.cycle_history_prev,
                 ['<s-down>'] = actions.cycle_history_next,
@@ -71,12 +74,25 @@ require('telescope').setup {
         },
         find_files = {
             hidden = false,
+            -- find_command = {
+            --     'rg',
+            --     '--files',
+            --     '--color',
+            --     'never',
+            --     '--ignore-file',
+            --     vim.env.XDG_CONFIG_HOME .. '/ripgrep/ignore',
+            -- },
         },
         live_grep = {
             path_display = { 'shorten' },
+            -- mappings = {
+            --     i = {
+            --         ['<c-f>'] = custom_pickers.actions.set_extension,
+            --         ['<c-l>'] = custom_pickers.actions.set_folders,
+            --     },
+            },
         },
-    },
-}
+    }
 
 require('telescope').load_extension 'fzf'
 require('telescope').load_extension('gh')
@@ -86,16 +102,16 @@ require('telescope').load_extension('gh')
 local M = {}
 
 M.project_files = function()
-  local opts = {} -- define here if you want to define something
-  local ok = pcall(require'telescope.builtin'.git_files, opts)
-  if not ok then require'telescope.builtin'.find_files(opts) end
+    local opts = {} -- define here if you want to define something
+    local ok = pcall(require'telescope.builtin'.git_files, opts)
+    if not ok then require'telescope.builtin'.find_files(opts) end
 end
 
-M.git_dirty=function()
-require('telescope.builtin').find_files({
-    prompt_title = "Git Dirty >",
-    finder = finders.new_oneshot_job({'git', 'ls-files', '-m', '-o', '--exclude-standard'}),
-})
-end
+-- M.git_dirty=function()
+--     require('telescope.builtin').find_files({
+--         prompt_title = "Git Dirty >",
+--         finder = finders.new_oneshot_job({'git', 'ls-files', '-m', '-o', '--exclude-standard'}),
+--     })
+-- end
 
 return M
