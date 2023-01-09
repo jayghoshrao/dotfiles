@@ -6,7 +6,6 @@ autotrace
 bibata-cursor-theme
 brotab-git
 c2esp
-calcure
 chromium-widevine
 conky-lua
 cozy-audiobooks
@@ -45,7 +44,6 @@ lxsession-git
 masterpdfeditor
 masterpdfeditor-free
 melonds
-minestein
 mongodb-bin
 mopidy-podcast
 mpv-sponsorblock-git
@@ -86,14 +84,13 @@ python-scikit-image
 python-selenium
 python-spotipy-git
 python-umonitor-git
-python2-pip
 qjoypad
 qt5-webengine-widevine
 r8152-dkms
 remmina-plugin-rdesktop
 ripgrep-all-bin
 rocketchat-client-bin
-rr-bin
+rofi-keepassxc
 rs-git
 rtv
 samsung-printers
@@ -107,7 +104,6 @@ snapd
 socli
 spotify
 stockfish
-syncthing-gtk
 teams
 telegram-desktop-bin
 termite

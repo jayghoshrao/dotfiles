@@ -21,7 +21,6 @@ bpytop
 brasero
 breezy
 btop
-calcurse
 calibre
 caprine
 catch2
@@ -164,6 +163,7 @@ nix
 nlopt
 nnn
 notmuch
+obsidian
 ocaml-csexp
 ocaml-topkg
 ocamlbuild
@@ -230,6 +230,7 @@ stow
 superlu
 swig
 sxiv
+syncthing
 task
 taskell
 tealdeer
