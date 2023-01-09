@@ -57,25 +57,6 @@ if [[ -x "$(command -v fd)" ]]; then
     }
 fi
 
-# vl - fuzzy open with vim from anywhere {{{
-# ex: vf word1 word2 ... (even part of a file name)
-# zsh autoload function
-# vl is easier typed, and l = locate
-autoload vl
-vl() {
-  local files
-
-  files=(${(f)"$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim/' | fzf --read0 -0 -1 -m)"})
-
-  if [[ -n $files ]]
-  then
-     nvim -- $files
-     print -l $files[1]
-  fi
-}
-
-#}}}
-
 # fl - fzf-locate: {{{
 autoload fzf_locate
 function fzf_locate()
@@ -106,14 +87,14 @@ bindkey '^F' fzf_locate
 
 # }}}
 
-# TODO: Change to fj: fuzzy jump? 
-#cl - fuzzy cd from anywhere (auto){{{
+#fj - fuzzy cd (jump) from anywhere (auto){{{
 #ex: cf word1 word2 ... (even part of a file name)
-autoload cl
-cl() {
+autoload fj
+fj() {
   local file
 
-  file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
+  # file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
+  file=$(fd "$@" . --base-directory=$HOME | fuzscope --base-directory "$HOME") 
 
   if [[ -n $file ]]
   then
@@ -176,11 +157,21 @@ fdp() {
 }
 #}}}
 
-# cdf - cd into the directory of the selected file {{{
-fcd() {
+# fs: fuzzy subdir - cd into the directory of the selected file {{{
+fs() {
    local file
    local dir
-   file=$(fd | fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+   file=$(fd | fzf +m -q "$1")
+
+  if [[ -n $file ]]
+  then
+     if [[ -d $file ]]
+     then
+        cd -- $file
+     else
+        cd -- ${file:h}
+     fi
+  fi
 }
 #}}}
 
