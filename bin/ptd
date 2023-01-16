@@ -21,8 +21,8 @@
 ## DONE: option to select cache location (useful to store databases for long term for offline manipulation of data)
 ## DONE: extract and fetch mechanism for PII, Arxiv, Scholar
 
-## FIXME: null-null-null.pdf
-## FIXME: Don't overwrite existing files
+## DONE: null-null-null.pdf: ARXIV tag regex was only considering old 4-digit numbers. 
+## DONE: Don't overwrite existing files
 
 ## TODO: I should technically also check the status of the message returned from the API to verify things. Maybe in the next python rewrite. 
 ## DONE: recursive mode will require file path handling: use bash instead?: See ptdr, wrapper script
@@ -145,7 +145,7 @@ function processPages()
     DOI=$(echo "$PDFPAGES" | grep -Pio '10.\d{4,9}/[A-Z0-9./:;()-_]+' | head -n 1)
     PII=$(echo "$PDFPAGES" | grep -Pio '[S,B][0-9()-/]*' | head -n 1)
     # ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}v?\d?' | head -n 1)
-    ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4}' | head -n 1)
+    ARXIV=$(echo "$PDFPAGES" | grep -Pio '\d{4}\.\d{4,5}' | head -n 1)
 
     if [ -n "$DOI" ]; then
         echo "== context =="
