@@ -1,10 +1,39 @@
 #!/usr/bin/env zsh
 
-[ "$1" = "-d" ] && [ -n "$2" ] && rm ~/bin/$2 && exit
-[ -n "$2" ] && mv ~/bin/$1 ~/bin/$2 && exit
+set -euo pipefail
 
+BIN_DIR=$HOME/bin
 
-touch ~/bin/$1
-[ -x ~/bin/$1 ] || chmod +x ~/bin/$1
-"$EDITOR" ~/bin/$1
-# dot add ~/bin/$1
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -d|--delete)
+            rm "$BIN_DIR/$2"
+            return
+            ;;
+        -m|--move)
+            mv "$BIN_DIR/$2" "$BIN_DIR/$3"
+            return
+            ;;
+        -g|--grep)
+            if [ -x "$(command -v rg )" ]; then
+                rg "$2" "$BIN_DIR" 
+            else
+                grep -nirE "$2" "$BIN_DIR"
+            fi
+            return
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+touch "$BIN_DIR/$1"
+[ -x "$BIN_DIR/$1" ] || chmod +x "$BIN_DIR/$1"
+"$EDITOR" "$BIN_DIR/$1"
+# dot add "$BIN_DIR/$1"
