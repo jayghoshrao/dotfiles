@@ -13,6 +13,7 @@ http://www.vox.com/rss/index.xml blog
 https://xkcd.com/rss.xml comics
 https://waitbutwhy.com/feed blog
 https://www.lesswrong.com/feed.xml?view=curated-rss
+https://www.linuxserver.io/blog.rss news tech
 
 https://hackaday.com/blog/feed/ 
 https://www.reddit.com/r/unixporn.rss reddit 
@@ -48,8 +49,8 @@ https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms !news news india
 http://seenunseen.ivm.libsynpro.com/rss podcast india !podcast
 http://nightvale.libsyn.com/rss podcast !podcast
 https://feeds.megaphone.fm/sciencevs podcast !podcast
-https://feeds.megaphone.fm/the-daily-show podcast news !podcast
 http://www.npr.org/rss/podcast.php?id=510298 podcast !podcast
+https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/0E563F45-9D14-4CE8-8EF0-AE32006CD7E7/0D4CC74D-FFF7-4B89-8818-AE32006CD7F0/podcast.rss podcast !podcast
 
 # Blogs
 https://rachelbythebay.com/w/atom.xml !blog blog
@@ -63,12 +64,13 @@ https://github.com/NixOS/nix/tags.atom !releases releases
 
 # Dockerhub containers
 # See RSS-Bridge
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterhub&repo=jupyterhub&format=Atom !dockerhub dockerhub
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterlab&repo=jupyterlab&format=Atom !dockerhub dockerhub
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=nextcloud&format=Atom !dockerhub dockerhub
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=swag&format=Atom !dockerhub dockerhub
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=zadam&repo=trilium&format=Atom !dockerhub dockerhub
-http://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=hkotel&repo=mealie&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterhub&repo=jupyterhub&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyter&repo=scipy-notebook&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=nextcloud&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=swag&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=zadam&repo=trilium&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=hkotel&repo=mealie&format=Atom !dockerhub dockerhub
+https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=vaultwarden&repo=server&format=Atom !dockerhub dockerhub
 
 # "query:Youtube:tags # \"youtube\""
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCweFJojRAFuxyYxe4KHL8vw !youtube youtube Runesmith DND
