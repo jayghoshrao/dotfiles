@@ -33,6 +33,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
+
 HDDJSON=$(lsblk -fs --json | jq -r --arg uuid "$UUID" '.blockdevices[] | select(.uuid==$uuid)')
 
 [ -z "$HDDJSON" ] && die "HDD not detected"
@@ -41,13 +42,17 @@ echo "$HDDJSON" | jq '.'
 name=$(echo "$HDDJSON" | jq -r .name)
 mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
 
+
 if [ "$mountpoint0" = "null" ]; then
     echo "HDD not mounted. Mounting to /media/$name"
     pmount /dev/$name
+    MOUNTPOINT="/media/$name"
+else
+    MOUNTPOINT="$mountpoint0"
 fi
 
 cd $HOME
 
 # Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
 # the backup disk located at /media/$name in the Backup folder
-mirror ${MIRRORFLAGS[*]} -r $name /media/$name/Backup -t $name -e ${EXCLUDES[*]} -- ${*:-${DEFAULT_DIRS[*]}}
+mirror ${MIRRORFLAGS[*]} -r $name $MOUNTPOINT/Backup -t $name -e ${EXCLUDES[*]} -- ${*:-${DEFAULT_DIRS[*]}}
