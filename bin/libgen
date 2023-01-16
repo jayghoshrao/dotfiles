@@ -5,33 +5,96 @@ from bs4 import BeautifulSoup as bs
 from iterfzf import iterfzf
 import wget
 import sys
+from dataclasses import dataclass, field
+import urllib.parse
+from pathlib import Path
+import argparse
 
-# search_url = 'http://libgen.is/search.php?lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def&req=' + input('search: ')
-base_search_url = 'http://libgen.is/search.php?lg_topic=libgen&open=0&view=simple&res=25&phrase=1&column=def&req='
+BASE_URL = "https://libgen.is"
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko"
 
+OUT_DIR = Path('.')
 
-def get_search(query):
-    url = base_search_url + query.replace(' ', '+')
-    # print(url)
-    req = requests.get(url)
-    soup = bs(req.content, 'html.parser')
-    table = soup.find("table", {"class": "c"})
-    rows = table.findAll("tr")
-    data = {row.findAll("td")[4].text + ' ' + row.findAll("td")[8].text + ' ' + row.findAll("td")[2].text: row for row in rows}
-    selection = iterfzf(data)
-    book = data[selection]
-    # print(book)
+@dataclass
+class SearchResult:
+    title:str = ''
+    author:str = ''
+    detail_item:str = ''
+    size:str = ''
+    pages:str = ''
+    year:str = ''
+    formats:str = ''
+    mirror1_url:str = ''
+    downloads:dict = field(default_factory=dict)
+    cover_url:str = ''
 
-    cells = book.findAll("td")
-    links = { cell.text: cell.find('a').attrs['href'] for cell in cells if cell.find('a')}
-    link = links[iterfzf(links)]
-    req = requests.get(link)
-    soup = bs(req.content, 'html.parser')
-    # downlink = iterfzf([ atag.attrs['href'] for atag in soup.findAll("a") ])
-    downlink = soup.find("a").attrs['href']
-    print(downlink)
-    # wget.download(downlink)
-    wget.download(downlink, out=input("Filename:"))
+def search_libgen(query, max_results=10, timeout=60):
+    res = "25" if max_results <= 25 else "50" if max_results <= 50 else "100"
+    search_url = f"{BASE_URL}/search.php?req={query.decode()}&res={res}&view=simple"
+    print("searching: " + search_url)
+    print("max results: " + str(max_results))
+    response = requests.get(search_url)
+    # soup = bs(response.content, 'html.parser')
+    soup = bs(response.content, 'html5lib')
 
-# get_search('+'.join(sys.argv[1:]))
-get_search(input("Search: ").replace(' ', '+'))
+    # Find the rows that represent each book, and skip the first item which is table headers
+    trs = soup.select('table[class="c"] > tbody > tr')[1:]
+
+    #map the trs to search results, filter out items that dont have a title or author, and limit it to max_results size
+    return [result for result in map(build_search_result, trs) if result.title and result.author][:max_results]
+
+def build_search_result(tr):
+    tds = tr.select('td')
+    s = SearchResult()
+    s.title = tds[2].select_one("a:last-of-type").text
+    s.author = tds[1].text
+    s.detail_item = BASE_URL + "/" + tds[2].select_one("a:last-of-type").get("href")
+    s.size = tds[7].text
+    s.pages = tds[5].text
+    s.year = tds[4].text
+    s.formats = tds[8].text.upper()
+    s.mirror1_url = tds[9].select_one("a:first-of-type").get("href")
+    return s
+
+def get_details(search_result, timeout=60):
+    s = search_result
+
+    while True:
+        try:
+            # raw = br.open(s.mirror1_url).read()
+            response = requests.get(s.mirror1_url)
+            soup = bs(response.content, 'html5lib')
+            break
+        except:
+            # sever error, retry after delay
+            print("Retrying...")
+            time.sleep(0.1)
+
+    download_a = soup.select('div[id="download"] > ul > li > a')[0]
+    download_url = download_a.get("href")
+
+    new_base_url = urllib.parse.urlparse(s.mirror1_url).hostname
+    image_url = "http://" + new_base_url + soup.select("img")[0].get("src")
+
+    s.downloads[s.formats] = download_url
+    s.cover_url = image_url
+
+    return s
+
+if __name__ == "__main__":
+    results = search_libgen(bytes(" ".join(sys.argv[1:]), "utf-8"))
+    
+    display_strings = [ f"[{r.formats}]: {r.year} | {r.author} | {r.title}" for r in results ]
+
+    selection = iterfzf(display_strings)
+
+    if selection is not None:
+        selection_id = display_strings.index(selection)
+        s = results[selection_id]
+        print(selection)
+        print("Fetching download links...")
+        s = get_details(s)
+        print(s)
+
+        wget.download(s.downloads[s.formats], out=f"{s.title} - {s.author}.{s.formats}")
+
