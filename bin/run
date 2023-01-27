@@ -75,8 +75,8 @@ rename_pulseaudio_sinks(){
         pacmd update-sink-proplist alsa_output.pci-0000_00_1f.3.analog-stereo device.description="Speakers" 
     fi
 
-    if [[ "$SINKS" =~ 'alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.analog-stereo' ]]; then
-        pacmd update-sink-proplist alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.analog-stereo device.description="Dock" 
+    if [[ "$SINKS" =~ 'alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.iec958-stereo' ]]; then
+        pacmd update-sink-proplist alsa_output.usb-Lenovo_ThinkPad_Thunderbolt_3_Dock_USB_Audio_000000000000-00.iec958-stereo device.description="Dock" 
     fi
 
     # pactl load-module module-alsa-sink device=hdmi:0,1 sink_properties=device.description="HDMI"
