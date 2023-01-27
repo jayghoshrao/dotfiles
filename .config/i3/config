@@ -457,6 +457,8 @@ for_window [title="VNC authentication"] floating enable, move position center
 for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, move position center
 for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
 
+for_window [window_role="PictureInPicture"] move to output right 
+
 
 #}}}
 
@@ -522,6 +524,8 @@ bindsym shift+$alt+space fullscreen disable; floating enable; resize set 25ppt 2
 # bindsym $mod+v exec whatsapp-nativefier
 bindsym $mod+v exec telegram-desktop
 
+bindsym F9 exec --no-startup-id $SCRIPTS/bmark
+
 # }}}
 
 # Screenshots: {{{
@@ -556,7 +560,7 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -mat
 
 # END:{{{
 
-exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpaper --pulseaudio --polybar
+exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpaper --pulseaudio --delay 1 --polybar
 
 # }}}
 
@@ -589,3 +593,7 @@ bindsym Control+period exec --no-startup-id dunstctl close &
 
 ## NOTE: Deactivates lxappearance
 # exec --no-startup-id /usr/lib/gsd-xsettings
+
+# Workaround for a recent-ish bug/update
+for_window [all] border pixel 1
+# for_window [class="Zathura"] move to workspace "temp"
