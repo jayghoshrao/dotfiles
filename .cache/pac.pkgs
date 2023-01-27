@@ -122,6 +122,7 @@ lazygit
 libsixel
 licenses
 lightdm-gtk-greeter-settings
+lightdm-pantheon-greeter
 lightdm-webkit-theme-litarvan
 linux
 linux-lts

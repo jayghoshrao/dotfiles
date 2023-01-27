@@ -1,9 +1,20 @@
 #!/bin/bash
 
 ## dex: [d]ecrypt [e]ncrypt e[x]change
+# RESOURCE: https://unix.stackexchange.com/questions/387993/how-to-run-a-pipe-safely-and-sequentially/388486#388486
+
+# TODO: recursive  in folder
+
+# TODO: encrypt if not, decrypt if not
+
+set -euo pipefail
 
 MODE='EXCHANGE' ### or EDIT (-e)
-TMPFILE=/tmp/dex.dump.$RANDOM
+
+LOCKFOLDER="$HOME/.local/share/dex"
+[ -d "$LOCKFOLDER" ] || mkdir -p "$LOCKFOLDER"
+
+# LOCKFILE="$HOME/.local/share/dex.lock"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -27,30 +38,40 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-typestr=$(file $1)
+FILENAME="$1"
+FILEPATH=$(realpath "$FILENAME")
+FILEPATHENC=${FILEPATH//\//%}
+LOCKFILE="$LOCKFOLDER/$FILEPATHENC"
+
+typestr=$(file "$FILENAME")
 
 if [[ "$MODE" == "EXCHANGE" ]]; then 
     if [[ "$typestr" =~ "encrypted" ]]; then 
-        gpg -dq "$1" > /tmp/dex.dump
-        mv /tmp/dex.dump "$1"
+        result=$(gpg -dq "$FILENAME" ) && printf '%s' "$result" > "$FILENAME"
+        unset result
     else
-        gpg -e "$1" 
-        mv "$1".gpg "$1"
+        data=$(gpg -o - -e "$FILENAME" > >(base64)) && printf '%s' "$data" | base64 -d > "$FILENAME"
+        unset data
     fi
 elif [[ "$MODE" == "PAGER" ]]; then 
     if [[ "$typestr" =~ "encrypted" ]]; then 
-        gpg -dq "$1" | less
+        gpg -dq "$FILENAME" | less
     else
-        less "$1"
+        less "$FILENAME"
     fi
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
-        gpg -dq "$1" > "$TMPFILE"
-        "$EDITOR" "$TMPFILE"
-        gpg -e "$TMPFILE" 
-        mv "$TMPFILE".gpg "$1"
-        rm "$TMPFILE"
+        # Uses lockfiles to ensure file is not multiply modified
+        ( flock -n 9 || exit 1
+        data=$(gpg -dq "$FILENAME" | vipe --suffix md) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        unset data
+        ) 9>"$LOCKFILE"
+    elif [ -f "$FILENAME" ]; then
+        # If file exists and not encrypted
+        "$EDITOR" "$FILENAME"
     else
-        "$EDITOR" "$1"
+        # if file doesn't exist
+        data=$(vipe --suffix md) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        unset data
     fi
 fi
