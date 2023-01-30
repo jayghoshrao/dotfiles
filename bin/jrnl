@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# JRNL: journaling script
+#
+# Depends on: 
+#   - dex: my gpg enc/dec script
+#   - peek: my filetype-based file opener script
+#   - fuzscope
+#
+# Stores one file per day.
+# Encrypts files by default using `dex`
+#
+# Variables:
+# JRNL_DIR -> Directory to store journal files
+# JRNL_FILENAME -> File name format. We use the current date.
+# JRNL_FILE -> Full filepath with filename for today's journal
+#
+# Usage: 
+# `jrnl` : open today's journal page
+# `jrnl -b`: browse journal entries
+
+
+MODE="EDIT"
+
+JRNL_DIR="$NOTES_DIR/journal"
+DATESTR="now"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -b|--browse)
+            MODE="BROWSE"
+            shift
+            ;;
+        -D|--directory)
+            JRNL_DIR="$2"
+            shift
+            shift
+            ;;
+        # -d|--date)
+        #     DATESTR="$2"
+        #     shift
+        #     shift
+        #     ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+DATESTR="$@"
+
+DATE=$(date -d "$DATESTR" '+%Y-%m-%d')
+JRNL_FILENAME="${DATE}.md"
+JRNL_FILE="$JRNL_DIR/$JRNL_FILENAME"
+
+[ -d "$JRNL_DIR" ] || mkdir -p "$JRNL_DIR"
+
+if [[ $MODE == "BROWSE" ]]; then
+    while : 
+    do
+        OUT=$(fd --base-directory "$JRNL_DIR" . | fuzscope -b "$JRNL_DIR")
+        if [[ -n "$OUT" ]]; then 
+            peek "$OUT"
+        else
+            break
+        fi
+    done
+else
+    # Decrypt and edit
+    # dex -e also creates a file if none exists
+    dex -e "$JRNL_FILE"
+fi
