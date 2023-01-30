@@ -43,6 +43,8 @@ FILEPATH=$(realpath "$FILENAME")
 FILEPATHENC=${FILEPATH//\//%}
 LOCKFILE="$LOCKFOLDER/$FILEPATHENC"
 
+VIPE_SUFFIX="$(basename "$FILENAME")"
+
 typestr=$(file "$FILENAME")
 
 if [[ "$MODE" == "EXCHANGE" ]]; then 
@@ -63,7 +65,7 @@ elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
         # Uses lockfiles to ensure file is not multiply modified
         ( flock -n 9 || exit 1
-        data=$(gpg -dq "$FILENAME" | vipe --suffix md) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        data=$(gpg -dq "$FILENAME" | vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
         unset data
         ) 9>"$LOCKFILE"
     elif [ -f "$FILENAME" ]; then
@@ -71,7 +73,10 @@ elif [[ "$MODE" == "EDIT" ]]; then
         "$EDITOR" "$FILENAME"
     else
         # if file doesn't exist
-        data=$(vipe --suffix md) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        # Uses lockfiles to ensure file is not multiply modified
+        ( flock -n 9 || exit 1
+        data=$(vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
         unset data
+        ) 9>"$LOCKFILE"
     fi
 fi
