@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # DONE: if directory, LS, if file, whatever
+# TODO: Replace with peek
 
 KEY=$1
 FILE_EXT=$2
@@ -29,6 +30,8 @@ elif [[ "$FILETYPE" == *"image"*  ]]; then
     # img.sh -d "$FILE_EXT"
     echo "$FILE_EXT"
     echo "Image preview not supported."
+elif [[ "$FILETYPE" == "application/octet-stream" ]]; then
+    dex -p "$FILE_EXT"
 else
     echo "$FILETYPE"
     echo "Preview not supported."
