@@ -81,6 +81,8 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.json_ls'
             require 'cfg.plugins.lsp.sumneko_lua'
             require 'cfg.plugins.lsp.pyright'
+            -- require 'cfg.plugins.lsp.pylsp'
+            -- require 'cfg.plugins.lsp.ruff_lsp'
             require 'cfg.plugins.lsp.texlab'
             require 'cfg.plugins.lsp.yaml_ls'
         end,
@@ -287,6 +289,7 @@ return require('packer').startup(function(use)
 
     -- Colorschemes
     -- use 'shaunsingh/nord.nvim'
+    -- Alt, darker nord: https://github.com/AlexvZyl/nordic.nvim
 
     use {
         'andersevenrud/nordic.nvim',
@@ -343,54 +346,6 @@ return require('packer').startup(function(use)
         end,
         -- lunajson for a custom launch function. See dap.lua
         rocks = 'lunajson'
-    }
-
-    use {
-        'rcarriga/nvim-dap-ui',
-        config = function()
-            require("dapui").setup({
-                icons = { expanded = "▾", collapsed = "▸" },
-                mappings = {
-                    -- Use a table to apply multiple mappings
-                    expand = { "<CR>", "<2-LeftMouse>" },
-                    open = "o",
-                    remove = "d",
-                    edit = "e",
-                    repl = "r",
-                },
-                layouts = {
-                    {
-                        elements = {
-                            'scopes',
-                            'breakpoints',
-                            'stacks',
-                            'watches',
-                        },
-                        size = 40,
-                        position = 'left',
-                    },
-                    {
-                        elements = {
-                            'repl',
-                            'console',
-                        },
-                        size = 10,
-                        position = 'bottom',
-                    },
-                },
-                floating = {
-                    max_height = nil, -- These can be integers or a float between 0 and 1.
-                    max_width = nil, -- Floats will be treated as percentage of your screen.
-                    border = "single", -- Border style. Can be "single", "double" or "rounded"
-                    mappings = {
-                        close = { "q", "<Esc>" },
-                    },
-                },
-                windows = { indent = 1 },
-            })
-            require('cfg.utils').map('n', '<space>dd', '<cmd>lua require("dapui").toggle()<cr>')
-            require('cfg.utils').map('n', '<space>dD', '<cmd>lua require("dapui").close()<cr>')
-        end
     }
 
     use {
@@ -504,11 +459,25 @@ return require('packer').startup(function(use)
 
     use {
         'goerz/jupytext.vim',
-        -- config = function()
-        --     vim.g.jupytext_filetype_map = {md = 'vimwiki'}
-        -- end
+        requires = {
+            'hkupty/iron.nvim',
+            'kana/vim-textobj-user',
+            'kana/vim-textobj-line',
+            'GCBallesteros/vim-textobj-hydrogen',
+        },
+        config = function()
+            -- vim.g.jupytext_filetype_map = {md = 'vimwiki'}
+            vim.g.jupytext_fmt = 'py'
+            vim.g.jupytext_style = 'hydrogen'
+            -- " Send cell to IronRepl and move to next cell.
+            -- " Depends on the text object defined in vim-textobj-hydrogen
+            -- " You first need to be connected to IronRepl
+            -- vim.api.nvim_buf_set_keymap(0, {'n'}, ']x', 'ctrih/^# %%<CR><CR>', {} )
+            require 'cfg.plugins.iron'
+        end
     }
-    vim.g.jupytext_filetype_map = {md = 'vimwiki'}
+    -- vim.g.jupytext_filetype_map = {md = 'vimwiki'}
+
 
     -- REPLs for nvim
     -- use {'hkupty/iron.nvim', tag = "v3.0"}

@@ -70,7 +70,7 @@ map('n', 'U', '<c-r>')
 -- typohacks
 -- TODO: Make this filetype specific to c/c++
 map('i', ';;', '<esc>A;<esc>')
-map('i', ':;', '::') 
+-- map('i', ':;', '::') 
 
 
 map('n', '<Left>', ':vertical resize +5<CR>')

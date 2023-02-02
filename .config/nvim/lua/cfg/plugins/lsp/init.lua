@@ -202,7 +202,7 @@ local function list_or_jump(action, title, opts)
     local current_word = vim.fn.expand("<cword>")
     vim.cmd ('tag ' .. current_word)
   elseif #flattened_results == 1 then
-    vim.lsp.util.jump_to_location(flattened_results[1])
+    vim.lsp.util.jump_to_location(flattened_results[1], 'utf-8')
   else
     local locations = vim.lsp.util.locations_to_items(flattened_results)
     pickers.new(opts, {
