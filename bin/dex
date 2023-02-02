@@ -26,7 +26,11 @@ do
             MODE='EDIT'
             shift # past value
             ;;
-        -p|--pager)
+        -p|--print)
+            MODE='PRINT'
+            shift # past value
+            ;;
+        --pager)
             MODE='PAGER'
             shift # past value
             ;;
@@ -60,6 +64,12 @@ elif [[ "$MODE" == "PAGER" ]]; then
         gpg -dq "$FILENAME" | less
     else
         less "$FILENAME"
+    fi
+elif [[ "$MODE" == "PRINT" ]]; then 
+    if [[ "$typestr" =~ "encrypted" ]]; then 
+        gpg -dq "$FILENAME"
+    else
+        cat "$FILENAME"
     fi
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
