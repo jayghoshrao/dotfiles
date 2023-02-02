@@ -89,6 +89,9 @@ zp zsh-users/zsh-autosuggestions
 # zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
 zp zdharma-continuum/fast-syntax-highlighting
 
+zpi pick"cb" as"command"
+zp niedzielski/cb
+
 if [[ "$ARCH" == "x86_64" ]]; then
 
 
@@ -157,6 +160,7 @@ if [[ "$ARCH" == "x86_64" ]]; then
         #     wget https://gist.githubusercontent.com/jayghoshter/0c7cda4e23a223fb5a0e7c0262925464/raw/44b0598b60c5f848eec4f7f6ec3d9263c78d0db1/dev.conda.env.yaml
         #     mamba env create -n dev -f dev.conda.env.yaml
         # fi
+
 
     fi
 fi
@@ -619,22 +623,18 @@ alias LD="DOTDIR=$HOME/.localdots"
 # peek: {{{
 peek()
 {
-    ## An upgrade to filer
-    ## Because I'm bored and sometimes have OCD
-
     urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-    OPENER="xdg-open"
     DEBUG="OFF"
+    MODE="EDIT"
 
     POSITIONAL=()
     while [[ $# -gt 0 ]]
     do
         key="$1"
         case $key in
-            -o|--opener)
-                OPENER="$2"
+            -p|--print)
                 shift # past value
-                shift # past value
+                MODE="PRINT"
                 ;;
             -d|--debug)
                 DEBUG="ON"
@@ -655,12 +655,12 @@ peek()
         ## Space separated
         # read -r FILES
 
-        ## Newline separated, becuase fzf pipes
-        FILES=()
-        while read -r line; do
-            # echo "> $line"
-            FILES+=( "$line" )
-        done
+    ## Newline separated, becuase fzf pipes
+    FILES=()
+    while read -r line; do
+        # echo "> $line"
+        FILES+=( "$line" )
+    done
     fi
 
     open()
@@ -670,16 +670,38 @@ peek()
 
     guiopen()
     {
-        nohup "$OPENER" "$@" >/dev/null 2>&1 & disown
+        nohup xdg-open "$@" >/dev/null 2>&1 & disown
     }
 
-    switch()
+    special()
     {
-
         FILE="$@"
         FILEBASENAME=$(basename "$FILE")
         [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
         FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
+
+        if [[ "$FILE" =~ $urlregex ]]; then
+            if [[ -x $(command -v urler.sh) ]]; then
+                urler.sh "$FILE"
+            else
+                guiopen "$FILE"
+            fi
+        else
+            guiopen "$FILE"
+        fi
+
+    }
+
+    driver()
+    {
+        FILE="$@"
+        FILEBASENAME=$(basename "$FILE")
+        [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
+        FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
+
+        if [[ "$FILETYPE" == "inode/symlink" ]]; then
+            driver "$(readlink -f "$FILE")"
+        fi
 
         if [[ "$DEBUG" == "ON" ]]; then 
             echo "file=$FILE"
@@ -690,33 +712,34 @@ peek()
             echo "------------------"
         fi
 
-        if [[ "$FILETYPE" == *"text"* ]]; then
-            $EDITOR "$FILE" && return 
-        elif [[ "$FILE" =~ $urlregex ]]; then
-            if [[ "$FILE" =~ "youtube" ]]; then
-                open mpv "$FILE"
-            else
-                guiopen "$FILE"
-            fi
+        if [[ "$MODE" == "EDIT" ]]; then
+            case "$FILETYPE" in 
+                "inode/directory"         ) builtin cd "$FILE"            ; return ;;
+                "inode/x-empty"           ) $EDITOR "$FILE"               ; return ;;
+                "application/octet-stream") dex -e "$FILE"                ; return ;;
+                "text/html"               ) guiopen "$FILE"               ; return ;;
+                "application/pdf"         ) guiopen "$FILE"               ; return ;;
+                "application/json"        ) $EDITOR "$FILE"               ; return ;;
+                "text/plain"              ) $EDITOR "$FILE"               ; return ;;
+                *                         ) special "$FILE"               ; return ;;
+            esac
+        elif [[ "$MODE" == "PRINT" ]]; then
+            case "$FILETYPE" in 
+                "inode/directory"         ) ls "$FILE"                    ; return ;;
+                "inode/x-empty"           ) cat "$FILE"                   ; return ;;
+                "application/octet-stream") dex -p "$FILE"                ; return ;;
+                "text/html"               ) guiopen "$FILE"               ; return ;;
+                "application/pdf"         ) guiopen "$FILE"               ; return ;;
+                "application/json"        ) cat "$FILE"                   ; return ;;
+                "text/plain"              ) cat "$FILE"                   ; return ;;
+                *                         ) special "$FILE"               ; return ;;
+            esac
         fi
-
-        case "$FILETYPE" in 
-            "inode/directory"         ) builtin cd "$FILE"            ; return ;;
-            "inode/symlink"           ) switch "$(readlink -f $FILE)" ; return ;;
-            "inode/x-empty"           ) $EDITOR "$FILE"               ; return ;;
-            "application/octet-stream") dex -e "$FILE"                ; return ;;
-            "text/html"               ) guiopen "$FILE"               ; return ;;
-            "application/pdf"         ) guiopen "$FILE"               ; return ;;
-            "application/json"        ) $EDITOR "$FILE"               ; return ;;
-            "text/plain"              ) $EDITOR "$FILE"               ; return ;;
-            *                         ) ;;
-        esac
-
 
     }
 
     for FILE in "${FILES[@]}"; do
-        switch "$FILE"
+        driver "$FILE"
     done
 }
 # peek: }}}
