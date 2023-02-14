@@ -120,6 +120,7 @@ kvantum-theme-materia
 lapacke
 lazygit
 libsixel
+libxcrypt-compat
 licenses
 lightdm-gtk-greeter-settings
 lightdm-pantheon-greeter
@@ -135,6 +136,7 @@ magic-wormhole
 man-pages
 materia-gtk-theme
 meld
+mesa-utils
 mgba-qt
 moreutils
 mp3wrap
