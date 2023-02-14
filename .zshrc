@@ -810,7 +810,7 @@ alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 
-alias ne="nix-shell"
+alias ns="nix-shell"
 alias ne="nix-env"
 alias neq="nix-env -q"
 alias neqas="nix-env -qas"
