@@ -30,7 +30,7 @@ class SearchResult:
 
 def search_libgen(query, max_results=10, timeout=60):
     res = "25" if max_results <= 25 else "50" if max_results <= 50 else "100"
-    search_url = f"{BASE_URL}/search.php?req={query.decode()}&res={res}&view=simple"
+    search_url = f"{BASE_URL}/search.php?req={query.decode().replace(' ', '%20')}&res={res}&view=simple"
     print("searching: " + search_url)
     print("max results: " + str(max_results))
     response = requests.get(search_url)

@@ -1,77 +1,105 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env python3
 
-#https://github.com/reactual/hacker-news-favorites-api
+import requests
+from bs4 import BeautifulSoup
+import re
+import time
+from joblib import Memory
+from pyfzf.pyfzf import FzfPrompt
+import plumbum
+import webbrowser
+import argparse
 
-hn_favURL="https://reactual.api.stdlib.com/hnfavs/?id=bronzecarnage&limit=10"
-hn_commentsURL="https://news.ycombinator.com/item?id="
+BASE_URL="https://news.ycombinator.com"
+re_item = re.compile(r"^item\?id=\d+")
 
-listfile="$HOME/.cache/hnfav.list"
-width="100"
-reader="artify"
-pager='| fold -w '$width' | pr -t -o $(( ( $(tput cols) - '$width' ) / 2 )) | bat -p --pager "less -s -M +Gg -RF"'
-# pager='| fold -w '$width' | pr -t -o $(( ( $(tput cols) - '$width' ) / 2 )) | less -s -M +Gg -RF'
-dump="cat"
+CACHE_DIR = '~/.cache/hnfav'
+memory = Memory(location=CACHE_DIR)
 
-POSITIONAL=()
-while [[ $# -gt 0 ]]
-do
-    key="$1"
+# Define the Hacker News username to scrape
+USERNAME = "bronzecarnage"
 
-    case $key in
-        -f|--fetch)
-            echo "Fetching from server..."
-            curl -sL "$hn_favURL" | jq -r '.[] | [.id, .title, .link] | @tsv' > "$listfile"
-            shift # past value
-            ;;
-        -s|--shuffle)
-            echo "Shuffling..."
-            dump="shuf"
-            shift # past value
-            ;;
-        -r|--reader)
-            reader="$2"
-            shift # past value
-            shift
-            ;;
-        -p|--pager)
-            pager="| $2"
-            shift # past value
-            shift
-            ;;
-        -a|--artify)
-            reader="artify"
-            pager='| fold -w 80 | awk -v M=$COLUMNS -f ~/bin/pad.awk | less -s -M +Gg -RF'
-            shift # past value
-            ;;
-        -h|--help)
-            echo "hnfav: shows favorited HN links"
-            echo "usage: hnfav <flags>"
-            echo "  where flags can be:"
-            echo "      -f: fetch from server"
-            echo "      -s: shuffle order"
-            echo "      -r <reader>: change reader. Default reader=artify"
-            echo "      -p <pager>: change pager. Default pager is an unnecessarily complicated command with fold | pr | bat | less"
-            echo "      -a: Deprecated/Redundant."
-            echo ""
-            echo "Press Ctrl-h in viewer to see viewer keybinds."
+fzf = FzfPrompt()
+FZF_OPTS = "--cycle" 
 
-            exit
-            ;;
-        *)    # unknown option
-            POSITIONAL+=("$1") # save it in an array for later
-            shift # past argument
-            ;;
-    esac
-done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+@memory.cache
+def extract_favorites(username):
 
-clear
-"$dump" "$listfile" | fzf -d $'\t' --bind "enter:execute@$reader {-1} $pager@,\
-ctrl-b:execute@$BROWSER {-1}@,\
-ctrl-o:execute@$BROWSER \"https://news.ycombinator.com/item?id=\"{1}@,\
-ctrl-e:execute@elinks {-1}@,\
-ctrl-y:execute@echo {-1} | xclip -i -selection clipboard@,\
-ctrl-r:execute@artify {-1} | fltrdr@,\
-ctrl-s:execute@artify {-1} > $NOTES_DIR/{2}.md @,\
-ctrl-h:execute@notify-send -t 0 hnfav 'C-b: article\nC-o: comments\nC-e: elinks\nC-r: fltrdr\nC-s: save to notes\nC-v: vipe'@,\
-ctrl-v:execute@artify {-1} | vipe@"
+    page = 0
+    favorites = {}
+
+    while True: 
+
+        page = page + 1
+        print(f"Fetching page {page}...", end=" ")
+
+        # Define the base URL for the user's favorite items
+        url = f"https://news.ycombinator.com/favorites?id={username}&p={page}"
+
+        # Send a GET request to the user's favorite items page
+        response = requests.get(url)
+
+        # Parse the HTML content of the page using Beautiful Soup
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Find all the favorite item links on the page
+        things = soup.findAll("tr", {"class": "athing"})
+
+        print(f"found {len(things)} items!")
+
+        if not things: 
+            break
+
+        # Loop over each favorite item link and extract the title, external link, and thread link
+        for athing in things:
+            span = athing.find("span", {"class": "titleline"})
+            a = span.find_next("a")
+            external_link = a.get("href")
+
+            if re_item.fullmatch(external_link):
+                external_link = f"{BASE_URL}/{external_link}"
+
+            title = a.get_text()
+            thread_sublink = athing.find_next("tr").find("span", {"class": "subline"}).findAll("a")[-1].get("href")
+            item_id = thread_sublink.replace("item?id=", "")
+
+            thread_link = f"{BASE_URL}/{thread_sublink}" 
+
+            favorites.update({
+                f"{item_id} - {title}": { 'thread_link': thread_link, 'external_link': external_link }
+                })
+
+        time.sleep(2)
+
+    return favorites
+
+def parse_args():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-f", "--fetch", action="store_true", help="invalidate cache and fetch favorites from HN")
+    args = ap.parse_args()
+    return args
+
+def main():
+    args = parse_args()
+
+    if args.fetch:
+        memory.clear()
+
+    data = extract_favorites(USERNAME)
+
+    while True:
+        try: 
+            selected = fzf.prompt(data, f"{FZF_OPTS} --prompt=\"SELECT ❯ \"")
+            selected = selected[0]
+            while True: 
+                try: 
+                    link_type = fzf.prompt(data[selected], f"{FZF_OPTS} --prompt=\"OPEN LINK ❯ \" --header=\"{selected}\"")
+                    link = data[selected][link_type[0]]
+                    webbrowser.open_new_tab(link)
+                except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+                    break
+        except plumbum.commands.processes.ProcessExecutionError: #type:ignore
+            break
+
+if __name__ == "__main__":
+    main()
