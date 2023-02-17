@@ -440,7 +440,22 @@ x()
 	# for value in $@; do
 	# 	arg="$arg$value"
 	# done
-    nohup "$@" >/dev/null 2>&1 & disown
+    # nohup "$@" >/dev/null 2>&1 & disown
+
+    if [[ "$2" =~ ":" ]];
+    then
+        EXT=${2##*.}
+        scp -rC "$2" "/tmp/remotefile.$EXT"
+        if [[ $? -eq 0 ]] ; then 
+            nohup "$1" "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+        else
+            >&2 echo "file not found!"
+            return -1
+        fi
+    else
+        nohup "$@" >/dev/null 2>&1 & disown
+    fi
+
 }
 #}}}
 #CHT.SH:{{{
@@ -720,7 +735,7 @@ peek()
                 "text/html"               ) guiopen "$FILE"               ; return ;;
                 "application/pdf"         ) guiopen "$FILE"               ; return ;;
                 "application/json"        ) $EDITOR "$FILE"               ; return ;;
-                "text/plain"              ) $EDITOR "$FILE"               ; return ;;
+                text/*              ) $EDITOR "$FILE"               ; return ;;
                 *                         ) special "$FILE"               ; return ;;
             esac
         elif [[ "$MODE" == "PRINT" ]]; then
@@ -731,7 +746,7 @@ peek()
                 "text/html"               ) guiopen "$FILE"               ; return ;;
                 "application/pdf"         ) guiopen "$FILE"               ; return ;;
                 "application/json"        ) cat "$FILE"                   ; return ;;
-                "text/plain"              ) cat "$FILE"                   ; return ;;
+                text/*              ) cat "$FILE"                   ; return ;;
                 *                         ) special "$FILE"               ; return ;;
             esac
         fi
