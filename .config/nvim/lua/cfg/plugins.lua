@@ -88,26 +88,6 @@ return require('packer').startup(function(use)
             require 'cfg.plugins.lsp.yaml_ls'
         end,
         requires = {
-            {
-                'L3MON4D3/LuaSnip',
-                config = function()
-                    require 'cfg.plugins.luasnip'
-                end,
-                requires = 'https://github.com/rafamadriz/friendly-snippets'
-            },
-            {
-                'hrsh7th/nvim-cmp',
-                config = function()
-                    require 'cfg.plugins.cmp'
-                end,
-                requires = {
-                    'hrsh7th/cmp-nvim-lsp',
-                    'hrsh7th/cmp-buffer',
-                    'hrsh7th/cmp-path',
-                    'saadparwaiz1/cmp_luasnip',
-                    -- 'petertriho/cmp-git',
-                },
-            },
             -- {
             --     'jose-elias-alvarez/null-ls.nvim',
             --     config = function()
@@ -120,6 +100,27 @@ return require('packer').startup(function(use)
         },
     }
     use 'm-pilia/vim-ccls'
+
+    use {
+        'hrsh7th/nvim-cmp',
+        config = function()
+            require 'cfg.plugins.cmp'
+        end,
+        requires = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            -- 'saadparwaiz1/cmp_luasnip',
+            -- 'petertriho/cmp-git',
+            {
+                'L3MON4D3/LuaSnip',
+                config = function()
+                    require 'cfg.plugins.luasnip'
+                end,
+                requires = 'https://github.com/rafamadriz/friendly-snippets'
+            }
+        },
+    }
 
     use {
         'onsails/diaglist.nvim',
@@ -484,7 +485,7 @@ return require('packer').startup(function(use)
     -- use {'hkupty/iron.nvim', tag = "v3.0"}
 
     use { 'ray-x/lsp_signature.nvim', config=function() require'lsp_signature'.setup() end }
-    use 'lewis6991/impatient.nvim'
+    -- use 'lewis6991/impatient.nvim'
 
     use {"akinsho/toggleterm.nvim", tag = '*', 
         config = function()

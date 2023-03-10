@@ -1,5 +1,3 @@
-require 'impatient'
-
 local g = vim.g
 local cmd = vim.cmd
 

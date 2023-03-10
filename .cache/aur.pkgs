@@ -8,6 +8,8 @@ birdtray
 brotab-git
 c2esp
 chromium-widevine
+code-features
+code-marketplace
 conky-lua
 cozy-audiobooks
 cppman
@@ -16,18 +18,13 @@ elinks-git
 epson-inkjet-printer-201108w
 epson-inkjet-printer-escpr
 espeak
-evcxr_repl
 figlet-fonts
 figlet-fonts-extra
 fltrdr
 gdb-dashboard-git
-gdm-settings
-gdm-tools
-gita
 gnome-documents
 gnome-shell-extension-dash-to-dock
 gnome-shell-pomodoro
-googler-git
 grub2-theme-vimix-git
 gsfonts-type1
 gtklp
@@ -50,7 +47,6 @@ mongodb-bin
 mopidy-podcast
 mpv-sponsorblock-git
 mutt-ics
-nanoboyadvance-git
 nb
 ncspot-git
 nemiver
@@ -69,8 +65,9 @@ pdfsandwich
 pdftag
 perl-devel-overloadinfo
 perl-getopt-long-descriptive
+pkhex-bin
 pmount
-proton
+pokeshell
 pulseaudio-control
 pup-git
 py3status-github-notifications
@@ -103,12 +100,10 @@ shantz-xwinwrap-bzr
 sioyek
 skypeforlinux-stable-bin
 snapd
-socli
 spotify
 stockfish
 teams
 telegram-desktop-bin
-termite
 tidy-viewer
 titillium-fonts
 transset-df
@@ -122,7 +117,6 @@ ttf-ms-fonts
 ttf-permanent-marker
 tuir
 twitch-curses
-typora
 uftp
 urlview
 v4l2ucp
@@ -133,8 +127,6 @@ whatsapp-nativefier
 wkhtmltopdf
 wpa_actiond
 xboxdrv
-xminesweeper
 xpad-dkms-git
 yay
 zoom
-zsh-notify-git

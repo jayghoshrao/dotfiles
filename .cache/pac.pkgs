@@ -7,11 +7,12 @@ arandr
 arc-gtk-theme
 asp
 at
+autoconf
+automake
 autorandr
 awesome-terminal-fonts
 b43-fwcutter
 baobab
-bash-language-server
 bind
 bison
 blueman
@@ -28,7 +29,6 @@ ccls
 cgal
 chromium
 cmatrix
-code
 cowsay
 cpanminus
 cpupower
@@ -104,6 +104,7 @@ htop
 hub
 hugo
 hyperfine
+i3blocks
 imagescan
 inetutils
 inotify-tools
@@ -112,7 +113,6 @@ irssi
 isync
 j4-dmenu-desktop
 jp2a
-julia
 keychain
 khal
 krita
@@ -128,7 +128,6 @@ lightdm-webkit-theme-litarvan
 linux
 linux-lts
 lolcat
-lua-language-server
 luit
 lvtk
 lxappearance
@@ -166,6 +165,7 @@ nix
 nlopt
 nnn
 notmuch
+noto-fonts-emoji
 obsidian
 ocaml-csexp
 ocaml-topkg
@@ -177,6 +177,7 @@ openldap
 openvr
 otf-font-awesome
 owncloud-client
+pacman-contrib
 paperkey
 papirus-icon-theme
 paraview
@@ -206,6 +207,7 @@ python-google-api-core
 python-i3ipc
 python-oauth2client
 python-praw
+python-pydbus
 python-scikit-learn
 python-seaborn
 qgnomeplatform-qt5
@@ -220,7 +222,6 @@ redshift
 reflector
 rofi-calc
 rofi-pass
-rust-analyzer
 scdoc
 screenfetch
 shfmt
@@ -240,7 +241,7 @@ tealdeer
 tectonic
 terminus-font
 testdisk
-texlab
+texinfo
 texlive-bibtexextra
 texlive-fontsextra
 texlive-formatsextra
