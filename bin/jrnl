@@ -63,7 +63,7 @@ JRNL_FILE="$JRNL_DIR/$JRNL_FILENAME"
 if [[ $MODE == "BROWSE" ]]; then
     while : 
     do
-        OUT=$(fd --base-directory "$JRNL_DIR" . | fuzscope -b "$JRNL_DIR")
+        OUT=$(fd --base-directory "$JRNL_DIR" . | fuzscope -b "$JRNL_DIR" --tac)
         if [[ -n "$OUT" ]]; then 
             peek "$OUT"
         else
