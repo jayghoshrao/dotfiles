@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-set -euo pipefail
+set -uo pipefail
 
 BIN_DIR=$HOME/bin
 
