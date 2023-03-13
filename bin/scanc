@@ -1,6 +1,52 @@
 #!/bin/bash
 
-scanimage -p --resolution 300 --mode $1 -d $(scanimage -L | grep -oe "epson[^']*") --format=tiff | convert tiff:- /tmp/scanned.pdf 
+set -euo pipefail
+
+DRIVER="hpaio:/net/officejet_pro_8600?ip=192.168.178.28&queue=false"
+MODES=( Color Gray Lineart )
+MODE=Color
+
+DATE=$(date -d now '+%Y-%m-%d')
+OUTPUT="${DATE}_scanned.pdf"
+
+TMPFILE="/tmp/$OUTPUT"
+
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        # -d|--driver)
+        #     DRIVER="$2"
+        #     shift # past value
+        #     shift
+        #     ;;
+        -o|--output)
+            OUTPUT="$2"
+            shift # past value
+            shift
+            ;;
+        -m|--mode)
+            MODE="$2"
+            shift # past value
+            shift
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [[ -z "$DRIVER" ]] ; then
+    DRIVERS=$( scanimage -L | awk '{print $2}' | tr -d \'\`  )
+    DRIVER=$(echo "$DRIVERS" | fzf )
+fi
+
+scanimage -p --resolution 300 --mode $MODE -d "$DRIVER" --format=tiff | convert tiff:- "$TMPFILE"
 
 sleep 1
 
@@ -16,7 +62,5 @@ gs -q -dNOPAUSE -dBATCH -dSAFER        \
    -dGrayImageResolution=300           \
    -dMonoImageDownsampleType=/Bicubic  \
    -dMonoImageResolution=300           \
-   -sOutputFile="$2"					\
-   /tmp/scanned.pdf
-   
-   
+   -sOutputFile="$OUTPUT" \
+   "$TMPFILE"
