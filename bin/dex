@@ -4,10 +4,9 @@
 # RESOURCE: https://unix.stackexchange.com/questions/387993/how-to-run-a-pipe-safely-and-sequentially/388486#388486
 
 # TODO: recursive  in folder
-
 # TODO: encrypt if not, decrypt if not
 
-set -euo pipefail
+set -uo pipefail
 
 MODE='EXCHANGE' ### or EDIT (-e)
 
@@ -29,6 +28,13 @@ do
         -p|--print)
             MODE='PRINT'
             shift # past value
+            ;;
+        -clf|--clean-lockfiles)
+            for FILE in $LOCKFOLDER/*; do 
+                LOCK_STATUS=$(flock -n -x "$FILE" echo 'unlocked!')
+                [[ -n "$LOCK_STATUS" ]] && rm "$FILE"
+            done 
+            exit
             ;;
         --pager)
             MODE='PAGER'
