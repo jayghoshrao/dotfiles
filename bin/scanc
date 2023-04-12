@@ -5,6 +5,7 @@ set -euo pipefail
 DRIVER="hpaio:/net/officejet_pro_8600?ip=192.168.178.28&queue=false"
 MODES=( Color Gray Lineart )
 MODE=Color
+SIZE=A4
 
 DATE=$(date -d now '+%Y-%m-%d')
 OUTPUT="${DATE}_scanned.pdf"
@@ -28,6 +29,11 @@ do
             shift # past value
             shift
             ;;
+        -s|--size)
+            SIZE="$2"
+            shift # past value
+            shift
+            ;;
         -m|--mode)
             MODE="$2"
             shift # past value
@@ -46,7 +52,15 @@ if [[ -z "$DRIVER" ]] ; then
     DRIVER=$(echo "$DRIVERS" | fzf )
 fi
 
-scanimage -p --resolution 300 --mode $MODE -d "$DRIVER" --format=tiff | convert tiff:- "$TMPFILE"
+if [[ $SIZE == "A4" ]]; then
+    WIDTH=215.9
+    HEIGHT=279.4
+elif [[ $SIZE == "card" ]]; then
+    WIDTH=85.6
+    HEIGHT=53.98
+fi
+
+scanimage -p --resolution 300 --mode $MODE -d "$DRIVER" --format=tiff -x $WIDTH -y $HEIGHT | convert tiff:- "$TMPFILE"
 
 sleep 1
 
