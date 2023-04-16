@@ -15,23 +15,15 @@
 #  TODO: Install LMOD automatically if it doesn't exist
 #  https://ianthehenry.com/posts/zsh-autoquoter/
 
-
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
 ARCH=$(uname -a | awk '{print $(NF-1)}')
 
-autoload -U +X bashcompinit && bashcompinit
-
+# autoload -U +X bashcompinit && bashcompinit
 # # NOTE: Uncomment in case compaudit complains of insecure directories
 # # Probably best to unset FPATH in bash before calling zsh in case of a nested call
 # autoload -U +X compinit && compinit -i
-autoload -Uz compinit; compinit
-
-if [ $HOST = "IBT918" ]; then
-    compdef '_files -W $NOTES_DIR' note
-    compdef '_files -W $NOTES_DIR' notes
-    compdef '_files -W ~/bin/' se
-fi
+# autoload -Uz compinit; compinit
 
 # Package Manager: {{{
 
@@ -57,144 +49,61 @@ zinit light-mode for \
     zdharma-continuum/z-a-patch-dl \
     zdharma-continuum/z-a-bin-gem-node
 
-### End of Zinit's installer chunk
+zinit lucid for \
+     wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
+     wait"0b" blockf @zsh-users/zsh-completions \
+     wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
 
-### Functions to make zinit configuration less verbose
-zpt() { zinit ice wait"${1}" lucid               "${@:2}"; } # Turbo
-zpi() { zinit ice lucid                            "${@}"; } # Regular Ice
-zp()  { [ -z $2 ] && zinit light $@ || zinit $@; } # zinit
-
-zinit snippet OMZL::directories.zsh 
-zinit snippet OMZL::termsupport.zsh
-zinit snippet OMZL::completion.zsh
-zinit snippet OMZP::git
+zinit lucid for \
+    OMZL::functions.zsh  \
+    OMZL::directories.zsh  \
+    OMZL::termsupport.zsh \
+    OMZL::completion.zsh \
+    OMZP::git
 
 zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
 
-## nix-shell with zsh
-# zinit snippet https://raw.githubusercontent.com/chisui/zsh-nix-shell/master/nix-shell.plugin.zsh
-zp chisui/zsh-nix-shell
-
-# Other OMZ options
-# zinit wait lucid for \ OMZL::git.zsh \ OMZL::clipboard.zsh \ OMZL::grep.zsh \ OMZL::history.zsh \ OMZL::spectrum.zsh \ OMZP::git \ OMZP::fzf 
-
-zpt 0b blockf
-zp zsh-users/zsh-completions
-
-zpt 0a lucid atload"_zsh_autosuggest_start"
-zp zsh-users/zsh-autosuggestions
-
-# ## Remove the the next line if compaudit complains of insecurity 
-[ $HOST = "IBT918" ] && zpt 0b atload'zpcompinit;zpcdreplay'
-# zpt 0b atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay"
-zp zdharma-continuum/fast-syntax-highlighting
-
-zpi pick"cb" as"command"
-zp niedzielski/cb
-
-if [[ "$ARCH" == "x86_64" ]]; then
-
-
-    zpi from"gh-r" as"command"
-    zp junegunn/fzf
-
-    zpt '0c' as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux"
-    zp junegunn/fzf
-
-    zpt '0c' multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null"
-    zp junegunn/fzf
-
-    zp Aloxaf/fzf-tab
-
-    if [ $HOST != "IBT918" ]; then
-        # RIPGREP:
-        zpi from"gh-r" as"program" mv"ripgrep* -> ripgrep" pick"ripgrep/rg"
-        zp BurntSushi/ripgrep
-
-        # # AUTOJUMP
-        # zi ice \
-        #   as"program" \
-        #   atclone"./install.py" \
-        #   atpull"%atclone" 
-        # zi light wting/autojump
-        
-        # NEOVIM: 
-        zpi from"gh-r" as"program" ver"stable" mv"nvim* -> nvim" pick"nvim/bin/nvim"
-        zp load neovim/neovim
-      
-        # FD: 
-        zpi as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
-        zp sharkdp/fd
-     
-        # GH-CLI: 
-        zpt "0" as"program" from"gh-r" pick"usr/bin/gh"
-        zp "cli/cli"
-       
-        # TMUX: 
-        zpi from"gh-r" as"program" mv"tmux* -> tmux" pick"tmux" atload"alias tmux=tmux"
-        zp tmux/tmux
-        
-        # NNN: 
-        zpi from"gh-r" as"program" mv"nnn* -> nnn" bpick"nnn-static*"
-        zp jarun/nnn
-
-        # BTOP: 
-        zpi from"gh-r" as"program" mv"btop* -> btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop"
-        zp aristocratos/btop
-
-        # nix-user-chroot: 
-        zpi from"gh-r" as"program" mv"nix-user-chroot-bin* -> nix-user-chroot" pick"nix-user-chroot" 
-        zp load nix-community/nix-user-chroot
-
-        zpi from"gh-r" as"program" mv"lazygit* -> lazygit" pick"lazygit"
-        zp load jesseduffield/lazygit
-        
-        # if [ ! -d $HOME/local/miniconda3 ]; then
-        #     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-        #     chmod +x Miniconda3-latest-Linux-x86_64.sh
-        #     ./Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/local/miniconda3
-        #     source $HOME/local/miniconda3/etc/profile.d/conda.sh
-        #     conda install mamba
-        #     source $HOME/local/miniconda3/etc/profile.d/mamba.sh
-        #     mamba init zsh
-        #     wget https://gist.githubusercontent.com/jayghoshter/0c7cda4e23a223fb5a0e7c0262925464/raw/44b0598b60c5f848eec4f7f6ec3d9263c78d0db1/dev.conda.env.yaml
-        #     mamba env create -n dev -f dev.conda.env.yaml
-        # fi
-
-
-    fi
-fi
+# TODO: 
+# OMZP::git-extras
 
 # Theme and Colors {{{
-
-zinit for \
-    light-mode pick"async.zsh" src"pure.zsh" \
-    sindresorhus/pure
+zinit light-mode for pick"async.zsh" src"pure.zsh" @sindresorhus/pure
 
 # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
 # coreutils package from Homebrew; you can also use https://github.com/ogham/exa)
-zinit ice atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!'
-zinit light trapd00r/LS_COLORS
-
-zinit light 'chrissicool/zsh-256color'
-zinit ice atclone"dircolors -b src/dir_colors > c.zsh" \
+zinit light-mode for atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' @trapd00r/LS_COLORS
+zinit light chrissicool/zsh-256color
+zinit light-mode for atclone"dircolors -b src/dir_colors > c.zsh" \
             atpull'%atclone' \
             pick"c.zsh" \
-            nocompile'!'
-zinit light arcticicestudio/nord-dircolors
-
+            nocompile'!' \
+            @arcticicestudio/nord-dircolors
 # }}}
 
+# Install fzf and related completion tools
+zinit lucid light-mode for \
+    from"gh-r" as"command" @junegunn/fzf \
+    wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
+    wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
+    atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
+
+zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
+
+## Conditionally install regularly used tools if not found
+zinit from"gh-r" as"command" light-mode for \
+    if'[[ -z "$commands[nvim]" ]]' mv"nvim*->nvim" pick"nvim/bin/nvim" @neovim/neovim \
+    if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
+    if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
+    if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
+    if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli
+
+zinit light-mode for if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb 
+
+# mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
+# mv"btop*->btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop" @aristocratos/btop
+# mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # }}}
-
-# ## Remote OMZ setup
-# export ZSH="$HOME/.oh-my-zsh"
-# ZSH_THEME="avit" #Look in $OMZ/themes
-# plugins=(git vi-mode zsh-autosuggestions zsh-syntax-highlighting )
-# source $ZSH/oh-my-zsh.sh
-# source $ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source $ZSH_CUSTOM/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 # Package Manager: }}}
 
@@ -283,11 +192,6 @@ function! appendToEnv()
     esac
 }
 
-
-# if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
-#     source /etc/profile.d/vte.sh
-# fi
-
 [ -f ~/.zsh-local ] && source ~/.zsh-local
 [ -f ~/.zsh-fzf ] && source ~/.zsh-fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -322,7 +226,6 @@ zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %
 # zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
 # zstyle ":completion:*:git-checkout:*" sort false
 # zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-
 
 # }}}
 
