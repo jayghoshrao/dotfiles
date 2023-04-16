@@ -336,7 +336,8 @@ SAVEHIST=100000
 LISTMAX=9999    # In the line editor, number of matches to show before asking permission
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-export TERM="xterm-256color-italic"
+
+[[ -n $(infocmp xterm-256color-italic 2>/dev/null) ]] && export TERM="xterm-256color-italic"
 export LESS="-iR"
 
 export NNN_FIFO=/tmp/nnn.fifo 
