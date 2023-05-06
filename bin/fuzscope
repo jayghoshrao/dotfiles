@@ -57,4 +57,10 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-fzf -0 -m -e -d $"\t" --preview="scope.sh {q} $BASEDIR{1}" --preview-window up:60% "$@" --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@" | sed "s@^@$BASEDIR@g"
+(fzf -0 -m -e -d $"\t" \
+    --preview="scope.sh {q} $BASEDIR{1}" \
+    --preview-window up:60% \
+    "$@" \
+    --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@" \
+    --bind "ctrl-y:execute@echo {1} | xclip -i -selection clipboard@" \
+    --bind "ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@") | sed "s@^@$BASEDIR@g"
