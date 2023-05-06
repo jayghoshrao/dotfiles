@@ -17,13 +17,16 @@
 #
 # Usage: 
 # `jrnl` : open today's journal page
+# `jrnl yesterday` open yesterday's journal page
 # `jrnl -b`: browse journal entries
 
 
 MODE="EDIT"
 
-JRNL_DIR="$NOTES_DIR/journal"
+# JRNL_DIR="$NOTES_DIR/journal"
+JRNL_DIR="${JRNL_DIR:-$HOME/journal}"
 DATESTR="now"
+ENCRYPTION=true
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -39,11 +42,10 @@ do
             shift
             shift
             ;;
-        # -d|--date)
-        #     DATESTR="$2"
-        #     shift
-        #     shift
-        #     ;;
+        +e|-ne|--no-encrypt-new)
+            ENCRYPTION=false
+            shift
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -71,7 +73,11 @@ if [[ $MODE == "BROWSE" ]]; then
         fi
     done
 else
-    # Decrypt and edit
-    # dex -e also creates a file if none exists
-    dex -e "$JRNL_FILE"
+    if ${ENCRYPTION}; then
+        # Decrypt and edit
+        # dex -e also creates a file if none exists
+        dex --edit "$JRNL_FILE"
+    else
+        dex --edit --noencrypt-nonexist "$JRNL_FILE"
+    fi
 fi
