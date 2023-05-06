@@ -11,13 +11,12 @@ g.maplocalleader = '\\'
 -- My custom configurations
 require 'cfg.settings'
 require 'cfg.commands'
-require 'cfg.autocmds'
 require 'cfg.mappings'
 require 'cfg.plugins'
 
 -- set colorscheme via autocmd hooks
-cmd[[doautocmd User PlugLoaded]]
-
+-- cmd[[doautocmd User PlugLoaded]]
+require 'cfg.autocmds'
 require 'cfg.folding'
 require 'cfg.abbreviations'
 

@@ -1,20 +1,5 @@
 local group = vim.api.nvim_create_augroup('Setup', {})
 
--- -- Automatically compile packer when saving the plugins' file
--- vim.api.nvim_create_autocmd('BufWritePost', {
---   group = group,
---   pattern = 'plugins.lua',
---   command = 'source <afile> | PackerCompile',
---   -- command = 'Reload | PackerSync'
--- })
-
--- Automatically compile packer when saving the plugins' file
-vim.api.nvim_create_autocmd('BufWritePost', {
-  group = group,
-  pattern = '*/.config/nvim/**',
-  command = 'PackerCompile'
-})
-
 -- Highlight text after yanking
 vim.api.nvim_create_autocmd('TextYankPost', {
   group = group,
@@ -53,18 +38,10 @@ vim.api.nvim_create_autocmd('FileChangedShellPost', {
   command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None]],
 })
 
--- Update plugins automatically periodically
-vim.api.nvim_create_autocmd('VimEnter', {
-  group = group,
-  callback = function()
-    require('cfg.utils').update_plugins_every_day()
-  end,
-})
-
-vim.api.nvim_create_autocmd(
-    'FileType', {
-        group = group,
-        pattern = "yaml",
-        command = [[ setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:> ]],
-    }
-)
+-- vim.api.nvim_create_autocmd(
+--     'FileType', {
+--         group = group,
+--         pattern = "yaml",
+--         command = [[ setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:> ]],
+--     }
+-- )

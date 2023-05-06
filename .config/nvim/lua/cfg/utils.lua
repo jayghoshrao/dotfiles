@@ -1,5 +1,4 @@
-local Path = require 'plenary.path'
-
+-- local Path = require 'plenary.path'
 local M = {}
 
 function M.map(modes, lhs, rhs, opts)
@@ -94,64 +93,64 @@ end
 -- automatically.
 --
 -- The last saved date is saved into `XDG_CACHE_HOME/.plugins_updated_at`.
-function M.update_plugins_every_day()
-  -- local plugin_updated_at_filename = vim.env.XDG_CACHE_HOME .. '/.plugins_updated_at'
-  local plugin_updated_at_filename = vim.env.HOME .. '/.config/.plugins_updated_at'
-  local file = io.open(plugin_updated_at_filename)
-  if not file then
-    vim.fn.writefile({}, plugin_updated_at_filename)
-    file:close()
-  end
+-- function M.update_plugins_every_day()
+--   -- local plugin_updated_at_filename = vim.env.XDG_CACHE_HOME .. '/.plugins_updated_at'
+--   local plugin_updated_at_filename = vim.env.HOME .. '/.config/.plugins_updated_at'
+--   local file = io.open(plugin_updated_at_filename)
+--   if not file then
+--     vim.fn.writefile({}, plugin_updated_at_filename)
+--     file:close()
+--   end
+-- 
+--   local today = os.date '%Y-%m-%d'
+-- 
+--   file = io.open(plugin_updated_at_filename)
+--   local contents = file:read '*a'
+--   if contents ~= today then
+--     vim.fn.execute 'PackerUpdate'
+-- 
+--     file = io.open(plugin_updated_at_filename, 'w')
+--     file:write(today)
+--   end
+-- 
+--   file:close()
+-- end
 
-  local today = os.date '%Y-%m-%d'
+-- function M.read_json_file(filename)
+--   local path = Path:new(filename)
+--   if not path:exists() then
+--     return nil
+--   end
+-- 
+--   local json_contents = path:read()
+--   local json = vim.fn.json_decode(json_contents)
+-- 
+--   return json
+-- end
 
-  file = io.open(plugin_updated_at_filename)
-  local contents = file:read '*a'
-  if contents ~= today then
-    vim.fn.execute 'PackerUpdate'
-
-    file = io.open(plugin_updated_at_filename, 'w')
-    file:write(today)
-  end
-
-  file:close()
-end
-
-function M.read_json_file(filename)
-  local path = Path:new(filename)
-  if not path:exists() then
-    return nil
-  end
-
-  local json_contents = path:read()
-  local json = vim.fn.json_decode(json_contents)
-
-  return json
-end
-
-function M.read_package_json()
-  return M.read_json_file 'package.json'
-end
+-- function M.read_package_json()
+--   return M.read_json_file 'package.json'
+-- end
 
 ---Check if the given NPM package is installed in the current project.
 ---@param package string
 ---@return boolean
-function M.is_npm_package_installed(package)
-  local package_json = M.read_package_json()
-  if not package_json then
-    return false
-  end
-
-  if package_json.dependencies and package_json.dependencies[package] then
-    return true
-  end
-
-  if package_json.devDependencies and package_json.devDependencies[package] then
-    return true
-  end
-
-  return false
-end
+-- function M.is_npm_package_installed(package)
+--   local package_json = M.read_package_json()
+--   if not package_json then
+--     return false
+--   end
+-- 
+--   if package_json.dependencies and package_json.dependencies[package] then
+--     return true
+--   end
+-- 
+--   if package_json.devDependencies and package_json.devDependencies[package] then
+--     return true
+--   end
+-- 
+--   return false
+-- end
 
 function M.toggle_quickfix()
     for _, win in pairs(vim.fn.getwininfo()) do
