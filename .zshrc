@@ -291,8 +291,8 @@ alias -g R='rep'
 
 alias d='dirs -v | head -10'
 
-alias ls='ls --color -v'
-alias la='ls -la --color -v'
+alias ls='ls --color -v -N'
+alias la='ls -la --color -v -N'
 # alias ll='ls -la --color --group-directories-first'
 alias ll='exa --long --all --links --git --git-ignore'
 
