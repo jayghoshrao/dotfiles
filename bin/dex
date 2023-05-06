@@ -9,6 +9,7 @@
 set -uo pipefail
 
 MODE='EXCHANGE' ### or EDIT (-e)
+ENCRYPT_NONEXIST=true
 
 LOCKFOLDER="$HOME/.local/share/dex"
 [ -d "$LOCKFOLDER" ] || mkdir -p "$LOCKFOLDER"
@@ -21,9 +22,21 @@ do
     key="$1"
 
     case $key in
+        -E|--encrypt)
+            MODE='ENCRYPT'
+            shift # past value
+            ;;
+        -D|--DECRYPT)
+            MODE='DECRYPT'
+            shift # past value
+            ;;
         -e|--edit)
             MODE='EDIT'
             shift # past value
+            ;;
+        -n|--noencrypt-nonexist)
+            ENCRYPT_NONEXIST=false
+            shift
             ;;
         -p|--print)
             MODE='PRINT'
@@ -39,6 +52,10 @@ do
         --pager)
             MODE='PAGER'
             shift # past value
+            ;;
+        -?*) 
+            echo "Unknown option: $1"
+            exit
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
@@ -88,11 +105,25 @@ elif [[ "$MODE" == "EDIT" ]]; then
         # If file exists and not encrypted
         "$EDITOR" "$FILENAME"
     else
-        # if file doesn't exist
-        # Uses lockfiles to ensure file is not multiply modified
-        ( flock -n 9 || exit 1
-        data=$(vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        if ${ENCRYPT_NONEXIST}; then
+            # if file doesn't exist
+            # Uses lockfiles to ensure file is not multiply modified
+            ( flock -n 9 || exit 1
+            data=$(vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+            unset data
+            ) 9>"$LOCKFILE"
+        else
+            "$EDITOR" "$FILENAME"
+        fi
+    fi
+elif [[ "$MODE" == "ENCRYPT" ]]; then
+    if [[ ! "$typestr" =~ "encrypted" ]]; then 
+        data=$(gpg -o - -e "$FILENAME" > >(base64)) && printf '%s' "$data" | base64 -d > "$FILENAME"
         unset data
-        ) 9>"$LOCKFILE"
+    fi
+elif [[ "$MODE" == "DECRYPT" ]]; then
+    if [[ "$typestr" =~ "encrypted" ]]; then 
+        result=$(gpg -dq "$FILENAME" ) && printf '%s' "$result" > "$FILENAME"
+        unset result
     fi
 fi
