@@ -2,6 +2,23 @@
 
 # RESOURCE: https://unix.stackexchange.com/questions/265026/rsyncs-read-only-file-system-30-error
 
+function preFlightCheck()
+{
+    TOOLS=(mirror jq rsync)
+    exit_flag=false
+    for TOOL in ${TOOLS[@]}; do 
+        if [ ! -x "$(command -v $TOOL )" ]; then
+            msg "${TOOL} not found!"
+        fi
+    done
+
+    ${exit_flag} && die "Please install the above prerequisites before running this script"
+}
+
+msg() {
+  echo >&2 -e "${1-}"
+}
+
 function die(){
     echo "ERROR: $@" 
     exit
