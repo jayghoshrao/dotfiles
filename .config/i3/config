@@ -499,8 +499,8 @@ bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
 bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
 bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
 # bindsym F4 exec $SCRIPTS/transparency.sh
-bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
-bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
+# bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
+# bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i sioyek {}
 # bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
