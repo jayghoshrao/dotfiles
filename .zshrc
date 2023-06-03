@@ -25,6 +25,7 @@ ARCH=$(uname -a | awk '{print $(NF-1)}')
 # autoload -U +X compinit && compinit -i
 # autoload -Uz compinit; compinit
 
+
 # Package Manager: {{{
 
 # ZINIT: {{{
@@ -106,6 +107,12 @@ zinit light-mode for if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" 
 # }}}
 
 # Package Manager: }}}
+
+# # Autocompletion for some scripts: moved to zcl
+# # autoload -Uz compinit; compinit
+# compdef '_files -W $NOTES_DIR' note
+# compdef '_files -W $NOTES_DIR' notes
+# compdef '_files -W $HOME/bin' se
 
 # Bindkeys: {{{
 # Allow v to edit the command line
@@ -790,4 +797,5 @@ function ssr() {
 function rep(){
     repeat "$1" { echo "${@:2}" }
 }
+
 
