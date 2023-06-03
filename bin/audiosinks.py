@@ -3,6 +3,7 @@
 from rofi import Rofi
 import pulsectl
 
+# TODO: Move it to some yaml type file
 SINK_ALIASES = {
   'Family 17h (Models 00h-0fh) HD Audio Controller Analog Stereo': "Builtin Analog Stereo",
   'PCM2912A Audio Codec Analog Stereo': "PCM2912A Audio Codec Analog Stereo",

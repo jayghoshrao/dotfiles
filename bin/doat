@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+dtime=$1; shift
+if [[ $dtime =~ ":" ]]; then
+    time=$dtime
+else
+    time=$(pdd --add $(toseconds $dtime) | head -n 1)
+fi
+echo $time
+time=$(echo $time | tr -d ':') 
+time=$time[1,4] ## Move to 'at' format
+echo $time
+echo "$@" | at $time

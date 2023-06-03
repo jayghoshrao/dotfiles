@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+times="$1"
+shift
+
+for arg in "$@"
+do
+    paste -d ',' "$times" <(awk -F ',' -v OFS=',' '{print $2}' "$arg") > "new_$arg"
+done
+

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+link=$(xclip -o -selection clipboard)
+BM_FILE=$HOME/Nextcloud/Store/local_bookmarks.txt
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -e|--edit)
+            "${EDITOR:-vim}" "$BM_FILE"
+            exit
+            ;;
+        -p|--print)
+            "${PAGER:-cat}" "$BM_FILE"
+            exit
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [[ "$link" =~ $urlregex ]]; then
+    if [[ -z $(grep "$link" "$BM_FILE") ]]; then
+        echo "$link" >> "$BM_FILE"
+        notify-send "Saved!" "$link"
+    else
+        notify-send "Link already saved!"
+    fi 
+else
+    notify-send "bmark error!" "$link is not a URL!"
+fi

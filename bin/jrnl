@@ -20,7 +20,6 @@
 # `jrnl yesterday` open yesterday's journal page
 # `jrnl -b`: browse journal entries
 
-
 MODE="EDIT"
 
 # JRNL_DIR="$NOTES_DIR/journal"

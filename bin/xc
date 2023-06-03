@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+MODE="OPEN"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -p|--paste)
+            MODE="PASTE"
+            shift 
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+function xopen()
+{
+    if [[ "$1" =~ ":" ]];
+    then
+        EXT=${1##*.}
+        scp -rC "$1" "/tmp/remotefile.$EXT"
+        if [[ $? -eq 0 ]] ; then 
+            nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+        else
+            >&2 echo "file not found!"
+            return -1
+        fi
+    else
+        nohup xdg-open "$@" >/dev/null 2>&1 & disown
+    fi
+}
+
+function process()
+{
+    if [[ "$MODE" == "OPEN" ]]; then
+        echo "Opening ${1}"
+        xopen "${1}"
+    elif [[ "$MODE" == "PASTE" ]]; then
+        echo "Pasting ${1}"
+        scp "${1}" .
+    fi
+}
+
+
+
+HOSTS=(jureca ibt012 ibt014 ibt067 ibt068 ibt069)
+
+FILEPATHS=$(xclip -selection c -o)
+[[ -z "${FILEPATHS}" ]] && exit
+
+FILEPATHS=($FILEPATHS)
+
+for FILEPATH in "${FILEPATHS[@]}"; do
+    echo "PROCESSING $FILEPATH"
+    if [[ ! -f ${FILEPATH} ]] ; then
+        echo "No such file: ${FILEPATH}"
+        for host in ${HOSTS[@]}; do
+            if ssh "$host" test -f "${FILEPATH}"; then
+               echo "FOUND in $host"
+               process "$host:$FILEPATH"
+               break 1
+            fi
+        done
+    else
+        process "$FILEPATH"
+    fi
+done

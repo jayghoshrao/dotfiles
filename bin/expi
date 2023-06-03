@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Query user for info
+#   - folder name
+#   - tags
+#   - Readme info
+#   - programs and config used to generate data
+#   - programs used to operate on data in this experiment
+#       - state of the program git
+#   - if git state is dirty, prompt first, or store results into a temp folder
