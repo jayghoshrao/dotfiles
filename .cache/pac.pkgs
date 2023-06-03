@@ -189,6 +189,7 @@ pdftricks
 perl-devel-globaldestruction
 picard
 pinta
+pkgconf
 pkgfile
 playerctl
 polybar
@@ -208,6 +209,7 @@ python-i3ipc
 python-oauth2client
 python-praw
 python-pydbus
+python-pygithub
 python-scikit-learn
 python-seaborn
 qgnomeplatform-qt5
@@ -247,7 +249,6 @@ texlive-fontsextra
 texlive-formatsextra
 texlive-games
 texlive-humanities
-texlive-langgreek
 texlive-music
 texlive-pstricks
 texlive-publishers

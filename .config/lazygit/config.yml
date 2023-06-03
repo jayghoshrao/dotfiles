@@ -60,9 +60,10 @@ git:
   disableForcePushing: false
   parseEmoji: false
 os:
-  editCommand: '' # see 'Configuring File Editing' section
-  editCommandTemplate: '{{editor}} {{filename}}'
-  openCommand: ''
+  editPreset: 'nvim'
+  # editCommand: '' # see 'Configuring File Editing' section
+  # editCommandTemplate: '{{editor}} {{filename}}' # Deprecated
+  # openCommand: ''
 refresher:
   refreshInterval: 10 # file/submodule refresh interval in seconds
   fetchInterval: 60 # re-fetch interval in seconds
