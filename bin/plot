@@ -4,6 +4,10 @@
 # USAGE: ./plot <file> <file> -o plot.pdf 
 
 # TODO: speed up for large files: file-read can be done via np.memmap for binary
+# TODO: clean up color-cycle-length to work with the new generators model
+#           - potentially due to the iter(COLORS) in marker-face-colors 
+# TODO: Allow continuous color maps that are fragmented over len(files)
+# TODO: Add --note for notes that can be printed at the bottom of the figure
 
 """ Name TBD: plotipy, plotti, plote, ploot, plawt, plaut, pluto
 
@@ -28,10 +32,13 @@ import argparse
 from subprocess import run
 from pathlib import Path
 import numpy as np
+import csv
 
 from matplotlib import ticker
 
 from scipy.interpolate import make_interp_spline, BSpline
+
+from mpl_toolkits.axes_grid1.inset_locator import InsetPosition
 
 # SMOOTH: https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
 # COLORS: https://coolors.co/0c5da5-ffcf70-e08300-bc4b51-ac8cba-474747-225851
@@ -47,11 +54,42 @@ def cmap_colors_to_hex(cmap_colors):
     # USAGE: cmap_colors_to_hex(plt.cm.tab10.colors)
     return list(map(lambda x: mpl.colors.rgb2hex(x), cmap_colors))
 
+
+def integral(y,x, npoints=500, kind='cubic'): 
+    assert min(x) == 0.0
+
+    # integ = [0.0]
+    # for i in range(1,len(x)): 
+    #     integ.append(np.trapz(y[:i+1], x=x[:i+1]))
+
+    integ = []
+    for xi in x: 
+        xsmooth = np.linspace(0.0, xi, npoints) 
+        f = interp1d(x, y, kind=kind, fill_value='extrapolate')
+        ysmooth = f(xsmooth)
+        integ.append(np.trapz(ysmooth, x=xsmooth))
+        
+        
+    return integ
+
 def abline(ax, slope, intercept, ls='dashed', lw=1):
     """Plot a line from slope and intercept"""
     axes = plt.gca()
     x_vals = np.array(axes.get_xlim())
+
+    if args['xlog']: 
+        x_vals = np.log10(x_vals)
+
+    # if args['ylog']: 
+    #     y_vals = np.log10(y_vals)
+
     y_vals = intercept + slope * x_vals
+
+    if args['xlog']: 
+        x_vals = np.power(10,x_vals)
+    if args['ylog']: 
+        y_vals = np.power(10,y_vals)
+
     ax.plot(x_vals, y_vals, ls=ls, lw=lw, c='gray')
 
 def extrapolate(x0, y0, x, kind='linear'): 
@@ -121,7 +159,7 @@ def readArray(data_path):
             values.append(float(line.strip()))
     return values
 
-def readfile(data_path, columns=[0,1], header=False, xticksColumn=0):
+def readfile(data_path, columns=[0,1], header=False, xticksColumn=None, xticklabelsColumn=None):
     """ Read x-y CSV-style files
     """
     if ':' in data_path:
@@ -131,6 +169,7 @@ def readfile(data_path, columns=[0,1], header=False, xticksColumn=0):
     x = []
     y = []
     xticks = []
+    xticklabels = []
     # columns = [0, 1]
     delimiter = ' '
     with open(data_path, newline='') as csvfile:
@@ -146,6 +185,8 @@ def readfile(data_path, columns=[0,1], header=False, xticksColumn=0):
             if (data_line != []):
                 if len(data_line) == 1:
                     y.append(float(data_line[0]))
+                elif len(columns) == 1: 
+                    y.append(float(data_line[columns[0]]))
                 else:
                     x.append(float(data_line[columns[0]]))
                     y.append(float(data_line[columns[1]]))
@@ -154,8 +195,10 @@ def readfile(data_path, columns=[0,1], header=False, xticksColumn=0):
                 # y.append(float(data_line[columns[1]]))
                 if xticksColumn is not None: 
                     xticks.append(float(data_line[xticksColumn]))
+                if xticklabelsColumn is not None:
+                    xticklabels.append(data_line[xticklabelsColumn])
 
-    return x, y, xticks
+    return x, y, xticks, xticklabels
 
 def scale_axis(vec:list, scale_factor_or_file):
     """ Scale either the x or y axis of a given plot line
@@ -220,20 +263,23 @@ def plot_things(files, ax, args):
 
     bar_count = 0
 
-    for filename,label,linestyle,marker,mfc,mec,linewidth,zorder in zip(files, 
+    for filename,label,linestyle,marker,markersize,mfc,mec,mew,linewidth,zorder in zip(files, 
                                                                 args['labels'], 
                                                                 args['linestyles'], 
                                                                 args['markers'], 
+                                                                args['markersize'],
                                                                 args['marker_face_colors'],
                                                                 args['marker_edge_colors'],
+                                                                args['marker_edge_widths'],
                                                                 args['linewidths'], 
                                                                 args['zorder']
                                                                 ):
+        print(f"Plotting: {filename}")
         if args['cadet']:
             x, y = readCadet(filename, int(args['cadet'][0]), args['cadet'][1])
             # print(x,y)
         else:
-            x, y, xticks = readfile(filename, args['columns'], args['header'], xticksColumn=args['xticks_column'])
+            x, y, xticks,xticklabels = readfile(filename, args['columns'], args['header'], xticksColumn=args['xticks_column'], xticklabelsColumn=args['xticklabels_column'])
 
         if args['normalize']:
             y = normalize(y, args['normalize'])
@@ -271,11 +317,11 @@ def plot_things(files, ax, args):
 
         if len(x) > 0: 
             if args['scatter']:
-                line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker, c=mfc, edgecolors=mec)
+                line = ax.scatter(x, y, label=label.replace('_', '-'), marker=marker, c=mfc, edgecolors=mec, s=markersize**2 if markersize else None)
                 lines.append(line)
             elif args['bar']: 
                 ## INPROGRESS: Assumes x column in files is 1..n, and matches in all provided input files
-                indices = list(range(1,len(x)+1))
+                indices = list(range(1,len(y)+1))
                 num_files = len(files)
                 width = args['bar_width']
                 shiftwidth = (num_files -1 )* width / 2.0 
@@ -286,7 +332,7 @@ def plot_things(files, ax, args):
                 if args['xticks_column'] is not None: 
                     plt.xticks(indices,xticks)
             else:
-                line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, markerfacecolor=mfc, linestyle=linestyle, linewidth=linewidth, zorder=zorder)
+                line = ax.plot(x, y, label=label.replace('_', '-'), marker=marker, markersize=markersize, markerfacecolor=mfc, markeredgewidth=mew, linestyle=linestyle, linewidth=linewidth, zorder=zorder)
                 lines.extend(line)
         else:
             if args['histogram']:
@@ -294,26 +340,40 @@ def plot_things(files, ax, args):
             elif args['violin']:
                 # pass
                 line = None
+            elif args['bar']: 
+                ## INPROGRESS: Assumes x column in files is 1..n, and matches in all provided input files
+                indices = list(range(1,len(y)+1))
+                num_files = len(files)
+                width = args['bar_width']
+                shiftwidth = (num_files -1 )* width / 2.0 
+                position = [ bar_count * width - shiftwidth + i for i in indices]
+                line = ax.bar(position,y, width=width, label=label.replace('_', '-'))
+                lines.append(line)
+                bar_count = bar_count + 1
+                if args['xticks_column'] is not None: 
+                    plt.xticks(indices,xticks)
             else:
-                line = ax.plot(y, label=label.replace('_', '-'), marker=marker, linestyle=linestyle, linewidth=linewidth)
+                line = ax.plot(y, label=label.replace('_', '-'), marker=marker, markersize=markersize, linestyle=linestyle, linewidth=linewidth)
                 lines.extend(line)
         if isinstance(args['fill'], float):
             ax.fill_between(x, y, args['fill'], interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
             plt.rcParams['hatch.linewidth'] = args['hatch_linewidth']
+        elif isinstance(args['fill'], str): 
+            _, yfill, _,_ = readfile(args['error'])
+            ax.fil_between(x, y, yfill, interpolate=True, hatch=args['hatch'], alpha=args['fill_alpha'])
 
         if args['annotate_pointwise_from_xticks_column']: 
             x_pad = args['annotate_pointwise_from_xticks_column'][0]
             y_pad = args['annotate_pointwise_from_xticks_column'][1]
             x_delta = x[0] * x_pad
             y_delta = y[0] * y_pad
-            for ia, annot in enumerate(xticks): 
+            for ia, annot in enumerate(xticklabels):
                 ax.annotate(annot, (x[ia] + x_delta, y[ia] + y_delta))
-
-
 
     if args['violin']: 
         ax.violinplot(ys)
-        positions = np.arange(len(args['labels'])) + 1
+        # positions = np.arange(len(args['labels'])) + 1
+        positions = np.arange(n_total_files) + 1
         plt.xticks(positions, args['labels'])
         # positions = np.arange(len(args['labels'])) + 1
         # labels = args['labels']
@@ -342,10 +402,15 @@ ap.add_argument("-xtl", "--xtick-labels", nargs='*', help="x axis tick labels")
 ap.add_argument("-ytx", "--yticks", nargs='*', type=float, help="y axis tick positions")
 ap.add_argument("-ytl", "--ytick-labels", nargs='*', help="y axis tick labels")
 
-ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks labels")
+# TODO: Clean up
+ap.add_argument("--xticks-column", type=int, help="Column from input files to count as xticks")
+ap.add_argument("--xticklabels-column", type=int, help="Column from input files to count as xtick labels")
+
 ap.add_argument("--bar-width", type=float, default=0.25, help="Width of bar in bar charts")
 
 ap.add_argument("-apfxc", "--annotate-pointwise-from-xticks-column", nargs=2, type=float, help="Use --xticks-column column from input file to annotate points. arg values are for padding")
+
+ap.add_argument("--no-axis", action='store_true', help='remove axis borders, ticks, and labels')
 
 ap.add_argument("--scitick", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting")
 ap.add_argument("--scitick2", choices=['x', 'y', 'both'], help="Apply scientific tick label formatting to axis 2")
@@ -355,8 +420,10 @@ ap.add_argument("-lw", "--linewidths", nargs='*', help="linewidth = 0.1 2 ...")
 ap.add_argument("-l", "--labels", nargs='*', help="legend labels")
 ap.add_argument("-z", "--zorder", nargs='*', type=int, help="zorder for each plot")
 ap.add_argument("-m", "--markers", nargs='*', help="markers = s, o, ...")
+ap.add_argument("-ms", "--markersize", nargs='*', type=float, help="Size of markers")
 ap.add_argument("-mfc", "--marker-face-colors", nargs='*', help="marker face colors")
 ap.add_argument("-mec", "--marker-edge-colors", nargs='*', help="marker edge colors")
+ap.add_argument("-mew", "--marker-edge-widths", nargs='*', help="marker edge colors")
 
 ap.add_argument("-lci", "--line-color-indices", nargs='*', type=int, help="Indices to line colors. Can specify two curves have the same color by repeating the index.")
 ap.add_argument("-lci2", "--line-color-indices2", nargs='*', type=int, help="Indices to line colors. Can specify two curves have the same color by repeating the index.")
@@ -385,6 +452,10 @@ ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in
 
 ap.add_argument("--smoothen", nargs='?', type=int, const=3, help="(Cubic) spline interpolation through provided data. --smoothen <order>, with default order=3")
 ap.add_argument("--smoothen-npoints", default=250, type=int, help="Number of points to use for --smoothen interpolation")
+
+ap.add_argument("--resample", help="Resample curve at points specified in this file")
+ap.add_argument("--reaverage", type=int, help="Average curve into specified number of cells")
+ap.add_argument("--reaverage-cylindrical", type=int, help="Average curve into specified number of cells")
 
 ap.add_argument("-n", "--normalize", nargs='?', const='self', help="normalize y data to given value or 'self'")
 ap.add_argument("-nx", "--normalize-x", nargs='?', const='self', help="normalize y data to given value or 'self'")
@@ -425,6 +496,9 @@ ap.add_argument("-y2l", "--y2lims",nargs=2, type=float, help="y axis limits for 
 ap.add_argument("--y2log", action='store_true', help="Y2 axis in log scale")
 ap.add_argument("-cmap2", "--colormap2", choices = qualitative_colormaps, default='tab10', help="Matplotlib colormap to use for second axis")
 # ap.add_argument("--color-cycle2-length", type=int, help="Number of colors to cycle through for each line")
+
+ap.add_argument("--inset", help='One file to plot as inset')
+ap.add_argument("--inset-plot", choices=['plot', 'hist'], default='plot', help='Type of inset plot')
  
 args = vars(ap.parse_args())
 
@@ -454,6 +528,22 @@ elif len(args['markers']) == 1:
     args['markers'] = iter(args['markers'] * n_total_files)
 else: 
     args['markers'] = iter(args['markers'])
+
+if not args['markersize']:
+    args['markersize'] = iter([ None ] * n_total_files)
+    # args['markersize'] = []
+elif len(args['markersize']) == 1:
+    args['markersize'] = iter(args['markersize'] * n_total_files)
+else: 
+    args['markersize'] = iter(args['markersize'])
+
+if not args['marker_edge_widths']:
+    args['marker_edge_widths'] = iter([ None ] * n_total_files)
+    # args['marker_edge_widths'] = []
+elif len(args['marker_edge_widths']) == 1:
+    args['marker_edge_widths'] = iter(args['marker_edge_widths'] * n_total_files)
+else: 
+    args['marker_edge_widths'] = iter(args['marker_edge_widths'])
 
 if not args['linewidths']:
     args['linewidths'] = iter([ 1 ] * n_total_files)
@@ -548,6 +638,10 @@ with plt.style.context(args['style']):
 
 
     setup_main_axis(ax, args)
+
+    if args['no_axis']: 
+        ax.axis('off')
+
     xs, ys, lines = plot_things(args['files'], ax, args)
 
     lines2=[]
@@ -560,8 +654,17 @@ with plt.style.context(args['style']):
     if args['fit_lines']: 
         ## TODO: Move it somewhere better
         for x,y,filename in zip(xs, ys, args['files']): 
-            X = np.array(x).reshape(-1,1)
+            X = np.array(x)
             Y = np.array(y)
+
+            ordering = X.argsort()
+            X = X[ordering].reshape(-1,1)
+            Y = Y[ordering]
+
+            if args['xlog']: 
+                X = np.log10(X)
+            if args['ylog']: 
+                Y = np.log10(Y)
 
             model = LinearRegression()
             model.fit(X, Y)
@@ -571,7 +674,7 @@ with plt.style.context(args['style']):
             print(f"{filename}: R2={score} | m={model.coef_} | c={model.intercept_}")
 
     if args['error']: 
-        x0, y0, _ = readfile(args['error'])
+        x0, y0, _,_ = readfile(args['error'])
         print(f"Reference file: {args['error']}")
         errors = []
         for x,y,filename in zip(xs, ys, args['files']): 
@@ -589,6 +692,76 @@ with plt.style.context(args['style']):
         for x,y,filename in zip(xs, ys, args['files']): 
             ysmooth = extrapolate(x,y,xsmooth, kind=args['extrapolate'])
             plt.plot(xsmooth, ysmooth, label=f"{args['extrapolate']} extrapolation")
+
+    if args['resample']: 
+        _, xnew, _,_ = readfile(args['resample'], columns=[0])
+        for x,y,filename in zip(xs, ys, args['files']): 
+            ynew = extrapolate(x,y,xnew, kind='linear')
+
+            with open(f'{filename}_resampled.csv', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(xnew, ynew))
+        
+    if args['reaverage']:
+        nRegions = args['reaverage']
+        nShells = nRegions + 1 #Including r = 0
+        rShells = []
+        for x,y,filename in zip(xs, ys, args['files']): 
+            x_left = min(x)
+            x_right = max(x)
+            assert x_left == 0.0
+            for n in range(nShells):
+                rShells.append(x_right * (n/nRegions))
+
+            x_avg = []
+            y_avg = []
+
+            for radIn, radOut in zip(rShells[:-1], rShells[1:]+rShells[:0]):
+                xnew = np.linspace(radIn, radOut, 250)
+                ynew = extrapolate(x,y,xnew, kind='linear')
+                x_center = (radIn + radOut)/2
+                yval = np.trapz(ynew, x=xnew) / (radOut - radIn)
+                x_avg.append(x_center)
+                y_avg.append(yval)
+
+            with open(f'{filename}_reaveraged_{args["reaverage"]}.csv', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(x_avg, y_avg))
+
+    if args['reaverage_cylindrical']:
+        nRegions = args['reaverage_cylindrical']
+        nShells = nRegions + 1 #Including r = 0
+        rShells = []
+        for x,y,filename in zip(xs, ys, args['files']): 
+            x_left = min(x)
+            x_right = max(x)
+            assert x_left == 0.0
+            for n in range(nShells):
+                rShells.append(x_right * (n/nRegions))
+
+            npoints = 500
+            x_avg = []
+            y_avg = []
+
+            yf = interp1d(x, y, kind='cubic', fill_value='extrapolate')
+            ## WARNING: TODO: Use scipy.integrate.cumulative_trapezoid instead
+            inty = integral(y,x)
+            intyf = interp1d(x, inty, kind='cubic', fill_value='extrapolate')
+
+            for radIn, radOut in zip(rShells[:-1], rShells[1:]+rShells[:0]):
+                x_center = (radIn + radOut)/2
+                xs_left = np.linspace(0, radIn, npoints)
+                xs_right= np.linspace(0, radOut, npoints)
+                ## int_{radIn}^{radOut} 2*pi* r * y(r) * dr
+                yval = radOut * np.trapz( yf(xs_right), x=xs_right) - radIn * np.trapz(yf(xs_left), xs_left) - (np.trapz(intyf(xs_right), x=xs_right) - np.trapz(intyf(xs_left), x=xs_left))
+                yval = 2* np.pi * yval / ( np.pi * (radOut**2 - radIn**2))
+                x_avg.append(x_center)
+                y_avg.append(yval)
+
+            with open(f'{filename}_reaveraged_cyl_{args["reaverage_cylindrical"]}.csv', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(x_avg, y_avg))
+
 
     ## TODO: update style for these
     if args['hlines']:
@@ -612,6 +785,30 @@ with plt.style.context(args['style']):
         ylim = ax.get_ylim()
         ax.set_ylim((ylim[1], ylim[0]))
 
+    # ax.annotate('$11.11 \\times$ better', xy=(2, 1200),  xycoords='data',
+    #             xytext=(0.8, 0.4), textcoords='axes fraction',
+    #             arrowprops=dict(facecolor='black', shrink=0.05),
+    #             horizontalalignment='center', verticalalignment='top',
+    #             )
+    #
+
+    # # INPROGRESS: 
+    # # if args['inset']: 
+    # inset_ax = fig.add_axes([0,0,1,1])
+    # ip = InsetPosition(ax, [0.55,0.60,0.4,0.3])
+    # inset_ax.set_axes_locator(ip)
+    # inset_ax.tick_params(axis='x', labelsize=8)
+    # inset_ax.tick_params(axis='y', labelsize=8)
+    # inset_ax.xaxis.offsetText.set_fontsize(8)
+    # inset_ax.set_title('Particle Size Distribution', fontsize=8)
+    # # inset_ax.get_xaxis().set_visible(False)
+    # # inset_ax.get_yaxis().set_visible(False)
+    # x, y, _ = readfile(args['inset'])
+    # if args['inset_plot'] == 'hist': 
+    #     line = inset_ax.hist(y, bins=20)
+    # else: 
+    #     inset_ax.plot(x,y)
+
     if args['output']:
 
         if not args['no_legend']:
@@ -631,7 +828,6 @@ with plt.style.context(args['style']):
         plt.show()
 
     if args['write']:
-        import csv
         for filename,newname,x,y in zip(args['files'], args['write'], xs, ys):
             with open(newname, 'w') as f:
                 writer = csv.writer(f, delimiter=',')
@@ -646,4 +842,3 @@ with plt.style.context(args['style']):
             with open(filename + '.y', 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(y))
-
