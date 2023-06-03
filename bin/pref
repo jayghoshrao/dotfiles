@@ -15,6 +15,9 @@ echo "file: $IMAGEFILE"
 # OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f'| vipe ) 
 OUT=$(tesseract "$IMAGEFILE" - | tr -d '\n' | tr -d '\f') 
 
-[ -z "$OUT" ] || echo -e "$OUT" | getdoi -o 
+echo "$OUT" >> ~/.pref
+# [ -z "$OUT" ] || echo -e "$OUT" | getdoi -o 
 
-
+if [[ -n "$OUT" ]]; then
+    ~/bin/cq --first --singlerun --prompt b "$OUT"
+fi
