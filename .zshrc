@@ -96,12 +96,12 @@ zinit from"gh-r" as"command" light-mode for \
     if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
     if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
     if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
-    if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli
+    if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
+    atclone"tar xf btop.tbz" pick"btop/bin/btop" @aristocratos/btop
 
 zinit light-mode for if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb 
 
 # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
-# mv"btop*->btop.tbz" atclone"tar xf btop.tbz" pick"bin/btop" @aristocratos/btop
 # mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # }}}
@@ -532,6 +532,8 @@ function dotsparsity(){
     $EDITOR $DOTDIR/info/sparse-checkout
     dot read-tree -m -u HEAD
 }
+
+function dotziupg() { dot pull && zi self-update && zi update --parallel 40 && zi cclear }
 
 ## FZF
 function dotlog(){
