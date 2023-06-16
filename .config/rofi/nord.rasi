@@ -38,7 +38,7 @@
 
     background-color:            rgba (0, 0, 0, 0%);
     separatorcolor:              rgba ( 29, 31, 33, 100 % );
-    separatorcolor:              @nord0;
+    separatorcolor:              @nord10;
 
     normal-background:           @background;
     normal-foreground:           @foreground;
@@ -62,7 +62,8 @@ window {
     background-color: @background;
     border:           1;
     padding:          0;
-    font: "Iosevka Extended 14";
+    /* font: "Iosevka Extended 14"; */
+    font: "Iosevka SS07 14";
 }
 mainbox {
     border:  0;
@@ -87,7 +88,7 @@ listview {
 element {
     /* border:  0; */
     /* padding: 1px ; */
-    border: 0 0 1px 0;
+    border: 0 0 0px 0;
     padding: 16px ;
 }
 element-text {
