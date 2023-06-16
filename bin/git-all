@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Find all repos from the current directory, 
+# show in FZF, 
+# Use lazygit to open
+# Usage: git all [path...]
+
+REPOS=$(fd --hidden --no-ignore --glob --absolute-path -t d '.git' "$@" | sed 's/\.git\/$//')
+echo "$REPOS" | fzf --cycle --preview="git --git-dir={}.git/ --work-tree={} status" --bind "enter:execute@lazygit --git-dir={}.git --work-tree={}@"
