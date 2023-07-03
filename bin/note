@@ -27,5 +27,6 @@ cd "$DIR" || exit
 EDITOR=nvim
 # FLAGS=+ZenMode
 
+mkdir -p $(dirname "$@")
 "$EDITOR" "$@".md
 
