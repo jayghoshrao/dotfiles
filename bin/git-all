@@ -5,5 +5,44 @@
 # Use lazygit to open
 # Usage: git all [path...]
 
-REPOS=$(fd --hidden --no-ignore --glob --absolute-path -t d '.git' "$@" | sed 's/\.git\/$//')
+FLAG_CHANGED_ONLY=false
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -c|--changed)
+            FLAG_CHANGED_ONLY=true
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+ALL_REPOS=$(fd --hidden --no-ignore --glob --absolute-path -t d '.git' "$@" | sed 's/\.git\/$//')
+
+[[ -z "$ALL_REPOS" ]] && exit -1
+
+REPOS=$ALL_REPOS
+
+if [[ $FLAG_CHANGED_ONLY == true ]]; then
+    REPOS=()
+    while IFS= read -a REPO ; do 
+        if [[ -n $(git --git-dir=${REPO}.git --work-tree=${REPO} status --porcelain) ]] ; then
+            REPOS+=( "$REPO" )
+        fi
+    done <<< "$ALL_REPOS"
+fi
+
+## Convert array to string
+if [[ $(declare -p REPOS) =~ "declare -a" ]] ; then
+    REPOS=$(IFS=$'\n'; echo "${REPOS[*]}")
+fi
+
 echo "$REPOS" | fzf --cycle --preview="git --git-dir={}.git/ --work-tree={} status" --bind "enter:execute@lazygit --git-dir={}.git --work-tree={}@"
