@@ -63,6 +63,7 @@ mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
 if [ "$mountpoint0" = "null" ]; then
     echo "HDD not mounted. Mounting to /media/$name"
     pmount /dev/$name
+    [[ $? != 0 ]] && die "Could not mount partition /dev/$name"
     MOUNTPOINT="/media/$name"
 else
     MOUNTPOINT="$mountpoint0"
