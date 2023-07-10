@@ -87,3 +87,10 @@ Notes:
 - Neovim's packer compiles its config. So sometimes you'll have to do `:PackerCompile` to get things right. Mostly, I have autocmds setup to do this, but some edge cases don't trigger them
 - Neovim's packer might complain when installing plugins fails. Remove the plugin, PackerSync, then add, and PackerSync again should fix the issue
 - A negative of using a bare git repo in `~` is that new config files have to be manually added.
+
+## Theming considerations
+In order to maintain some consistency in themes/colors, remember to apply changes to 
+    - kitty : Use `kitty +kitten themes --reload-in=all` to try out themes
+    - tmux : Use `tpm`
+    - nvim
+        - lualine

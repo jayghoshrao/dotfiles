@@ -1,19 +1,4 @@
 require('gitsigns').setup {
-  keymaps = {
-    noremap = true,
-
-    ['n <leader>gs'] = '<cmd>lua require"gitsigns".stage_hunk()<CR>',
-    ['n <leader>gu'] = '<cmd>lua require"gitsigns".reset_hunk()<CR>',
-    ['n <leader>gp'] = '<cmd>lua require"gitsigns".preview_hunk()<CR>',
-    ['n <leader>gb'] = '<cmd>lua require"gitsigns".blame_line()<CR>',
-
-    -- Text objects
-    ['o ih'] = ':<C-U>lua require"gitsigns".text_object()<CR>',
-    ['x ih'] = ':<C-U>lua require"gitsigns".text_object()<CR>',
-  },
-}
-
-require('gitsigns').setup {
   signs = {
     add          = { hl = 'GitSignsAdd'   , text = '│', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'    },
     change       = { hl = 'GitSignsChange', text = '│', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn' },

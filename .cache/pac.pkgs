@@ -43,6 +43,7 @@ desmume
 diff-so-fancy
 direnv
 discord
+dmraid
 docker
 docker-compose
 dovecot
@@ -107,6 +108,7 @@ hyperfine
 i3blocks
 imagescan
 inetutils
+inkscape
 inotify-tools
 intel-ucode
 irssi
@@ -114,12 +116,13 @@ isync
 j4-dmenu-desktop
 jc
 jp2a
+jupyterlab
 keychain
 khal
 krita
 kvantum-theme-materia
-lapacke
 lazygit
+libgnome-keyring
 libsixel
 libxcrypt-compat
 licenses
@@ -201,7 +204,6 @@ privoxy
 progress
 pulsemixer
 pv
-pyright
 python-deepdiff
 python-gitpython
 python-gnupg
@@ -250,10 +252,11 @@ texlive-fontsextra
 texlive-formatsextra
 texlive-games
 texlive-humanities
+texlive-langgreek
+texlive-mathscience
 texlive-music
 texlive-pstricks
 texlive-publishers
-texlive-science
 thunar
 thunderbird
 tigervnc

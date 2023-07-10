@@ -78,6 +78,7 @@ python-bibtexparser
 python-cmapy
 python-eyed3
 python-i3-py
+python-newspaper
 python-pulsectl
 python-pysmartdl
 python-rauth

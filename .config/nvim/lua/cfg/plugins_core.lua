@@ -1,6 +1,5 @@
 return {
 
-
     'tpope/vim-surround',
     'tpope/vim-unimpaired',
     'tpope/vim-repeat',
@@ -59,17 +58,21 @@ return {
             require 'cfg.plugins.lsp.yaml_ls'
         end,
         dependencies = {
-            -- {
-            --     'jose-elias-alvarez/null-ls.nvim',
-            --     config = function()
-            --         require 'cfg.plugins.lsp.null_ls'
-            --     end,
-            -- },
             {
                 'onsails/lspkind-nvim'
             }
         },
     },
+
+    {
+        'jose-elias-alvarez/null-ls.nvim',
+        ft = {"python"},
+        config = function()
+            require 'cfg.plugins.lsp.null_ls'
+        end,
+        requires = { "nvim-lua/plenary.nvim" },
+    },
+
 
     {
         'nvim-treesitter/nvim-treesitter',
@@ -104,6 +107,17 @@ return {
     },
 
     {
+        'mfussenegger/nvim-dap-python',
+        ft = "python",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+        },
+        config = function()
+            require('dap-python').setup()
+        end
+    },
+
+    {
         'theHamsta/nvim-dap-virtual-text',
         config = function()
             require("nvim-dap-virtual-text").setup({
@@ -119,6 +133,28 @@ return {
                 virt_lines = false,                 -- show virtual lines instead of virtual text (will flicker!)
                 virt_text_win_col = nil             -- position the virtual text at a fixed window column (starting from the first text column) ,
             })
+        end
+    },
+
+    {
+        "rcarriga/nvim-dap-ui",
+        dependencies = "mfussenegger/nvim-dap",
+        config = function()
+            local dap = require("dap")
+            local dapui = require("dapui")
+            dapui.setup()
+            local map = require('cfg.utils').map
+            map('n', '<space>dd', ':lua require"dapui".toggle()<CR>')
+
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open()
+            end
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close()
+            end
         end
     },
 
@@ -199,7 +235,7 @@ return {
 
     {
         'nvim-lualine/lualine.nvim',
-        dependencies = {'kyazdani42/nvim-web-devicons', opt = true},
+        dependencies = {'nvim-tree/nvim-web-devicons', opt = true},
         config = function()
             require 'cfg.plugins.lualine'
         end
@@ -224,7 +260,6 @@ return {
                 -- StatusLine
                 minimal_mode = false
             })
-
             -- require('cfg.utils').create_augroups {
             --   nord = {
             --         { 'User', 'PlugLoaded', [[++nested colorscheme nordic]] },
@@ -232,6 +267,8 @@ return {
             -- }
         end
     },
+
+    { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 
     { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki'}},
 

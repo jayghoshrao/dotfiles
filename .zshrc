@@ -64,6 +64,9 @@ zinit lucid for \
 
 zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
 
+# CATPPUCCIN
+zinit snippet https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
+
 # TODO: 
 # OMZP::git-extras
 

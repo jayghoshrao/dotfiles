@@ -118,7 +118,7 @@ function M.on_attach(client, bufnr)
   -- buf_map('n', '<space>ld', [[<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({ border = 'single' })<cr>]], opts)
 
   -- -- TODO: Ideally swap keys with <space>f find
-  buf_map('n', '<space>g', [[<cmd>lua vim.lsp.buf.formatting()<cr>]], opts)
+  buf_map('n', '<space>g', [[<cmd>lua vim.lsp.buf.format()<cr>]], opts)
 
   -- -- Auto formatting
   -- if client.resolved_capabilities.document_formatting then

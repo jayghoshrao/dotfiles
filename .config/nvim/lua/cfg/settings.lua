@@ -5,8 +5,8 @@ opt.expandtab = true
 opt.shiftwidth = 4
 opt.tabstop = 4
 opt.softtabstop = 4
-opt.autoindent = true
-opt.smartindent = true
+opt.autoindent = false
+opt.smartindent = false
 
 -- Buffers
 opt.hidden = true -- Buffer switching without saving
