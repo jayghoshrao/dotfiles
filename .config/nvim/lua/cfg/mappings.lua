@@ -81,6 +81,10 @@ map('n', '<leader>d', ':lcd %:p:h<cr>')     -- change working dir to that of cur
 map('n', '<leader>ld', ':pwd<cr>')          -- print current dir
 map('n', '<leader>lcd', ':lcd ~/')          -- prompt for changing working dir
 
+-- find and cd into root directory
+map('n', '<leader>r', ":lua require('cfg.utils').cd_root()<CR>")
+
+
 -- Strip trailing whitespace
 -- map('n', '<F2>', ':%s/\s*$//e<CR>')
 

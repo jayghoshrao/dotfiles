@@ -87,71 +87,6 @@ function M.restart()
   vim.cmd.doautocmd 'VimEnter'
 end
 
--- Execute `PackerUpdate` every day automatically so that we are always up to
--- date!
--- I run `PackerUpdate` manually anyways, so it makes sense to run it
--- automatically.
---
--- The last saved date is saved into `XDG_CACHE_HOME/.plugins_updated_at`.
--- function M.update_plugins_every_day()
---   -- local plugin_updated_at_filename = vim.env.XDG_CACHE_HOME .. '/.plugins_updated_at'
---   local plugin_updated_at_filename = vim.env.HOME .. '/.config/.plugins_updated_at'
---   local file = io.open(plugin_updated_at_filename)
---   if not file then
---     vim.fn.writefile({}, plugin_updated_at_filename)
---     file:close()
---   end
--- 
---   local today = os.date '%Y-%m-%d'
--- 
---   file = io.open(plugin_updated_at_filename)
---   local contents = file:read '*a'
---   if contents ~= today then
---     vim.fn.execute 'PackerUpdate'
--- 
---     file = io.open(plugin_updated_at_filename, 'w')
---     file:write(today)
---   end
--- 
---   file:close()
--- end
-
--- function M.read_json_file(filename)
---   local path = Path:new(filename)
---   if not path:exists() then
---     return nil
---   end
--- 
---   local json_contents = path:read()
---   local json = vim.fn.json_decode(json_contents)
--- 
---   return json
--- end
-
--- function M.read_package_json()
---   return M.read_json_file 'package.json'
--- end
-
----Check if the given NPM package is installed in the current project.
----@param package string
----@return boolean
--- function M.is_npm_package_installed(package)
---   local package_json = M.read_package_json()
---   if not package_json then
---     return false
---   end
--- 
---   if package_json.dependencies and package_json.dependencies[package] then
---     return true
---   end
--- 
---   if package_json.devDependencies and package_json.devDependencies[package] then
---     return true
---   end
--- 
---   return false
--- end
-
 function M.toggle_quickfix()
     for _, win in pairs(vim.fn.getwininfo()) do
         if win.quickfix == 1 then
@@ -177,6 +112,44 @@ end
 function _G.P(...)
   local objects = vim.tbl_map(vim.inspect, { ... })
   print(unpack(objects))
+end
+
+function M.cd_root()
+    local path=vim.fn.getcwd()
+    local root_markers = { '.git', '.tasks', 'compile_commands.json', 'requirements.txt', 'setup.py'}
+
+    while true do
+        for _,  marker in ipairs(root_markers) do
+            local marker_path = path .. '/' .. marker
+            if vim.fn.isdirectory(marker_path) == 1 or vim.fn.filereadable(marker_path) == 1 then
+                vim.cmd('cd ' .. path)
+                print('Changed directory to: ' .. path)
+                return
+            end
+        end
+
+        local parent_path = vim.fn.fnamemodify(path, ':h')
+        if parent_path == path then
+            print('Project root not found.')
+            return
+        end
+
+        path = parent_path
+    end
+end
+
+-- Open init.lua and change working directory to its location
+function M.editrc()
+    local init_lua_path = vim.fn.stdpath('config') .. '/init.lua'
+
+    -- Check if init.lua exists
+    if vim.fn.filereadable(init_lua_path) == 1 then
+        vim.cmd('silent! edit ' .. init_lua_path) -- Open init.lua
+        local init_lua_dir = vim.fn.fnamemodify(init_lua_path, ':h')
+        vim.cmd('cd ' .. init_lua_dir) -- Change working directory to init.lua's location
+    else
+        print('init.lua not found.')
+    end
 end
 
 return M

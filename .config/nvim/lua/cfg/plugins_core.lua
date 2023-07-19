@@ -45,6 +45,7 @@ return {
         config = function()
             require 'cfg.plugins.lsp'
             require 'cfg.plugins.lsp.cc_ls'
+            -- require 'cfg.plugins.lsp.clangd'
             require 'cfg.plugins.lsp.docker_ls'
             require 'cfg.plugins.lsp.fortls'
             require 'cfg.plugins.lsp.rust_analyzer'
@@ -354,6 +355,15 @@ return {
             local map = require 'cfg.utils'.map
             map('n', '<space>m', '<cmd>MaximizerToggle<cr>')
         end
+    },
+
+    {
+        "j-hui/fidget.nvim",
+        tag = "legacy",
+        event = "LspAttach",
+        opts = {
+            -- options
+        },
     }
 
 }
