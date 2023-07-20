@@ -78,7 +78,7 @@ require("nvim-tree").setup {
 }
 
 map('n', '<space>v', [[:NvimTreeToggle<CR>]])
-map('n', '<leader>e', [[:NvimTreeToggle<CR>]])
+map('n', '<leader>e', [[:NvimTreeFindFileToggle<CR>]])
 
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrw = 1
