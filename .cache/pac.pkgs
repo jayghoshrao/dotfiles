@@ -209,7 +209,6 @@ python-deepdiff
 python-gitpython
 python-gnupg
 python-google-api-core
-python-i3ipc
 python-oauth2client
 python-praw
 python-pydbus

@@ -81,7 +81,12 @@ bind [c urlincrement -1
 bind ]c urlincrement 1
 bind <C-x> urlincrement -1
 bind <C-a> urlincrement 1
-bind T current_url tabopen
+" bind T current_url tabopen
+bind T fillcmdline tabgroupcreate
+bind gt fillcmdline tabgroupswitch
+bind gT fillcmdline tabgroupmove
+bind gR fillcmdline tabgrouprename
+" bind tx tabgroupclose
 bind yy clipboard yank
 bind ys clipboard yankshort
 bind yc clipboard yankcanon
@@ -122,10 +127,10 @@ bind x stop
 bind gi focusinput -l
 bind g? rot13
 bind g; changelistjump -1
-bind J tabprev
-bind K tabnext
-bind gt tabnext_gt
-bind gT tabprev
+" bind J tabprev
+" bind K tabnext
+" bind gt tabnext_gt
+" bind gT tabprev
 bind g^ tabfirst
 bind g0 tabfirst
 bind g$ tablast
