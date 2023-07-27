@@ -2,7 +2,6 @@
 
 -- -- WORKFLOW:
 -- https://github.com/ThePrimeagen/git-worktree.nvim
--- https://github.com/stefandtw/quickfix-reflector.vim
 -- https://github.com/chipsenkbeil/distant.nvim -- remote edits
 -- https://github.com/ahmedkhalf/project.nvim
 
@@ -20,6 +19,11 @@
 -- https://github.com/ngscheurich/iris.nvim -- color helper
 -- use 'LnL7/vim-nix' -- probably not required, but potentially useful
 -- https://github.com/junegunn/vim-peekaboo -- See register context
+-- https://github.com/ofirgall/open.nvim
+
+-- C++ dev
+-- https://github.com/p00f/clangd_extensions.nvim
+-- https://github.com/Civitasv/cmake-tools.nvim
 
 return {
 
@@ -167,6 +171,52 @@ return {
         config = function()
             require('cfg.plugins.tree')
         end,
-    }
+    },
+
+    {
+        "m-demare/hlargs.nvim",
+        config = function()
+            require('hlargs').setup()
+        end
+    },
+    {
+        "stevearc/aerial.nvim",
+        config = function()
+            require('aerial').setup({
+                -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+                on_attach = function(bufnr)
+                    -- Jump forwards/backwards with '{' and '}'
+                    vim.keymap.set('n', '{', '<cmd>AerialPrev<CR>', {buffer = bufnr})
+                    vim.keymap.set('n', '}', '<cmd>AerialNext<CR>', {buffer = bufnr})
+                end
+            })
+            -- You probably also want to set a keymap to toggle aerial
+            vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
+        end
+    },
+    { 'nvim-focus/focus.nvim', version = false , config=true},
+    {
+        "nvim-zh/colorful-winsep.nvim",
+        config = true,
+        event = { "WinNew" },
+    },
+
+    -- {
+    --   "klen/nvim-config-local",
+    --   config = function()
+    --     require('config-local').setup ({
+    --       -- Config file patterns to load (lua supported)
+    --       config_files = { ".nvim.lua", ".nvimrc", ".exrc" },
+    --
+    --       -- Where the plugin keeps files data
+    --       hashfile = vim.fn.stdpath("data") .. "/config-local",
+    --
+    --       autocommands_create = true, -- Create autocommands (VimEnter, DirectoryChanged)
+    --       commands_create = true,     -- Create commands (ConfigLocalSource, ConfigLocalEdit, ConfigLocalTrust, ConfigLocalIgnore)
+    --       silent = false,             -- Disable plugin messages (Config loaded/ignored)
+    --       lookup_parents = true,     -- Lookup config files in parent directories
+    --     })
+    --   end
+    -- },
 
 }

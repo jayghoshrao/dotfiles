@@ -1,6 +1,7 @@
 local opt = vim.opt
 
 -- Indentation
+opt.exrc = true
 opt.expandtab = true
 opt.shiftwidth = 4
 opt.tabstop = 4

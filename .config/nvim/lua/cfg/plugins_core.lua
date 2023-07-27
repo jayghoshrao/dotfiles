@@ -176,6 +176,9 @@ return {
                     require 'cfg.plugins.luasnip'
                 end,
                 dependencies = 'https://github.com/rafamadriz/friendly-snippets'
+            },
+            {
+                "lukas-reineke/cmp-under-comparator"
             }
         },
     },
@@ -195,8 +198,8 @@ return {
             -- { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
             {
                 'nvim-telescope/telescope-fzf-native.nvim', 
-                -- build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' 
-                build = 'make' 
+                build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' 
+                -- build = 'make' 
             }
         },
     },
