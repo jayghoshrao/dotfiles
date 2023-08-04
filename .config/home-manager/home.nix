@@ -38,7 +38,34 @@
     nix-info
 
     # Global python packages for my scripts
-    (python311.withPackages(ps: with ps; [ ipython numpy scipy plumbum pyfzf joblib beautifulsoup4 requests pulsectl lz4 i3ipc i3-py rich xdg deepdiff ruamel_yaml markdownify argcomplete magic pdfrw spotipy python-gnupg gpgme wget pygithub papis-python-rofi]))
+    (python311.withPackages(ps: with ps; [ 
+      ipython 
+      numpy
+      scipy
+      plumbum
+      pyfzf
+      joblib
+      beautifulsoup4
+      requests
+      pulsectl
+      lz4
+      i3ipc
+      i3-py
+      rich
+      xdg
+      deepdiff
+      ruamel_yaml
+      markdownify
+      argcomplete
+      magic
+      pdfrw
+      spotipy
+      python-gnupg
+      gpgme
+      wget
+      pygithub
+      papis-python-rofi
+    ]))
 
   ];
 

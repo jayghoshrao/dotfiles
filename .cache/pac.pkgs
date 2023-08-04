@@ -45,7 +45,6 @@ diff-so-fancy
 direnv
 discord
 dmraid
-docker
 docker-compose
 dovecot
 doxygen
@@ -166,7 +165,6 @@ newsboat
 nextcloud-client
 nfs-utils
 nim
-nix
 nlopt
 nnn
 notmuch
