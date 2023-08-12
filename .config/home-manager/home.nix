@@ -39,32 +39,34 @@
 
     # Global python packages for my scripts
     (python311.withPackages(ps: with ps; [ 
-      ipython 
-      numpy
-      scipy
-      plumbum
-      pyfzf
-      joblib
-      beautifulsoup4
-      requests
-      pulsectl
-      lz4
-      i3ipc
-      i3-py
-      rich
-      xdg
-      deepdiff
-      ruamel_yaml
-      markdownify
       argcomplete
-      magic
-      pdfrw
-      spotipy
-      python-gnupg
+      beautifulsoup4
+      deepdiff
       gpgme
-      wget
-      pygithub
+      i3-py
+      i3ipc
+      icalendar # For use with mutt-ics
+      ipython 
+      joblib
+      lz4
+      magic
+      markdownify
+      numpy
+      pip
       papis-python-rofi
+      pdfrw
+      plumbum
+      pulsectl
+      pyfzf
+      pygithub
+      python-gnupg
+      requests
+      rich
+      ruamel_yaml
+      scipy
+      spotipy
+      wget
+      xdg
     ]))
 
   ];
