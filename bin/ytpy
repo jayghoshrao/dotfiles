@@ -3,11 +3,15 @@
 import requests
 from bs4 import BeautifulSoup as bs
 import json
-from iterfzf import iterfzf
+# from iterfzf import iterfzf
 import os
 import sys
 import copy
 import argparse
+
+from pyfzf.pyfzf import FzfPrompt
+fzf = FzfPrompt()
+FZF_FILE_OPTS =  '--cycle -d ":" --prompt="❯ " --bind="ctrl-o:execute@xdg-open https://github.com/{1}@" --bind="ctrl-y:execute@echo https://github.com/{1} | xclip -i -selection clipboard@"'
 
 ## DONE: directly play playlist
 ## TODO: show video length in fzf
@@ -79,7 +83,8 @@ def play_video(videoId, playcmd):
 
 def search_and_resolve(query, args, playcmd):
     search_res = get_search(query, args['type'])
-    selection = iterfzf(search_res, exact=True)
+    # selection = iterfzf(search_res, exact=True)
+    selection = fzf.prompt(search_res, FZF_FILE_OPTS)[0]
     while selection is not None:
         if args['type'] == 'video':
             play_video(search_res[selection], playcmd)
@@ -88,18 +93,23 @@ def search_and_resolve(query, args, playcmd):
                 os.system(playcmd + ' ' + base_playlist_url + search_res[selection])
             else:
                 episodes = get_playlistItems(search_res[selection])
-                selection2 = iterfzf(episodes, exact=True)
+                # selection2 = iterfzf(episodes, exact=True)
+                selection2 = fzf.prompt(episodes, FZF_FILE_OPTS)[0]
                 while selection2 is not None:
                     play_video(episodes[selection2], playcmd)
-                    selection2 = iterfzf(episodes, exact=True)
+                    # selection2 = iterfzf(episodes, exact=True)
+                    selection2 = fzf.prompt(episodes, FZF_FILE_OPTS)[0]
         elif args['type'] == 'channel':
             uploads = get_channel_uploads(search_res[selection])
             episodes = get_playlistItems(uploads)
-            selection2 = iterfzf(episodes, exact=True)
+            # selection2 = iterfzf(episodes, exact=True)
+            selection2 = fzf.prompt(episodes, FZF_FILE_OPTS)[0]
             while selection2 is not None:
                 play_video(episodes[selection2], playcmd)
-                selection2 = iterfzf(episodes, exact=True)
-        selection = iterfzf(search_res, exact=True)
+                # selection2 = iterfzf(episodes, exact=True)
+                selection2 = fzf.prompt(episodes, FZF_FILE_OPTS)[0]
+        # selection = iterfzf(search_res, exact=True)
+        selection = fzf.prompt(search_res, FZF_FILE_OPTS)[0]
 
 
 def main():
