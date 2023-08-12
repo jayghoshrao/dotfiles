@@ -100,12 +100,13 @@ zinit from"gh-r" as"command" light-mode for \
     if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
     if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
     if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
-    atclone"tar xf btop.tbz" pick"btop/bin/btop" @aristocratos/btop
+    if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop
 
-zinit light-mode for if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb 
+zinit light-mode for \
+    if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb \
+    if'[[ -z "$commands[lazygit]" ]]' from "gh-r" as"program" mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
-# mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # }}}
 
@@ -266,6 +267,7 @@ command -v nvim >/dev/null && alias vim="nvim" vimdiff="nvim -d" # Use neovim fo
 
 #Alias {{{
 
+alias sudo="sudo -E"
 alias i3c="dotf $HOME/.config/i3/config"
 alias zc="dotf $HOME/.zshrc"
 alias zcf="dotf $HOME/.zsh-fzf"
@@ -346,6 +348,32 @@ xo()
     fi
 
 }
+
+xx()
+{
+	# arg=""
+	# for value in "$@"; do
+	# 	arg="$arg$value"
+	# done
+
+    if [[ "$1" =~ ":" ]];
+    then
+        EXT=${1##*.}
+        scp -rC "$1" "/tmp/remotefile.$EXT"
+        if [[ $? -eq 0 ]] ; then 
+            nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+            exit
+        else
+            >&2 echo "file not found!"
+            return -1
+        fi
+    else
+        nohup xdg-open "$@" >/dev/null 2>&1 & disown
+        exit
+    fi
+
+}
+
 #}}}
 # eXecute: {{{
 x()
@@ -728,7 +756,7 @@ function vimfu()
 fpass() {
     local DIR=${PWD}
     cd ~/.password-store
-    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@echo {} | sed 's/.gpg//' | xargs pass edit@" 
+    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@echo {} | sed 's/.gpg//' | xargs pass edit@" | less
     cd "$DIR"
 }
 
