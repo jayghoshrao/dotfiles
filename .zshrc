@@ -104,7 +104,7 @@ zinit from"gh-r" as"command" light-mode for \
 
 zinit light-mode for \
     if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb \
-    if'[[ -z "$commands[lazygit]" ]]' from "gh-r" as"program" mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
+    if'[[ -z "$commands[lazygit]" ]]' from"gh-r" as"program" mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
 
