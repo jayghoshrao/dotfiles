@@ -261,6 +261,8 @@ export NNN_COLORS="2136" ## Different colors for contexts
 export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:fuznavdir;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*;s:fuznavsubdir'
 export LC_COLLATE="C" ## dot files clumped together
 
+export LANG=en_US.UTF-8
+
 ## Exports: }}}
 
 command -v nvim >/dev/null && export EDITOR='nvim' || export EDITOR='vim'
