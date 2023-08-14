@@ -85,8 +85,8 @@ zinit light-mode for atclone"dircolors -b src/dir_colors > c.zsh" \
 # }}}
 
 # Install fzf and related completion tools
+# wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
 zinit lucid light-mode for \
-    # wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
     wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
     atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
 
@@ -104,7 +104,7 @@ zinit from"gh-r" as"command" light-mode for \
     if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
 # Load scripts directly from repo
-zinit from "gh" as"command" light-mode for \
+zinit from"gh" as"command" light-mode for \
     if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb \
 
 # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
