@@ -86,8 +86,7 @@ zinit light-mode for atclone"dircolors -b src/dir_colors > c.zsh" \
 
 # Install fzf and related completion tools
 zinit lucid light-mode for \
-    from"gh-r" as"command" @junegunn/fzf \
-    wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
+    # wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
     wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
     atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
 
@@ -95,16 +94,18 @@ zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
 
 ## Conditionally install regularly used tools if not found
 zinit from"gh-r" as"command" light-mode for \
+    if'[[ -z "$commands[fzf]" ]]' @junegunn/fzf \
     if'[[ -z "$commands[nvim]" ]]' mv"nvim*->nvim" pick"nvim/bin/nvim" @neovim/neovim \
     if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
     if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
     if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
     if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
-    if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop
+    if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
+    if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
 
-zinit light-mode for \
-    if'[[ -z "$commands[cb]" ]]' from"gh" as"command" pick"cb" @niedzielski/cb \
-    if'[[ -z "$commands[lazygit]" ]]' from"gh-r" as"program" mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
+# Load scripts directly from repo
+zinit from "gh" as"command" light-mode for \
+    if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb \
 
 # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
 
