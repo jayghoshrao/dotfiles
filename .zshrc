@@ -535,30 +535,30 @@ ring() {
 # Dotfile management: {{{
 ## Functions are better for pipes
 export DOTDIR=$HOME/.dots
-function dot()  {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME "$@"}
-function dots() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME status "$@"}
-function dotc() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"}
-function dota() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
-function dotu() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
-function dotd() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
-function dotr() {/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
+function dot()  {command git --git-dir=$DOTDIR --work-tree=$HOME "$@"}
+function dots() {command git --git-dir=$DOTDIR --work-tree=$HOME status "$@"}
+function dotc() {command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"}
+function dota() {command git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
+function dotu() {command git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
+function dotd() {command git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
+function dotr() {command git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
 function dotlg() {lazygit --git-dir=$DOTDIR --work-tree=$HOME} 
 
 function dotf(){
     ## setting the env vars helps vim-fugitive know what's going on
     [ -n "$@" ] && QUERY="-q $@"
-    /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME peek
+    command git --git-dir=$DOTDIR --work-tree=$HOME ls-tree --full-tree -r HEAD | awk '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME peek
 }
 
 function dotaf(){
-    files=$(/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
-    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
+    files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add 
 }
 
 function dotcf(){
-    files=$(/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="/usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
-    [ -n "$files" ] && echo "$files" | xargs /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME add 
-    /usr/bin/git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"
+    files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add 
+    command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"
 }
 
 function dotsparsity(){
