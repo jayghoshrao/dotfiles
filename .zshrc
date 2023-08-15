@@ -17,8 +17,6 @@
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
-ARCH=$(uname -a | awk '{print $(NF-1)}')
-
 # autoload -U +X bashcompinit && bashcompinit
 # # NOTE: Uncomment in case compaudit complains of insecure directories
 # # Probably best to unset FPATH in bash before calling zsh in case of a nested call
