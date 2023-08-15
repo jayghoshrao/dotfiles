@@ -25,89 +25,90 @@ ARCH=$(uname -a | awk '{print $(NF-1)}')
 # autoload -U +X compinit && compinit -i
 # autoload -Uz compinit; compinit
 
-
 # Package Manager: {{{
 
 # ZINIT: {{{
-### Added by Zinit's installer
-if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
-        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
-        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+# Set $NO_ZINIT in docker images if necessary
+if [[ ! -v NO_ZINIT ]] ; then 
+    if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+        print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+        command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+        command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
+            print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+            print -P "%F{160}▓▒░ The clone has failed.%f%b"
+    fi
+
+    source "$HOME/.zinit/bin/zinit.zsh"
+    autoload -Uz _zinit
+    (( ${+_comps} )) && _comps[zinit]=_zinit
+
+    # Load a few important annexes, without Turbo
+    # (this is currently required for annexes)
+    zinit light-mode for \
+        zdharma-continuum/z-a-rust \
+        zdharma-continuum/z-a-as-monitor \
+        zdharma-continuum/z-a-patch-dl \
+        zdharma-continuum/z-a-bin-gem-node
+
+    zinit lucid for \
+         wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
+         wait"0b" blockf @zsh-users/zsh-completions \
+         wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
+
+    zinit lucid for \
+        OMZL::functions.zsh  \
+        OMZL::directories.zsh  \
+        OMZL::termsupport.zsh \
+        OMZL::completion.zsh \
+        OMZP::git
+
+    zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
+
+    # CATPPUCCIN
+    zinit snippet https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
+
+    # TODO: 
+    # OMZP::git-extras
+
+    # Theme and Colors {{{
+    zinit light-mode for pick"async.zsh" src"pure.zsh" @sindresorhus/pure
+
+    # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
+    # coreutils package from Homebrew; you can also use https://github.com/ogham/exa)
+    zinit light-mode for atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' @trapd00r/LS_COLORS
+    zinit light chrissicool/zsh-256color
+    zinit light-mode for atclone"dircolors -b src/dir_colors > c.zsh" \
+                atpull'%atclone' \
+                pick"c.zsh" \
+                nocompile'!' \
+                @arcticicestudio/nord-dircolors
+    # }}}
+
+    # Install fzf and related completion tools
+    # wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
+    zinit lucid light-mode for \
+        wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
+        atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
+
+    zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
+
+    ## Conditionally install regularly used tools if not found
+    zinit from"gh-r" as"command" light-mode for \
+        if'[[ -z "$commands[fzf]" ]]' @junegunn/fzf \
+        if'[[ -z "$commands[nvim]" ]]' mv"nvim*->nvim" pick"nvim/bin/nvim" @neovim/neovim \
+        if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
+        if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
+        if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
+        if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
+        if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
+        if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
+
+    # Load scripts directly from repo
+    zinit from"gh" as"command" light-mode for \
+        if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb
+
+    # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
 fi
-
-source "$HOME/.zinit/bin/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-
-# Load a few important annexes, without Turbo
-# (this is currently required for annexes)
-zinit light-mode for \
-    zdharma-continuum/z-a-rust \
-    zdharma-continuum/z-a-as-monitor \
-    zdharma-continuum/z-a-patch-dl \
-    zdharma-continuum/z-a-bin-gem-node
-
-zinit lucid for \
-     wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
-     wait"0b" blockf @zsh-users/zsh-completions \
-     wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
-
-zinit lucid for \
-    OMZL::functions.zsh  \
-    OMZL::directories.zsh  \
-    OMZL::termsupport.zsh \
-    OMZL::completion.zsh \
-    OMZP::git
-
-zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
-
-# CATPPUCCIN
-zinit snippet https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
-
-# TODO: 
-# OMZP::git-extras
-
-# Theme and Colors {{{
-zinit light-mode for pick"async.zsh" src"pure.zsh" @sindresorhus/pure
-
-# For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
-# coreutils package from Homebrew; you can also use https://github.com/ogham/exa)
-zinit light-mode for atclone"dircolors -b LS_COLORS > c.zsh" atpull'%atclone' pick"c.zsh" nocompile'!' @trapd00r/LS_COLORS
-zinit light chrissicool/zsh-256color
-zinit light-mode for atclone"dircolors -b src/dir_colors > c.zsh" \
-            atpull'%atclone' \
-            pick"c.zsh" \
-            nocompile'!' \
-            @arcticicestudio/nord-dircolors
-# }}}
-
-# Install fzf and related completion tools
-# wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
-zinit lucid light-mode for \
-    wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
-    atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
-
-zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
-
-## Conditionally install regularly used tools if not found
-zinit from"gh-r" as"command" light-mode for \
-    if'[[ -z "$commands[fzf]" ]]' @junegunn/fzf \
-    if'[[ -z "$commands[nvim]" ]]' mv"nvim*->nvim" pick"nvim/bin/nvim" @neovim/neovim \
-    if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
-    if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
-    if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
-    if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
-    if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
-    if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
-
-# Load scripts directly from repo
-zinit from"gh" as"command" light-mode for \
-    if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb \
-
-# mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
 
 # }}}
 
