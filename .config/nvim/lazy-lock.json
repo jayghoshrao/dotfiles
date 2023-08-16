@@ -64,6 +64,7 @@
   "vim-indent-object": { "branch": "master", "commit": "5c5b24c959478929b54a9e831a8e2e651a465965" },
   "vim-lion": { "branch": "master", "commit": "ce46593ecd60e6051fb6e4d3986d2fc9f5a618b1" },
   "vim-maximizer": { "branch": "master", "commit": "2e54952fe91e140a2e69f35f22131219fcd9c5f1" },
+  "vim-nix": { "branch": "master", "commit": "1e8d3cc4d74f40fb384cd1739739543fe117ff61" },
   "vim-obsession": { "branch": "master", "commit": "fe9d3e1a9a50171e7d316a52e1e56d868e4c1fe5" },
   "vim-repeat": { "branch": "master", "commit": "24afe922e6a05891756ecf331f39a1f6743d3d5a" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" },

@@ -25,6 +25,9 @@
 -- https://github.com/p00f/clangd_extensions.nvim
 -- https://github.com/Civitasv/cmake-tools.nvim
 
+-- Folds
+-- https://github.com/chrisgrieser/nvim-origami
+
 return {
 
     'ggandor/lightspeed.nvim',
@@ -143,14 +146,6 @@ return {
 
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
 
-    -- optional
-    {
-        'junegunn/fzf', 
-        build = function()
-            vim.fn['fzf#install']()
-        end
-    },
-
     {
         'Wansmer/treesj',
         dependencies = { 'nvim-treesitter/nvim-treesitter' },
@@ -194,12 +189,14 @@ return {
             vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
         end
     },
-    { 'nvim-focus/focus.nvim', version = false , config=true},
+    -- { 'nvim-focus/focus.nvim', version = false , config=true},
     {
         "nvim-zh/colorful-winsep.nvim",
         config = true,
         event = { "WinNew" },
     },
+
+    { 'LnL7/vim-nix' },
 
     -- {
     --   "klen/nvim-config-local",
