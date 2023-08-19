@@ -831,4 +831,8 @@ function rep(){
     repeat "$1" { echo "${@:2}" }
 }
 
-
+# I've generally avoided setting PATH in this file
+# and delegated that to the zsh-local file, but it's 
+# good to have this when working on multiple servers
+# for a quick and easy setup.
+[[ -d "$HOME/bin" ]] && appendToEnv PATH "$HOME/bin"
