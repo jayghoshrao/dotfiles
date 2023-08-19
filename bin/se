@@ -18,10 +18,11 @@ do
             return
             ;;
         -g|--grep)
+            shift
             if [ -x "$(command -v rg )" ]; then
-                rg "$2" "$BIN_DIR" 
+                rg "$@" "$BIN_DIR" 
             else
-                grep -nirE "$2" "$BIN_DIR"
+                grep -nirE "$@" "$BIN_DIR"
             fi
             return
             ;;
