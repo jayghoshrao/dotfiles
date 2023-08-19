@@ -733,6 +733,7 @@ add-zsh-hook precmd set_longrunning_alert
 ## SSH TMUX REFRESH ENV: {{{
 # updates DISPLAY env in outdated tmux sessions
 function tmux_update_display(){
+    [[ -z $commands[grep] ]] || [[ -z $commands[sed] ]] && return
     if [ -n "$TMUX" ]; then
         if [[ $(tmux show-env | grep "^DISPLAY" | sed 's/DISPLAY=//') != $DISPLAY ]]; then
             # echo "DISPLAY OUTDATED!"
