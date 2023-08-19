@@ -303,12 +303,10 @@ alias -g C='| xclip -i -selection clipboard'
 alias -g V='| vipe'
 alias -g R='rep'
 
-alias d='dirs -v | head -10'
-
 alias ls='ls --color -v -N'
 alias la='ls -la --color -v -N'
-# alias ll='ls -la --color --group-directories-first'
-alias ll='exa --long --all --links --git --git-ignore'
+alias ll='ls -la --color --group-directories-first'
+# alias ll='exa --long --all --links --git --git-ignore'
 
 # Open modified files
 # ACMR = Added || Copied || Modified || Renamed

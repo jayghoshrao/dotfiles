@@ -305,6 +305,7 @@ function cd() {
         local lsd=$(echo ".." && ls -pL --group-directories-first --color=never)
         local sel="$(printf '%s\n' "${lsd[@]}" | fzf --reverse --print-query --expect=ctrl-e --bind="ctrl-y:execute@echo ${PWD}/{} | xclip -i -selection clipboard@" --preview 'scope.sh {q} {}')"
         [ -z "$sel" ] && return 0
+        # TODO: Stop dependence on sed, write pure sh/bash
         query="$(echo -e "$sel" | sed -n 1p)"
         filerform="$(echo -e "$sel" | sed -n '2,3p')"
         filerformquery="$(echo -e "$sel" | sed -n -e '1p' -e '3p')"
