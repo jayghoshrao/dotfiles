@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+## Simple script to look at current code in a repo
+
 REPO="$1"
 [ -z "$REPO" ] && exit 1
 
@@ -7,3 +9,7 @@ DIR=$(mktemp -d)
 git clone --depth 1 "$REPO" "$DIR"
 "$EDITOR" "$DIR"
 rm -rf "$DIR"
+
+# Should ideally also be able to see git log (is there a simple script to grab this from github?)
+# Should be able to store dir to temp and remember this when run again in a few minutes
+# Should open the readme file automatically

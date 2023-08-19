@@ -2,6 +2,7 @@
 
 # TODO: auto-change margin padding in terminal (while loop?)
 # TODO: add favorite
+# TODO: extract tags
 
 unread="$HOME/.cache/bookmarks.list"
 listfile="$unread"

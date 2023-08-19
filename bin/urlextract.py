@@ -20,6 +20,9 @@ fzf = FzfPrompt()
 FZF_URL_OPTS =  '--multi --tac --prompt="[ <C-u>: urler.sh | <C-y>: yank | <C-x>: xdg-open | <enter> ff ] Type to fuzzy match: " --bind="ctrl-x:execute@xdg-open {}@","ctrl-u:execute@nohup urler.sh {} >/dev/null 2>&1 & disown@" --bind="ctrl-y:execute@echo {} | xclip -i -selection clipboard@"'
 
 ## Extracted from urlview manpage
+## This is not suited for mutt's usecase since messages may mess with whitespace. 
+## So we would get hits for cases like "https://some-url.com/).NEXTWORDNOTINURL"
+## NOTE: URLSCAN is better at this!! extract regex from there
 urlregex=r'(((http|https|ftp|gopher)|mailto):(//)?[^ <>"\t]*|(www|ftp)[0-9]?\.[-a-z0-9.]+)[^ .,;\t\n\r<">\):]?[^, <>"\t]*[^ .,;\t\n\r<">\):]'
 
 ap = argparse.ArgumentParser()

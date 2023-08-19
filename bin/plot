@@ -1,5 +1,8 @@
 #!/bin/python3
 
+# The above non-env shebang allows me to bypass my nix python setup and use the 
+# system's python3 and packages. This is necesssary because of openGL issues in nix
+
 # depends on the mplstyle files from https://github.com/garrettj403/SciencePlots
 # USAGE: ./plot <file> <file> -o plot.pdf 
 

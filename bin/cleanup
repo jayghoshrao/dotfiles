@@ -9,5 +9,6 @@ then
     conda clean --all
 fi
 
-# TODO: Nix
-# TODO: Docker
+# nix-store --gc
+
+# docker system prune
