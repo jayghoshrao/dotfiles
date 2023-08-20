@@ -75,7 +75,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
     # wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
     zinit lucid light-mode for \
         wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
-        wait"0d" atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
+        atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
 
     zinit wait"1" lucid light-mode for has'nix' @chisui/zsh-nix-shell
 
