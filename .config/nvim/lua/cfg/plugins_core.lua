@@ -211,9 +211,9 @@ return {
                 end,
                 build = function()
                     if vim.fn.executable('make') then
-                        return 'make'
+                        os.execute('make')
                     elseif vim.fn.executable('cmake') then
-                        return 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+                        os.execute('cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build')
                     end
                 end,
                 -- build = 'make' 
