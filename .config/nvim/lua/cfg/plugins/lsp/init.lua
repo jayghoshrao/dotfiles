@@ -113,6 +113,10 @@ function M.on_attach(client, bufnr)
   buf_map('n', '[d', [[<cmd>lua vim.diagnostic.goto_prev()<cr>]], opts)
   buf_map('n', ']d', [[<cmd>lua vim.diagnostic.goto_next()<cr>]], opts)
 
+-- TODO: 
+-- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+-- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+
   -- Show diagnostics popup with <leader>d
   -- TODO: Remap
   -- buf_map('n', '<space>ld', [[<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({ border = 'single' })<cr>]], opts)

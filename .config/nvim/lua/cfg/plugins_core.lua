@@ -33,7 +33,7 @@ return {
     -- NOTE: install and initialize before nvim-lspconfig
     {
         'williamboman/mason.nvim',
-        -- 'williamboman/mason-lspconfig.nvim',
+        -- TODO: 'williamboman/mason-lspconfig.nvim',
         -- "jayp0521/mason-nvim-dap.nvim",
         config = function()
             require 'cfg.plugins.mason'
@@ -75,6 +75,8 @@ return {
         requires = { "nvim-lua/plenary.nvim" },
     },
 
+    -- TODO: 'https://github.com/sustech-data/wildfire.nvim'
+    -- https://github.com/echasnovski/mini.nvim
 
     {
         'nvim-treesitter/nvim-treesitter',
@@ -87,6 +89,8 @@ return {
         end,
         dependencies = {
             -- 'nvim-treesitter/playground',
+            'nvim-treesitter/nvim-treesitter-textobjects',
+            -- TODO: https://github.com/RRethy/nvim-treesitter-textsubjects
             {
               'numToStr/Comment.nvim',
               dependencies = {
@@ -203,9 +207,15 @@ return {
             {
                 'nvim-telescope/telescope-fzf-native.nvim', 
                 enabled = function()
-                    return vim.fn.executable('cmake') == 1 
+                    return vim.fn.executable('cmake') == 1 or vim.fn.executable('make') == 1
                 end,
-                build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+                build = function()
+                    if vim.fn.executable('make') then
+                        return 'make'
+                    elseif vim.fn.executable('cmake') then
+                        return 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+                    end
+                end,
                 -- build = 'make' 
                 config = function()
                     require('telescope').setup {
