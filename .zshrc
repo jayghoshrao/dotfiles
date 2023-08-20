@@ -77,7 +77,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
         wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
         wait"0d" atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
 
-    zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
+    zinit wait"1" lucid light-mode for has'nix' @chisui/zsh-nix-shell
 
     ## Conditionally install regularly used tools if not found
     zinit from"gh-r" as"command" light-mode for \
