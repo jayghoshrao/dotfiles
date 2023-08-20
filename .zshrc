@@ -40,30 +40,19 @@ if [[ $LOAD_ZINIT != false ]] ; then
     autoload -Uz _zinit
     (( ${+_comps} )) && _comps[zinit]=_zinit
 
-    # Load a few important annexes, without Turbo
-    # (this is currently required for annexes)
-    zinit light-mode for \
-        zdharma-continuum/z-a-rust \
-        zdharma-continuum/z-a-as-monitor \
-        zdharma-continuum/z-a-patch-dl \
-        zdharma-continuum/z-a-bin-gem-node
+    # # TODO: potentially use bin-gem-node to unclutter $PATH
+    # zinit light-mode for \
+    #     zdharma-continuum/zinit-annex-rust \
+    #     zdharma-continuum/zinit-annex-readurl\
+    #     zdharma-continuum/zinit-annex-patch-dl \
+    #     zdharma-continuum/zinit-annex-bin-gem-node
 
-    zinit lucid for \
-         wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
-         wait"0b" blockf @zsh-users/zsh-completions \
-         wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
-
-    zinit lucid for \
+    zinit lucid wait"1" for \
         OMZL::functions.zsh  \
         OMZL::directories.zsh  \
         OMZL::termsupport.zsh \
         OMZL::completion.zsh \
         OMZP::git
-
-    zinit snippet https://raw.githubusercontent.com/soheilpro/zsh-vi-search/master/src/zsh-vi-search.zsh
-
-    # CATPPUCCIN
-    zinit snippet https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh
 
     # TODO: 
     # OMZP::git-extras
@@ -86,7 +75,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
     # wait"0c" as"command" id-as"junegunn/fzf-tmux" pick"bin/fzf-tmux" @junegunn/fzf \
     zinit lucid light-mode for \
         wait"0c" multisrc"shell/{completion,key-bindings}.zsh" id-as"junegunn/fzf_completions" pick"/dev/null" @junegunn/fzf \
-        atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
+        wait"0d" atload"zicompinit;zicdreplay" @Aloxaf/fzf-tab
 
     zinit wait"1" lucid light-mode for @chisui/zsh-nix-shell
 
@@ -106,6 +95,13 @@ if [[ $LOAD_ZINIT != false ]] ; then
         if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb
 
     # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
+
+    ## Should be the last loaded due to compinit
+    zinit lucid for \
+         wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
+         wait"0b" blockf @zsh-users/zsh-completions \
+         wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
+
 fi
 
 # }}}
