@@ -32,6 +32,10 @@ while [[ $# -gt 0 ]]
 do
     key="$1"
     case $key in
+        -l|--last)
+            MODE="LAST"
+            shift
+            ;;
         -b|--browse)
             MODE="BROWSE"
             shift
@@ -61,7 +65,12 @@ JRNL_FILE="$JRNL_DIR/$JRNL_FILENAME"
 
 [ -d "$JRNL_DIR" ] || mkdir -p "$JRNL_DIR"
 
-if [[ $MODE == "BROWSE" ]]; then
+if [[ $MODE == "LAST" ]]; then
+    OUT=$(fd --base-directory "$JRNL_DIR" . | tail -n 1)
+    if [[ -f "$JRNL_DIR/$OUT" ]]; then 
+        peek "$JRNL_DIR/$OUT"
+    fi
+elif [[ $MODE == "BROWSE" ]]; then
     while : 
     do
         OUT=$(fd --base-directory "$JRNL_DIR" . | fuzscope -b "$JRNL_DIR" --tac)
