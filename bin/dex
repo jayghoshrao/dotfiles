@@ -6,6 +6,17 @@
 # TODO: recursive  in folder
 # TODO: encrypt if not, decrypt if not
 
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+die() {
+  local msg=$1
+  local code=${2-1} # default exit status 1
+  msg "$msg"
+  exit "$code"
+}
+
 set -uo pipefail
 
 MODE='EXCHANGE' ### or EDIT (-e)
@@ -97,7 +108,7 @@ elif [[ "$MODE" == "PRINT" ]]; then
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
         # Uses lockfiles to ensure file is not multiply modified
-        ( flock -n 9 || exit 1
+        ( flock -n 9 || die "Failure to acquire lockfile: $LOCKFILE."
         data=$(gpg -dq "$FILENAME" | vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
         unset data
         ) 9>"$LOCKFILE"
