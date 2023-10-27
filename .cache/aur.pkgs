@@ -91,6 +91,7 @@ python-scikit-image
 python-selenium
 python-spotipy-git
 python-umonitor-git
+qgnomeplatform-qt5
 qjoypad
 qt5-webengine-widevine
 r8152-dkms
@@ -139,4 +140,5 @@ xboxdrv
 xdelta
 xpad-dkms-git
 yay
+yazi-bin
 zoom

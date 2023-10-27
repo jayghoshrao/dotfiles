@@ -242,13 +242,9 @@ return {
 
     {
         'lukas-reineke/indent-blankline.nvim',
+        main = "ibl",
         config = function()
-            require("indent_blankline").setup {
-                show_end_of_line = true,
-                space_char_blankline = " ",
-                use_treesitter = false, -- testing
-                char_list = {"▏"}
-            }
+            require("ibl").setup() 
         end
     },
 

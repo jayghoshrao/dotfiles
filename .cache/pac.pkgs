@@ -56,12 +56,10 @@ eog
 evolution-ews
 exfat-utils
 extra-cmake-modules
-fd
 feh
 firefox
 font-manager
 fortune-mod
-fzf
 fzy
 gedit
 gifsicle
@@ -125,7 +123,6 @@ kvantum-theme-materia
 lazygit
 libgnome-keyring
 libsixel
-libxcrypt-compat
 licenses
 lightdm-gtk-greeter-settings
 lightdm-pantheon-greeter
@@ -214,7 +211,6 @@ python-pydbus
 python-pygithub
 python-scikit-learn
 python-seaborn
-qgnomeplatform-qt5
 qt5-networkauth
 qt5-xcb-private-headers
 qt5ct
@@ -229,7 +225,6 @@ rofi-pass
 scdoc
 screenfetch
 shfmt
-sox
 speedtest-cli
 splix
 spotifyd
@@ -273,6 +268,7 @@ ttf-fira-code
 ttf-iosevka-nerd
 ttf-joypixels
 ttf-monoid
+turbostat
 udiskie
 urlscan
 urlwatch

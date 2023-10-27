@@ -61,25 +61,28 @@ return {
     --   end,
     -- }
 
-    -- {
-    --     'vim-pandoc/vim-pandoc',
-    --     config = function()
-    --         require 'cfg.plugins.pandoc'
-    --     end,
-    --     ft = {
-    --         'markdown',
-    --         'vimwiki',
-    --         'tex'
-    --     }
-    -- },
-
     {
-        'vimwiki/vimwiki',
+        'vim-pandoc/vim-pandoc',
         config = function()
-            require 'cfg.plugins.vimwiki'
+            require 'cfg.plugins.pandoc'
         end,
-        ft = {'markdown', 'vimwiki', 'pandoc'}
+        ft = {
+            'markdown',
+            'vimwiki',
+            'tex',
+            'pandoc'
+        }
     },
+
+    { 'vim-pandoc/vim-pandoc-syntax' },
+
+    -- {
+    --     'vimwiki/vimwiki',
+    --     config = function()
+    --         require 'cfg.plugins.vimwiki'
+    --     end,
+    --     ft = {'markdown', 'vimwiki', 'pandoc'}
+    -- },
 
     -- -- NOTE: doesn't work everywhere since vimwiki
     -- -- is only used for certain filetypes

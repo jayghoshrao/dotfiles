@@ -45,3 +45,11 @@ vim.api.nvim_create_autocmd('FileChangedShellPost', {
 --         command = [[ setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:> ]],
 --     }
 -- )
+
+vim.api.nvim_create_autocmd(
+    'FileType', {
+        group = group,
+        pattern = "pandoc",
+        command = [[ setlocal commentstring=%%\ %s ]],
+    }
+)
