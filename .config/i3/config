@@ -57,8 +57,8 @@ set $contrast-bg		#2f343f
 # window colors: {{{ 
 
 #                        border       background   text       indicator
-client.focused           $nord4  $nord4  $whitish   $nord4
-client.unfocused         $monokai-bg  $monokai-bg  $mutegrey  $monokai-bg
+client.focused           $nord4  $nord4  $monokai-bg   $nord4
+client.unfocused         $monokai-bg  $monokai-bg  $nord4  $monokai-bg
 client.focused_inactive  $monokai-bg  $monokai-bg  $mutegrey  $monokai-bg
 client.urgent            $bloodred    $bloodred    $whitish   $monokai-bg
 
@@ -84,8 +84,8 @@ bindsym $mod+Shift+r restart
 bindsym $mod+q kill
 
 # font pango:Space Mono 12px
-font pango:Cascadia Code 12px
-# font pango:Iosevka Extended 12px
+# font pango:Cascadia Code 14px
+font pango:Iosevka Extended 16px
 
 # }}}
 
@@ -95,7 +95,8 @@ font pango:Cascadia Code 12px
 # set $term alacritty
 set $term kitty
 bindsym $mod+Return exec $term &
-bindsym $mod+shift+Return exec $term -e tmux &
+# bindsym $mod+shift+Return exec $term -e tmux &
+bindsym $mod+shift+Return exec $term --class kitty-float &
 
 #}}}
 
@@ -206,7 +207,8 @@ bindsym $mod+z scratchpad show;
 # Startlist: {{{
 
 ## TODO: Automate this and datetime setting
-exec --no-startup-id redshift -l 50.78:6.08 -t 5000:2500 & ## Aachen
+# exec --no-startup-id redshift -l 50.78:6.08 -t 5000:2500 & ## Aachen
+exec --no-startup-id redshift &
 # exec --no-startup-id redshift -l 12.97:77.59 -t 5000:2500 & ## India
 
 # exec --no-startup-id picom &
@@ -215,8 +217,8 @@ exec --no-startup-id nm-applet &
 exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
 exec --no-startup-id dropbox &
-exec --no-startup-id owncloud &
-exec --no-startup-id nextcloud &
+# exec --no-startup-id owncloud &
+# exec --no-startup-id nextcloud &
 exec --no-startup-id recollindex &
 exec --no-startup-id rocketchat-desktop & 
 exec --no-startup-id discord & 
@@ -268,7 +270,7 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
-bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
+# bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
 
 # bindsym $mod+m workspace next
 # bindsym $mod+n workspace prev
@@ -423,6 +425,7 @@ bindsym $mod+r mode "resize"
 
 # for_window [title="taskell-board"] floating enable, resize set 2300 1200, move position center
 for_window [title="taskell-board"] floating enable, resize set 90 ppt 80 ppt, move position center
+for_window [class="kitty-float"] floating enable, resize set 90 ppt 80 ppt, move position center
 for_window [class="firefox"] floating enable
 for_window [class="Gcr-prompter"] floating_enabled focus
 for_window [class="Gsimplecal"] floating enable
@@ -458,6 +461,9 @@ for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, mov
 for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
 
 for_window [window_role="PictureInPicture"] move to output right 
+
+# workspace  "plots"  output  HDMI2
+# for_window [class="Matplotlib"] move to workspace plots
 
 
 #}}}
@@ -500,9 +506,9 @@ bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -
 bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
 # bindsym F4 exec $SCRIPTS/transparency.sh
 # bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
-# bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
+bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
-bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i sioyek {}
+bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i zathura {}
 # bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
 bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
@@ -536,8 +542,6 @@ bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~
 bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # Area selection
 # }}}
 
-bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
-bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
 
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -matching fuzzy -dmenu -p 'Workspace')"
 
@@ -560,7 +564,7 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -mat
 
 # END:{{{
 
-exec $SCRIPTS/run --delay 3 --display --notification --keyboard --conky --wallpaper --pulseaudio --delay 1 --polybar
+exec $SCRIPTS/run --delay 3 --display --notification --keyboard --wallpaper --pulseaudio --delay 1 --polybar
 
 # }}}
 
@@ -574,8 +578,8 @@ mode "$mode_deskenv"
     bindsym k exec --no-startup-id $SCRIPTS/run --keyboard, mode "default"
     bindsym d exec --no-startup-id $SCRIPTS/run --display, mode "default"
     bindsym n exec --no-startup-id $SCRIPTS/run --notification, mode "default"
-    bindsym r exec --no-startup-id $SCRIPTS/run --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
-    bindsym shift+r exec --no-startup-id $SCRIPTS/run --display --notification --keyboard --conky --pulseaudio --polybar --wallpaper, mode "default"
+    bindsym r exec --no-startup-id $SCRIPTS/run --notification --keyboard --pulseaudio --polybar --wallpaper, mode "default"
+    bindsym shift+r exec --no-startup-id $SCRIPTS/run --display --notification --keyboard --pulseaudio --polybar --wallpaper, mode "default"
 
     # back to normal: Enter or Escape
 	bindsym Return mode "default"
@@ -600,3 +604,17 @@ for_window [all] border pixel 1
 
 
 bindsym F12 exec $SCRIPTS/xc
+
+bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
+# TODO: Depends on zinit. Decouple it
+# bindsym $mod+n exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh
+bindsym $mod+shift+bracketright exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh -m
+
+# bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
+# bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
+bindsym $mod+$alt+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
+bindsym $mod+shift+w exec --no-startup-id i3-autolayout tabmode
+
+exec --no-startup-id i3-autolayout autolayout &
+## TODO: Look into this https://github.com/eliep/i3-layouts
+exec --no-startup-id syncthing serve --no-browser &
