@@ -37,15 +37,16 @@ else
     QUERY=""
 fi
 
+finder()
+{
+    # find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' 
+    rg --files --sortr modified 
+}
 
-
-# OUT=$(rg --files --sortr modified | fuzscope "$QUERY" )  ### This groups folders together even when only ONE file within is modified recently
-
-OUT=$(find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' | fuzscope $QUERY )
-# echo "$OUT"
+OUT=$(finder | fuzscope $QUERY )
 
 while [ -n "$OUT" ]; do 
     # echo -e "$OUT" | filer
     echo -e "$OUT" | peek
-    OUT=$(find . -type f -printf "%T+\t%P\n" | sort -r | awk $'\t' '{print $2}' | fuzscope $QUERY )
+    OUT=$(finder | fuzscope $QUERY )
 done
