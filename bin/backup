@@ -24,7 +24,7 @@ function die(){
     exit
 }
 
-DEFAULT_DIRS=(dev/personal Nextcloud Dropbox Pictures scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg)
+DEFAULT_DIRS=(dev/personal Nextcloud Dropbox Pictures Documents scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg)
 EXCLUDES=(Dropbox/.dropbox.cache)
 UUID=2b4a6eaf-c88a-4430-9a4f-ce96c03e8f6c
 MIRRORFLAGS=()
@@ -73,4 +73,4 @@ cd $HOME
 
 # Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
 # the backup disk located at /media/$name in the Backup folder
-mirror ${MIRRORFLAGS[*]} -r $name $MOUNTPOINT/Backup -t $name -e ${EXCLUDES[*]} -- ${*:-${DEFAULT_DIRS[*]}}
+mirror ${MIRRORFLAGS[*]} -r $name $MOUNTPOINT/Backup push $name -e ${EXCLUDES[*]} -f ${*:-${DEFAULT_DIRS[*]}}
