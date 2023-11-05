@@ -218,16 +218,18 @@ exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
 exec --no-startup-id dropbox &
 # exec --no-startup-id owncloud &
-# exec --no-startup-id nextcloud &
+exec --no-startup-id nextcloud &
 exec --no-startup-id recollindex &
 exec --no-startup-id rocketchat-desktop & 
 exec --no-startup-id discord & 
+
 
 exec --no-startup-id mopidy &
 exec --no-startup-id mpd ~/.config/mpd/mpd.conf &
 
 # exec_always --no-startup-id setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
-# exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Alt_R=Control_L|space'
+exec_always --no-startup-id xmodmap ~/.local/etc/xmodmap/xmodmap.modified
+exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Alt_R=Control_L|space'
 
 exec_always --no-startup-id xset -dpms &
 exec_always --no-startup-id xset s off &
@@ -564,7 +566,7 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -mat
 
 # END:{{{
 
-exec $SCRIPTS/run --delay 3 --display --notification --keyboard --wallpaper --pulseaudio --delay 1 --polybar
+exec $SCRIPTS/run --delay 3 --display --notification --wallpaper --pulseaudio --delay 1 --polybar
 
 # }}}
 
@@ -592,7 +594,6 @@ bindsym $mod+d mode "$mode_deskenv"
 # Dunst controls
 bindsym $alt+period exec --no-startup-id dunstctl history-pop &
 bindsym Control+period exec --no-startup-id dunstctl close &
-
 
 
 ## NOTE: Deactivates lxappearance
