@@ -24,10 +24,22 @@ function die(){
     exit
 }
 
+function mount_partition(){
+    [ -z "$1" ] && die "No mount partition specified!"
+    sudo mkdir -p /media/$1
+    sudo mount /dev/$1 /media/$1
+}
+
+function unmount_partition(){
+    sudo umount /dev/$1
+    sudo rmdir /media/$1
+}
+
 DEFAULT_DIRS=(dev/personal Nextcloud Dropbox Pictures Documents scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg)
 EXCLUDES=(Dropbox/.dropbox.cache)
 UUID=2b4a6eaf-c88a-4430-9a4f-ce96c03e8f6c
 MIRRORFLAGS=()
+MOUNT_AND_DIE=
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -42,6 +54,10 @@ do
             MIRRORFLAGS+=("--delete")
             shift # past value
             ;;
+        --mount)
+            MOUNT_AND_DIE=true
+            shift # past value
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -49,7 +65,6 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
-
 
 HDDJSON=$(lsblk -fs --json | jq -r --arg uuid "$UUID" '.blockdevices[] | select(.uuid==$uuid)')
 
@@ -59,18 +74,21 @@ echo "$HDDJSON" | jq '.'
 name=$(echo "$HDDJSON" | jq -r .name)
 mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
 
-
 if [ "$mountpoint0" = "null" ]; then
     echo "HDD not mounted. Mounting to /media/$name"
-    pmount /dev/$name
+    mount_partition $name
     [[ $? != 0 ]] && die "Could not mount partition /dev/$name"
     MOUNTPOINT="/media/$name"
 else
     MOUNTPOINT="$mountpoint0"
 fi
 
+[ -n $MOUNT_AND_DIE ] && exit
+
 cd $HOME
 
 # Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
 # the backup disk located at /media/$name in the Backup folder
-mirror ${MIRRORFLAGS[*]} -r $name $MOUNTPOINT/Backup push $name -e ${EXCLUDES[*]} -f ${*:-${DEFAULT_DIRS[*]}}
+mirror ${MIRRORFLAGS[*]} -r $MOUNTPOINT/Backup push -e ${EXCLUDES[*]} -f ${*:-${DEFAULT_DIRS[*]}}
+
+unmount_partition $name
