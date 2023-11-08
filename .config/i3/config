@@ -229,7 +229,7 @@ exec --no-startup-id mpd ~/.config/mpd/mpd.conf &
 
 # exec_always --no-startup-id setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
 exec_always --no-startup-id xmodmap ~/.local/etc/xmodmap/xmodmap.modified
-exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Alt_R=Control_L|space'
+exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Control_L=Escape'
 
 exec_always --no-startup-id xset -dpms &
 exec_always --no-startup-id xset s off &
