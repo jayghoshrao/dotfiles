@@ -35,10 +35,35 @@ function unmount_partition(){
     sudo rmdir /media/$1
 }
 
+function find_and_mount_hdd(){
+    HDDJSON=$(lsblk -fs --json | jq -r --arg uuid "$UUID" '.blockdevices[] | select(.uuid==$uuid)')
+
+    [ -z "$HDDJSON" ] && die "HDD not detected"
+    echo "$HDDJSON" | jq '.'
+
+    name=$(echo "$HDDJSON" | jq -r .name)
+    mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
+
+    if [ "$mountpoint0" = "null" ]; then
+        echo "HDD not mounted. Mounting to /media/$name"
+        mount_partition $name
+        [[ $? != 0 ]] && die "Could not mount partition /dev/$name"
+        MOUNTPOINT="/media/$name"
+    else
+        MOUNTPOINT="$mountpoint0"
+    fi
+
+    BACKUP_DIR="$MOUNTPOINT/Backup"
+
+    [[ "$MOUNT_AND_DIE" == "true" ]] && exit
+}
+
 DEFAULT_DIRS=(dev/personal Nextcloud Dropbox Pictures Documents scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg)
 EXCLUDES=(Dropbox/.dropbox.cache)
 UUID=2b4a6eaf-c88a-4430-9a4f-ce96c03e8f6c
 MIRRORFLAGS=()
+MOUNTPOINT=
+BACKUP_DIR=
 MOUNT_AND_DIE=
 
 POSITIONAL=()
@@ -66,29 +91,20 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-HDDJSON=$(lsblk -fs --json | jq -r --arg uuid "$UUID" '.blockdevices[] | select(.uuid==$uuid)')
+TARGET="${1:-hdd}"
 
-[ -z "$HDDJSON" ] && die "HDD not detected"
-echo "$HDDJSON" | jq '.'
-
-name=$(echo "$HDDJSON" | jq -r .name)
-mountpoint0=$(echo "$HDDJSON" | jq -r .mountpoints[0])
-
-if [ "$mountpoint0" = "null" ]; then
-    echo "HDD not mounted. Mounting to /media/$name"
-    mount_partition $name
-    [[ $? != 0 ]] && die "Could not mount partition /dev/$name"
-    MOUNTPOINT="/media/$name"
+if [[ "$TARGET" == "hdd" ]]; then
+    find_and_mount_hdd
 else
-    MOUNTPOINT="$mountpoint0"
+    BACKUP_DIR="$TARGET"
 fi
-
-[[ "$MOUNT_AND_DIE" == "true" ]] && exit
 
 cd $HOME
 
 # Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
 # the backup disk located at /media/$name in the Backup folder
-mirror ${MIRRORFLAGS[*]} -r $MOUNTPOINT/Backup push -e ${EXCLUDES[*]} -f ${*:-${DEFAULT_DIRS[*]}}
+mirror ${MIRRORFLAGS[*]} -r $BACKUP_DIR push -e ${EXCLUDES[*]} -f ${DEFAULT_DIRS[*]}
 
-unmount_partition $name
+if [[ "$TARGET" == "hdd" ]]; then
+    unmount_partition $name
+fi
