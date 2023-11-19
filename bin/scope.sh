@@ -31,7 +31,7 @@ elif [[ "$FILETYPE" == *"image"*  ]]; then
     echo "$FILE_EXT"
     echo "Image preview not supported."
 elif [[ "$FILETYPE" == "application/octet-stream" ]]; then
-    dex -p "$FILE_EXT"
+    dex -p "$FILE_EXT" | fold -w 80 -s
 else
     echo "$FILETYPE"
     echo "Preview not supported."
