@@ -83,7 +83,7 @@ else
     MOUNTPOINT="$mountpoint0"
 fi
 
-[ -n $MOUNT_AND_DIE ] && exit
+[[ "$MOUNT_AND_DIE" == "true" ]] && exit
 
 cd $HOME
 
