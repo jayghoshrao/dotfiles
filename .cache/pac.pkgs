@@ -7,7 +7,6 @@ arandr
 arc-gtk-theme
 archlinux-keyring
 arp-scan
-asp
 at
 autoconf
 automake
@@ -238,7 +237,6 @@ syncthing
 task
 taskell
 tealdeer
-tectonic
 terminus-font
 testdisk
 texinfo
