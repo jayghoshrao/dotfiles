@@ -218,9 +218,9 @@ exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
 exec --no-startup-id dropbox &
 # exec --no-startup-id owncloud &
-exec --no-startup-id nextcloud &
+# exec --no-startup-id nextcloud &
 exec --no-startup-id recollindex &
-exec --no-startup-id rocketchat-desktop & 
+# exec --no-startup-id rocketchat-desktop & 
 exec --no-startup-id discord & 
 
 
@@ -612,9 +612,9 @@ bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: '
 bindsym $mod+shift+bracketright exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh -m
 
 # bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
-# bindsym $mod+$alt+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
+bindsym $mod+shift+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
 bindsym $mod+$alt+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
-bindsym $mod+shift+w exec --no-startup-id i3-autolayout tabmode
+# bindsym $mod+shift+w exec --no-startup-id i3-autolayout tabmode
 
 exec --no-startup-id i3-autolayout autolayout &
 ## TODO: Look into this https://github.com/eliep/i3-layouts
