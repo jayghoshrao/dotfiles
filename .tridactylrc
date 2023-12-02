@@ -166,6 +166,7 @@ bind ;A hint -A
 bind ;; hint -; *
 bind ;# hint -#
 bind ;v hint -W mpvsafe
+bind ;d hint -W book
 bind ;w hint -w
 bind ;t hint -W tabopen
 bind ;O hint -W fillcmdline_notrail open
@@ -303,6 +304,7 @@ alias tabclosealltoleft tabcloseallto left
 alias reibadailty jumble
 alias pocket js -s ~/bin/pocket-bookmarklet.js
 alias saveas! saveas --cleanup --overwrite
+alias book js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('/home/jayghoshter/bin/bmark ' + url))
 
 " For syntax highlighting see https://github.com/tridactyl/vim-tridactyl
 " vim: set filetype=tridactyl
