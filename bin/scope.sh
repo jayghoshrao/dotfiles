@@ -10,12 +10,15 @@ EXT=${FILE_EXT##*.}
 FILETYPE="$(file --mime-type "$FILE_EXT" | awk '{print $NF}')"
 
 GREPPRG=grep
+urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
 # if hash rg 2>/dev/null; then
 # 	GREPPRG=rg
 # fi
 
-if [ -d "$FILE_EXT" ]; then 
+if [[ "$FILE_EXT" =~ $urlregex ]]; then
+    echo $(curl -fsSL "$FILE_EXT" | grep -Pio '(?<=<title>)(.*?)(?=\s*</title>)')
+elif [ -d "$FILE_EXT" ]; then 
     ls -p --color=always --group-directories-first "$FILE_EXT"
 elif [[ "$FILETYPE" == *"directory"*  ]]; then
     ls -p --color=always --group-directories-first "$FILE_EXT"
