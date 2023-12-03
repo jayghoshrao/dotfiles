@@ -79,7 +79,7 @@ On my local machine, I can just have a global install of whatever I want anyway.
 dot pull
 zinit self-update
 zinit update --parallel
-nvim +PackerSync
+zinit cclear ## clears invalid completions
 ```
 
 Notes: 
