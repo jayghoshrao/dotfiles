@@ -502,6 +502,8 @@ ap.add_argument("-cmap2", "--colormap2", choices = qualitative_colormaps, defaul
 
 ap.add_argument("--inset", help='One file to plot as inset')
 ap.add_argument("--inset-plot", choices=['plot', 'hist'], default='plot', help='Type of inset plot')
+
+ap.add_argument("--print-stats", action='store_true')
  
 args = vars(ap.parse_args())
 
@@ -812,6 +814,16 @@ with plt.style.context(args['style']):
     # else: 
     #     inset_ax.plot(x,y)
 
+    if args['print_stats']:
+        for filename in args['files']:
+            x, y, xticks,xticklabels = readfile(filename, args['columns'], args['header'], xticksColumn=args['xticks_column'], xticklabelsColumn=args['xticklabels_column'])
+            print(f"file: {filename}")
+            print(f"xrange: [{min(x)}, {max(x)}] | xdelta: {max(x) - min(x)}")
+            print(f"yrange: [{min(y)}, {max(y)}] | ydelta: {max(y) - min(y)}")
+            print(f"ymean: {np.mean(x)}")
+            print(f"ystd: {np.std(x)}")
+        sys.exit(0)
+
     if args['output']:
 
         if not args['no_legend']:
@@ -845,3 +857,4 @@ with plt.style.context(args['style']):
             with open(filename + '.y', 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(y))
+
