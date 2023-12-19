@@ -340,6 +340,8 @@ def plot_things(files, ax, args):
         else:
             if args['histogram']:
                 line = ax.hist(y, bins=args['histogram'])
+                h,e = np.histogram(y, bins=args['histogram'])
+                print(e)
             elif args['violin']:
                 # pass
                 line = None
