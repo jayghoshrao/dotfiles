@@ -147,7 +147,7 @@ bindsym $mod+$alt+k focus parent
 bindsym $mod+$alt+j focus child
 
 #focus previouly focused workspace
-bindsym $mod+$alt+Tab workspace back_and_forth
+# bindsym $mod+$alt+Tab workspace back_and_forth
 bindsym $mod+w workspace back_and_forth
 
 # }}}
@@ -497,7 +497,7 @@ assign [class="Civ5XP"]                                     workspace number $ws
 # Keybinds: {{{
 
 # Keyboard helpers:{{{
-bindsym $mod+i exec $SCRIPTS/emojimenu
+# bindsym $mod+i exec $SCRIPTS/emojimenu
 bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
 bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
 # }}}
@@ -624,3 +624,5 @@ exec --no-startup-id syncthing serve --no-browser &
 
 bindsym $mod+v exec kdocker -f
 exec_always --no-startup-id kdocker -x $(pgrep -u $(whoami) thunderbird) -loq
+
+bindsym $mod+i focus mode_toggle
