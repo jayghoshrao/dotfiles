@@ -15,6 +15,7 @@ FZF_FILE_OPTS =  '--cycle -d ":" --prompt="❯ " --bind="ctrl-o:execute@xdg-open
 
 ## DONE: directly play playlist
 ## TODO: show video length in fzf
+## Allow using exported opml subscription data to list channels
 ## FIXME: If two things (channels/playlists) have same name, the new one overwrites the old, causing data loss.
 #### That's why Luke Smith wasn't available as a channel
 
