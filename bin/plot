@@ -456,6 +456,8 @@ ap.add_argument("--legend-ncol", default=1, type=int, help="Number of columns in
 ap.add_argument("--smoothen", nargs='?', type=int, const=3, help="(Cubic) spline interpolation through provided data. --smoothen <order>, with default order=3")
 ap.add_argument("--smoothen-npoints", default=250, type=int, help="Number of points to use for --smoothen interpolation")
 
+ap.add_argument("-g", "--gradient", action='store_true', help='Use np.gradient() to get derivative')
+
 ap.add_argument("--resample", help="Resample curve at points specified in this file")
 ap.add_argument("--reaverage", type=int, help="Average curve into specified number of cells")
 ap.add_argument("--reaverage-cylindrical", type=int, help="Average curve into specified number of cells")
@@ -847,6 +849,12 @@ with plt.style.context(args['style']):
             with open(newname, 'w') as f:
                 writer = csv.writer(f, delimiter=',')
                 writer.writerows(zip(x, y))
+
+    if args['gradient']:
+        for filename,x,y in zip(args['files'], xs, ys):
+            with open(Path(filename).stem + '_gradient.csv', 'w') as f:
+                writer = csv.writer(f, delimiter=',')
+                writer.writerows(zip(x, np.gradient(y,x)))
 
     if args['split']:
         import csv
