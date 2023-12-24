@@ -26,12 +26,15 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 for DIR in */; do
     cd $DIR
-    cmd=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
-    if [[ $PARALLEL == 0 ]]; then
-        $cmd
-    else
-        nohup $cmd >out.log 2>&1 &
-    fi
+    allcmds=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
+    IFS=';' read -ra cmdarray <<< "$allcmds"
+    for cmd in "${cmdarray[@]}"; do
+        if [[ $PARALLEL == 0 ]]; then
+            eval "$cmd"
+        else
+            eval nohup "$cmd" >out.log 2>&1 &
+        fi
+    done
     cd $ROOT
 done
 
