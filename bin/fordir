@@ -4,10 +4,35 @@
 ## Usage: fordir pwd
 
 ROOT=$PWD
+PARALLEL=0
+
+## Commandline args processing
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -p|--parallel)
+            PARALLEL=1
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
 
 for DIR in */; do
     cd $DIR
     cmd=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
-    $cmd
+    if [[ $PARALLEL == 0 ]]; then
+        $cmd
+    else
+        nohup $cmd >out.log 2>&1 &
+    fi
     cd $ROOT
 done
+
+wait
