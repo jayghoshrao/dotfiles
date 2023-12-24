@@ -162,6 +162,23 @@ def readArray(data_path):
             values.append(float(line.strip()))
     return values
 
+def readColumn(data_path:str|Path, column:int, header=False):
+    data = []
+    delimiter = ' '
+    with open(data_path, newline='') as csvfile:
+        if ',' in csvfile.readline():
+            delimiter = ','
+    with open(data_path, newline='') as infile:
+        # data = list(csv.reader(infile))
+        if header:
+            print(infile.readline())
+        for line in infile:
+            data_line = line.strip().split(delimiter)
+            data_line = list(filter(None, data_line))
+            if (data_line != []):
+                data.append(data_line[column])
+    return data
+
 def readfile(data_path, columns=[0,1], header=False, xticksColumn=None, xticklabelsColumn=None):
     """ Read x-y CSV-style files
     """
