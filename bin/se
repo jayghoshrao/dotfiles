@@ -17,6 +17,10 @@ do
             mv "$BIN_DIR/$2" "$BIN_DIR/$3"
             return
             ;;
+        -p|--page)
+            less "$BIN_DIR/$2" 
+            return
+            ;;
         -g|--grep)
             shift
             if [ -x "$(command -v rg )" ]; then
