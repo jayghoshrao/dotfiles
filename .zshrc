@@ -288,7 +288,7 @@ alias gj="git-jump"
 alias fu="findup.py"
 
 # alias -g ff="fuzscope | filer"
-alias -g ff="fuzscope | peek"
+alias -g FF="fuzscope | peek"
 alias -g G='| grep -i --color'  ## Global alias
 alias -g F='| fzf'  ## Global alias
 alias -g X='>/dev/null 2>&1 & disown'
@@ -826,6 +826,11 @@ function ssr() {
 
 function rep(){
     repeat "$1" { echo "${@:2}" }
+}
+
+function ff()
+{
+    fuzscope "$@" | peek
 }
 
 # I've generally avoided setting PATH in this file
