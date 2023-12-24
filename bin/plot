@@ -231,6 +231,17 @@ def scale_axis(vec:list, scale_factor_or_file):
         vec = [ v * scale_factor for v in vec ]
     return vec
 
+def shift_axis(vec:list, shift_factor_or_file):
+    """ shift either the x or y axis of a given plot line
+    """
+    if Path(shift_factor_or_file).expanduser().exists():
+        shift_factors = readArray(shift_factor_or_file)
+        vec = [ v+s for v,s in zip(vec, shift_factors)]
+    else: 
+        shift_factor = float(shift_factor_or_file)
+        vec = [ v + shift_factor for v in vec ]
+    return vec
+
 def setup_main_axis(ax, args):
     """ Main axis and plot setup
     """
@@ -313,6 +324,14 @@ def plot_things(files, ax, args):
             x = scale_axis(x, args['xscale'])
         if args['yscale']:
             y = scale_axis(y, args['yscale'])
+
+        ## TODO: Allow this to be specified per plot line
+        if args['xshift']:
+            if x == []:
+                x = [0] * len(y)
+            x = shift_axis(x, args['xshift'])
+        if args['yshift']:
+            y = shift_axis(y, args['yshift'])
 
         ## Unlike --xlog and --ylog, these actually scale the data
         if args['xlogify']: 
@@ -489,6 +508,8 @@ ap.add_argument("-n", "--normalize", nargs='?', const='self', help="normalize y 
 ap.add_argument("-nx", "--normalize-x", nargs='?', const='self', help="normalize y data to given value or 'self'")
 ap.add_argument("-xs", "--xscale", help="Scale the x axis for all plots by a numerical value or text file with every value")
 ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a numerical value or text file with every value")
+ap.add_argument("--xshift", help="shift the x axis for all plots by a numerical value or text file with every value")
+ap.add_argument("--yshift", help="shift the y axis for all plots by a numerical value or text file with every value")
 
 
 ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
