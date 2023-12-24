@@ -351,6 +351,9 @@ def plot_things(files, ax, args):
             x = xsmooth
             y = ysmooth
 
+        if args['integrate']:
+            print(f"trapezoidal integral: {np.trapz(y,x)}")
+
         xs.append(x)
         ys.append(y)
 
@@ -503,6 +506,8 @@ ap.add_argument("-g", "--gradient", action='store_true', help='Use np.gradient()
 ap.add_argument("--resample", help="Resample curve at points specified in this file")
 ap.add_argument("--reaverage", type=int, help="Average curve into specified number of cells")
 ap.add_argument("--reaverage-cylindrical", type=int, help="Average curve into specified number of cells")
+
+ap.add_argument("--integrate", action='store_true', help="Trapezoidal integration of curves. Use xshift to move baseline.")
 
 ap.add_argument("-n", "--normalize", nargs='?', const='self', help="normalize y data to given value or 'self'")
 ap.add_argument("-nx", "--normalize-x", nargs='?', const='self', help="normalize y data to given value or 'self'")
