@@ -65,10 +65,10 @@ def integral(y,x, npoints=500, kind='cubic'):
     # for i in range(1,len(x)): 
     #     integ.append(np.trapz(y[:i+1], x=x[:i+1]))
 
+    f = interp1d(x, y, kind=kind, fill_value='extrapolate')
     integ = []
     for xi in x: 
         xsmooth = np.linspace(0.0, xi, npoints) 
-        f = interp1d(x, y, kind=kind, fill_value='extrapolate')
         ysmooth = f(xsmooth)
         integ.append(np.trapz(ysmooth, x=xsmooth))
         
