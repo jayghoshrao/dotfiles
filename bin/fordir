@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+## Run a command within each subdirectory
+## Usage: fordir pwd
+
+ROOT=$PWD
+
+for DIR in */; do
+    cd $DIR
+    cmd=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
+    $cmd
+    cd $ROOT
+done

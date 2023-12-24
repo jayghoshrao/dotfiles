@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# Fetch the metadata for a given git remote and output it in the form required by fetchgit
+
+function die(){
+    echo -e "ERROR: $@" >&2
+    exit -1
+}
+
+fetch_commit_id()
+{
+    local URL
+    local ref
+
+    if [[ "$1" =~ "http" ]]; then
+        URL="$1"
+    elif curl --head --silent --fail https://github.com/$1 > /dev/null 2>&1; then
+        URL="https://github.com/$1"
+    else
+        die "invalid url at git: $1"
+        return
+    fi
+
+    ref="refs/heads/${2:-main}"
+
+    git ls-remote "$URL" $ref | cut -d $'\t' -f1
+
+}
+
+nix_sha256()
+{
+    local URL
+
+    if [[ "$1" =~ "http" ]]; then
+        URL="$1/archive/refs/heads/${2:-main}.zip"
+    elif curl --head --silent --fail https://github.com/$1/archive/refs/heads/${2:-main}.zip > /dev/null 2>&1; then
+        URL="https://github.com/$1/archive/refs/heads/${2:-main}.zip"
+    else
+        die "invalid url at sha: $1"
+        return
+    fi
+    
+    nix-prefetch-url --unpack --print-path "$URL" | head -n 1
+}
+
+if [[ "$1" =~ "http" ]]; then
+    REPO_URL="$1"
+elif curl --head --silent --fail https://github.com/$1 > /dev/null 2>&1; then
+    REPO_URL="https://github.com/$1"
+else
+    die "invalid url at main: $1"
+fi
+
+echo -e "url = \"$REPO_URL\";\n\
+rev = \"$(fetch_commit_id $1 $2)\";\n\
+sha256 = \"$(nix_sha256 $1 $2)\";" | tee >(xclip -i -selection c)
