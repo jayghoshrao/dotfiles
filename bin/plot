@@ -824,8 +824,8 @@ with plt.style.context(args['style']):
             print(f"file: {filename}")
             print(f"xrange: [{min(x)}, {max(x)}] | xdelta: {max(x) - min(x)}")
             print(f"yrange: [{min(y)}, {max(y)}] | ydelta: {max(y) - min(y)}")
-            print(f"ymean: {np.mean(x)}")
-            print(f"ystd: {np.std(x)}")
+            print(f"ymean: {np.mean(y)}")
+            print(f"ystd: {np.std(y)}")
         sys.exit(0)
 
     if args['output']:
