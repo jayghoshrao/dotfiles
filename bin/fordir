@@ -5,6 +5,7 @@
 
 ROOT=$PWD
 PARALLEL=0
+EXPR='*/'
 
 ## Commandline args processing
 POSITIONAL=()
@@ -16,6 +17,11 @@ do
             PARALLEL=1
             shift # past value
             ;;
+        -e|--expr|--expression)
+            EXPR="$2"
+            shift # past value
+            shift # past value
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -24,7 +30,9 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-for DIR in */; do
+DIRS=($(eval "echo ${EXPR}"))
+
+for DIR in "${DIRS[@]}"; do
     cd $DIR
     allcmds=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
     IFS=';' read -ra cmdarray <<< "$allcmds"
