@@ -16,7 +16,7 @@
 
 export HISTFILE="${HOME}/.zsh_history"
 fc -R
-cmds=$(fc -lnr -20 | fzf -m --prompt="Select commands to store in file >"| tac)
+cmds=$(fc -lnr -40 | tail -n+2 | fzf -m --prompt="Select commands to store in file >"| tac)
 # cmds=$(history -R| fzf --tac -m | cut -f2- -d ' ')
 
 stepfile="commands.step"
