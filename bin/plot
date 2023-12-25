@@ -396,6 +396,7 @@ def plot_things(files, ax, args):
                 line = ax.bar(position,y, width=width, label=label.replace('_', '-'))
                 lines.append(line)
                 bar_count = bar_count + 1
+                x = position
                 if args['xticks_column'] is not None: 
                     plt.xticks(indices,xticks)
                 if args['xticklabels_column'] is not None: 
