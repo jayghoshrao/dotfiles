@@ -578,6 +578,7 @@ function dotlog(){
 ## DOTDIR=$HOME/.localdots dot
 ## An alias to make even that easy:
 alias LD="DOTDIR=$HOME/.localdots"
+alias DD="GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME"
 
 # }}}
 # peek: {{{
