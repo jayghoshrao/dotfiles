@@ -175,6 +175,16 @@ fs() {
 }
 #}}}
 
+# fe: fuzzy edit- edit selected file
+fe() {
+   local file
+   local dir
+   file=$(fd | fzf +m -q "$1")
+
+   "$EDITOR" "$file"
+}
+#}}}
+
 # GIT {{{
 #
 # fshow - git commit browser
