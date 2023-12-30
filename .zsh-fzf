@@ -69,7 +69,7 @@ function fzf_locate()
     # OUT=$(locate home media | fuzscope "$QUERY" ) 
     # OUT=$(fd "$@" . ~ | fuzscope ) 
 
-    OUT=$(fd "$@" . --base-directory=$HOME | fuzscope --base-directory "$HOME") 
+    OUT=$(fd -L --base-directory=$HOME "$@" . | fuzscope --base-directory "$HOME") 
 
     if [[ -n "$OUT" ]]; then 
         FILE=$(echo -e "$OUT" | tail -1)
@@ -94,7 +94,7 @@ fj() {
   local file
 
   # file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
-  file=$(fd "$@" . --base-directory=$HOME | fuzscope --base-directory "$HOME") 
+  file=$(fd --base-directory=$HOME -L "$@" . | fuzscope --base-directory "$HOME") 
 
   if [[ -n $file ]]
   then
@@ -226,6 +226,7 @@ fjrnl() {
 
 # Autojump: {{{
 j() {
+    [[ -x "$(command -v autojump)" ]] || fj && return
     if [[ "$#" -ne 0 ]]; then
         cd $(autojump $@)
         return
