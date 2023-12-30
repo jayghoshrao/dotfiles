@@ -93,6 +93,9 @@ return {
             -- TODO: https://github.com/RRethy/nvim-treesitter-textsubjects
             {
               'numToStr/Comment.nvim',
+                opts = {
+
+                },
               dependencies = {
                     -- Dynamically set commentstring based on cursor location in file
                     { 
