@@ -95,13 +95,20 @@ return {
               'numToStr/Comment.nvim',
               dependencies = {
                     -- Dynamically set commentstring based on cursor location in file
-                    'JoosepAlviste/nvim-ts-context-commentstring',
+                    { 
+                        'JoosepAlviste/nvim-ts-context-commentstring',
+                        config = function()
+                            require('ts_context_commentstring').setup({})
+                            vim.g.skip_ts_context_commentstring_module = true
+                        end
+                    },
                 },
-              config = function()
-                require('Comment').setup({
-                  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-                })
-              end,
+
+              -- config = function()
+              --   require('Comment').setup({
+              --     pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+              --   })
+              -- end,
             },
         },
     },
@@ -183,7 +190,9 @@ return {
                 config = function()
                     require 'cfg.plugins.luasnip'
                 end,
-                dependencies = 'https://github.com/rafamadriz/friendly-snippets'
+                version = "v2.*",
+                build = "make install_jsregexp",
+                dependencies = 'https://github.com/rafamadriz/friendly-snippets',
             },
             {
                 "lukas-reineke/cmp-under-comparator"
