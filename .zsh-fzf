@@ -124,25 +124,25 @@ vg() {
 
 #}}}
 
-# fdd - cd to selected directory {{{
-fdd() {
+# dj - jump to selected directory {{{
+dj() {
   local dir
-  dir=$(find ${2:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m -q $1) &&
+  dir=$(find ${1:-.} -path '*/\.*' -prune \
+                  -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
 
 #}}}
 
-# fda - including hidden directories {{{
-fda() {
+# dja - including hidden directories {{{
+dja() {
   local dir
   dir=$(find ${1:-.} -type d 2> /dev/null | fzf +m) && cd "$dir"
 }
 #}}}
 
-# fdr - cd to selected parent directory {{{
-fdp() {
+# dp - cd to selected parent directory {{{
+dp() {
   local declare dirs=()
   get_parent_dirs() {
     if [[ -d "${1}" ]]; then dirs+=("$1"); else return; fi
