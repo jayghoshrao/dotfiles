@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+if [ ! -d .git ] && ! git rev-parse --is-inside-work-tree &>/dev/null; then exit -1; fi
+[ -n "$1" ] || exit 0
+
+MODE="DIFF"
+## Commandline args processing
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -s|--show)
+            MODE="SHOW"
+            shift # past value
+            shift # past value
+            ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+filespec="$1"
+shift
+
+commit=$(git log --oneline -- "$filespec" | fzf | awk '{print $1}')
+while [[ -n "$commit" ]]; do 
+
+    if [[ "$MODE" == "SHOW" ]] ; then
+        git show "$commit:$filespec" | nvim -
+    elif [[ "$MODE" == "DIFF" ]] ; then
+        previous=$(git log --pretty=format:"%H" -- "$filespec" | grep "^$commit" -A1 | tail -n 1)
+        git diff $previous..$commit -- "$filespec" | nvim -
+    fi
+
+    commit=$(git log --oneline -- "$filespec" | fzf | awk '{print $1}')
+done 
