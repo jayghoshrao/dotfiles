@@ -40,7 +40,11 @@ for DIR in "${DIRS[@]}"; do
         if [[ $PARALLEL == 0 ]]; then
             eval "$cmd"
         else
-            eval nohup "$cmd" >out.log 2>&1 &
+            if [[ $(echo "$cmd" | awk '{print $1}') == 'cd' ]]; then
+                eval "$cmd"
+            else
+                eval nohup "$cmd" >out.log 2>&1 &
+            fi
         fi
     done
     cd $ROOT
