@@ -34,9 +34,11 @@ do
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
-            input="$SCRIPTDIR/$(ls $SCRIPTDIR | grep .step | fzf -q $1)"
+            # input="$SCRIPTDIR/$(ls $SCRIPTDIR | grep .step | fzf -q $1)"
             # echo "Stepping through: $input"
-            IFS=$'\n'; readarray -t a < "$input"
+            if [[ -n "$1" ]]; then
+                IFS=$'\n'; readarray -t a < "$1"
+            fi
             shift # past argument
             ;;
     esac
