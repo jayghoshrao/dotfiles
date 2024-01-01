@@ -226,7 +226,11 @@ fjrnl() {
 
 # Autojump: {{{
 j() {
-    [[ -x "$(command -v autojump)" ]] || (fj && return)
+    if [[ -x "$(command -v autojump)" ]]; then
+        fj
+        return
+    fi
+
     if [[ "$#" -ne 0 ]]; then
         cd $(autojump $@)
         return
