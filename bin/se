@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-set -uo pipefail
+set -o pipefail
 
 BIN_DIR=$HOME/bin
 
@@ -38,7 +38,9 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-touch "$BIN_DIR/$1"
-[ -x "$BIN_DIR/$1" ] || chmod +x "$BIN_DIR/$1"
-"$EDITOR" "$BIN_DIR/$1"
-# dot add "$BIN_DIR/$1"
+[[ -n "$1" ]] && SCRIPTNAME="$1" || SCRIPTNAME=$(ls "$BIN_DIR" | fzf +m)
+
+touch "$BIN_DIR/$SCRIPTNAME"
+[ -x "$BIN_DIR/$SCRIPTNAME" ] || chmod +x "$BIN_DIR/$SCRIPTNAME"
+"$EDITOR" "$BIN_DIR/$SCRIPTNAME"
+# dot add "$BIN_DIR/$SCRIPTNAME"
