@@ -329,19 +329,21 @@ xo()
 	# 	arg="$arg$value"
 	# done
 
-    if [[ "$1" =~ ":" ]];
-    then
-        EXT=${1##*.}
-        scp -rC "$1" "/tmp/remotefile.$EXT"
-        if [[ $? -eq 0 ]] ; then 
-            nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+    for ARG in "$@"; do 
+        if [[ "$ARG" =~ ":" ]];
+        then
+            EXT=${ARG##*.}
+            scp -rC "$ARG" "/tmp/remotefile.$EXT"
+            if [[ $? -eq 0 ]] ; then 
+                nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+            else
+                >&2 echo "file not found!"
+                return -1
+            fi
         else
-            >&2 echo "file not found!"
-            return -1
+            nohup xdg-open "$ARG" >/dev/null 2>&1 & disown
         fi
-    else
-        nohup xdg-open "$@" >/dev/null 2>&1 & disown
-    fi
+    done
 
 }
 
