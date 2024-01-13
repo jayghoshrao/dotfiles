@@ -5,7 +5,9 @@
 
 ROOT=$PWD
 PARALLEL=0
-EXPR='*/'
+# EXPR='*/'
+EXPR='.*'
+MAXDEPTH_FLAG="-d 1" # Default only top-level
 
 ## Commandline args processing
 POSITIONAL=()
@@ -22,6 +24,10 @@ do
             shift # past value
             shift # past value
             ;;
+        -r|--recurse)
+            MAXDEPTH_FLAG=
+            shift
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -30,7 +36,8 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-DIRS=($(eval "echo ${EXPR}"))
+# DIRS=($(eval "echo ${EXPR}"))
+DIRS=($(fd "${EXPR}" --type d $MAXDEPTH_FLAG))
 
 for DIR in "${DIRS[@]}"; do
     cd $DIR
