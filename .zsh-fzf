@@ -180,6 +180,7 @@ fe() {
    local file
    local dir
    file=$(fd | fzf +m -q "$1")
+   [ -f "$file" ] || return
 
    "$EDITOR" "$file"
 }
