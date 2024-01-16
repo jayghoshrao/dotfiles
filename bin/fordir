@@ -8,6 +8,7 @@ PARALLEL=0
 # EXPR='*/'
 EXPR='.*'
 MAXDEPTH_FLAG="-d 1" # Default only top-level
+FDFIND_ARGS=""
 
 ## Commandline args processing
 POSITIONAL=()
@@ -28,6 +29,14 @@ do
             MAXDEPTH_FLAG=
             shift
             ;;
+        -f|--full-path) # apply regex to full path
+            FDFIND_ARGS="${FDFIND_ARGS} --full-path"
+            shift
+            ;;
+        -g|--glob) # apply regex to full path
+            FDFIND_ARGS="${FDFIND_ARGS} --glob"
+            shift
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -37,7 +46,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # DIRS=($(eval "echo ${EXPR}"))
-DIRS=($(fd "${EXPR}" --type d $MAXDEPTH_FLAG))
+DIRS=($(fd "${EXPR}" --type d $MAXDEPTH_FLAG $FDFIND_ARGS))
 
 for DIR in "${DIRS[@]}"; do
     cd $DIR
