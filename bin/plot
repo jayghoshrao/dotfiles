@@ -312,6 +312,18 @@ def plot_things(files, ax, args):
         else:
             x, y, xticks,xticklabels = readfile(filename, args['columns'], args['header'], xticksColumn=args['xticks_column'], xticklabelsColumn=args['xticklabels_column'])
 
+        if args['sort']:
+            if x != []:
+                x_new = np.array(x)
+                y_new = np.array(y)
+                ordering = x_new.argsort()
+                x_new = x_new[ordering]
+                y_new = y_new[ordering]
+                x = xnew
+                y = ynew
+            else:
+                y = list(sorted(y))
+
         if args['normalize']:
             y = normalize(y, args['normalize'])
         if args['normalize_x']:
@@ -521,6 +533,7 @@ ap.add_argument("-ys", "--yscale", help="Scale the y axis for all plots by a num
 ap.add_argument("--xshift", help="shift the x axis for all plots by a numerical value or text file with every value")
 ap.add_argument("--yshift", help="shift the y axis for all plots by a numerical value or text file with every value")
 
+ap.add_argument("--sort", action='store_true', help="Sort values before printing")
 
 ap.add_argument("-hl", "--hlines", nargs='*', type=float, help="Add horizontal lines at these y values")
 ap.add_argument("-vl", "--vlines", nargs='*', type=float, help="Add vertical lines at these x values")
