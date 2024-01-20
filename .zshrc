@@ -88,7 +88,8 @@ if [[ $LOAD_ZINIT != false ]] ; then
         if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
         if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
         if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
-        if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit 
+        if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit \
+        if'[[ -z "$commands[jq]" ]]' mv"jq*->jq" @jqlang/jq 
 
     # Load scripts directly from repo
     zinit from"gh" as"command" light-mode for \
