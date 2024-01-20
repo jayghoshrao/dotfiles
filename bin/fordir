@@ -6,7 +6,7 @@
 ROOT=$PWD
 PARALLEL=0
 # EXPR='*/'
-EXPR='.*'
+EXPR='.'
 MAXDEPTH_FLAG="-d 1" # Default only top-level
 FDFIND_ARGS=""
 
@@ -20,6 +20,7 @@ do
             PARALLEL=1
             shift # past value
             ;;
+        ## Only leaving this here for legacy reasons
         -e|--expr|--expression)
             EXPR="$2"
             shift # past value
@@ -45,14 +46,21 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-# DIRS=($(eval "echo ${EXPR}"))
+if [[ $# -eq 1 ]]; then
+    ALLCMDS_RAW="$1"
+else
+    EXPR="$1"
+    ALLCMDS_RAW="$2"
+fi
+
 DIRS=($(fd "${EXPR}" --type d $MAXDEPTH_FLAG $FDFIND_ARGS))
 
 for DIR in "${DIRS[@]}"; do
     cd $DIR
-    allcmds=$(echo "$@" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
+    allcmds=$(echo "$ALLCMDS_RAW" | sed  "s|DIR|$DIR|g" | sed "s|ROOT|$ROOT|g")
     IFS=';' read -ra cmdarray <<< "$allcmds"
     for cmd in "${cmdarray[@]}"; do
+        # echo $cmd
         if [[ $PARALLEL == 0 ]]; then
             eval "$cmd"
         else
