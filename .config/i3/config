@@ -443,8 +443,8 @@ for_window [class="feh"] floating enable
 # for_window [class="google-keep-nativefier-23ad36"] floating enable, resize set 1566 831, move to scratchpad
 # for_window [class="Chromium" instance="crx_hnpfjngllnobngcgfapefoaidbinmjnm"] floating enable, resize set 90ppt 80ppt, move position center, move to scratchpad
 for_window [class="mpv"] floating enable
-for_window [class="mpv"] focus
-for_window [class="mpv"] fullscreen
+# for_window [class="mpv"] focus
+for_window [class="mpv"] floating enable, move to output right, fullscreen
 for_window [instance="Navigator"] floating disable
 for_window [window_role="_float"] floating enable
 for_window [class="gnuplot_qt"] floating enable  
