@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##      __                                    
 ##     / _|_   _ _______  ___ ___  _ __   ___ 
@@ -37,18 +37,29 @@
 ## -b to append base directory
 ## flag to switch off the --expect output (first line showing key)
 
+# TODO: Allow --action arg to change action on Enter key
+
+PREVIEW_POSITION="right"
+PREVIEW_SIZE="70%"
+
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
     key="$1"
     case $key in
         -b|--base-directory)
-            ## Basically to compensate for fd --base-directory
-            ## TODO: This breaks scope.sh
+            ## compensates for fd --base-directory
             BASEDIR="$2/"
-            shift # past value
-            shift # past value
-            ;;
+            shift; shift ;;
+        -pp|--preview-position)
+            PREVIEW_POSITION="$2"
+            shift; shift ;;
+        -ps|--preview-size)
+            PREVIEW_SIZE="$2"
+            shift; shift ;;
+        -pps|--preview-position-size)
+            IFS=":" read -r PREVIEW_POSITION PREVIEW_SIZE <<< "$2"
+            shift; shift ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
@@ -59,8 +70,10 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 (fzf -0 -m -e -d $"\t" \
     --preview="scope.sh {q} $BASEDIR{1}" \
-    --preview-window up:60% \
+    --preview-window ${PREVIEW_POSITION}:${PREVIEW_SIZE} \
     "$@" \
     --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@" \
+    --bind "del:execute@rm -i {1}@+abort" \
+    --bind "ctrl-e:execute@$EDITOR {1}@" \
     --bind "ctrl-y:execute@echo {1} | xclip -i -selection clipboard@" \
     --bind "ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@") | sed "s@^@$BASEDIR@g"
