@@ -103,7 +103,7 @@ cd $HOME
 
 # Use mirror to rsync either DEFAULT_DIRS or given set of positional args to
 # the backup disk located at /media/$name in the Backup folder
-mirror ${MIRRORFLAGS[*]} -r $BACKUP_DIR push -e ${EXCLUDES[*]} -f ${DEFAULT_DIRS[*]}
+mirror ${MIRRORFLAGS[*]} -r $BACKUP_DIR push -e ${EXCLUDES[*]} -f ${DEFAULT_DIRS[*]} -i ".git"
 
 if [[ "$TARGET" == "hdd" ]]; then
     unmount_partition $name
