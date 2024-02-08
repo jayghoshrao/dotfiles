@@ -276,7 +276,7 @@ alias nrc="$EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
 alias zz="source $HOME/.zshrc"
 
 alias n="notes"
-alias nn="note"
+alias nn="notes --new"
 # alias ns="notesearch"
 alias fns="fnotesearch"
 
@@ -775,13 +775,14 @@ alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 
-alias ns="nix-shell"
-alias ne="nix-env"
-alias neq="nix-env -q"
-alias neqas="nix-env -qas"
-alias neqm="nix-env -qa --meta --json -A"
-alias neia="nix-env -iA"
-alias neu="nix-env --uninstall"
+# alias ns="nix-shell"
+# alias ne="nix-env"
+# alias neq="nix-env -q"
+# alias neqas="nix-env -qas"
+# alias neqm="nix-env -qa --meta --json -A"
+# alias neia="nix-env -iA"
+# alias neu="nix-env --uninstall"
+
 alias znix="module load nix && nix-shell --command zsh"
 
 function nsd(){

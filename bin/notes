@@ -1,13 +1,54 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-# TODO: Allow subfolders to be wikis
-# TODO: ENCRYPTION
+# TODO: Encryption
+# TODO: Pandoc integration: html and pdf output
+# TODO: Image integration: n --store-image file_or_url dumped to $NOTES_DIR/.assets
+# TODO: Browse randomized 
 
 # fuz	"$@"
 # rg --files | makecache | fuzscope | filer
 # rg --files --sortr accessed | fuzscope "$QUERY" | filer
 
-DIR="$NOTES_DIR"
+function find_files()
+{
+    # find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' 
+    rg --files --sortr modified 
+}
+
+OPEN_COMMAND="peek"
+
+function browse() 
+{
+    FUZSCOPE_COMMAND="fuzscope"
+    
+    OUT=$(find_files | $FUZSCOPE_COMMAND $@)
+    while [ -n "$OUT" ]; do 
+        # echo -e "$OUT" | filer
+        # echo -e "$OUT" | $OPEN_COMMAND
+        $OPEN_COMMAND "$OUT"
+        OUT=$(find_files | $FUZSCOPE_COMMAND $@)
+    done
+}
+
+function create()
+{
+    filepath="$1"
+    extension="${filepath##*.}"
+    [[ "$extension" == "$filepath" ]] && extension="md" && filepath="${filepath}.md"
+    mkdir -p "$(dirname "$filepath")"
+    $EDITOR "$filepath"
+    exit
+}
+
+function search()
+{
+    rg -S --no-heading --no-messages --line-number "$1" "$DIR" | fzf -e -d ':' --preview 'rg --ignore-case --pretty --with-filename --context 10 -F -- '"{3..}"' {1}' --preview-window up:70% --bind "enter:execute: $EDITOR {1} +{2}"
+}
+
+DIR=$(realpath "$NOTES_DIR")
+ROOT="$PWD"
+
+cd "$DIR" || exit
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -17,36 +58,27 @@ do
     case $key in
         -d|--directory)
             DIR="$2"
-            shift # past value
-            shift
-            ;;
+            shift; shift ;;
+        -o|--opener)
+            OPEN_COMMAND="$2"
+            shift; shift ;;
+        --grep|--search|--find)
+            search "$2"
+            exit
+            shift; shift ;;
+        --new|--create|--add)
+            create "$2"
+            shift; shift ;;
+        -h|--help)
+            echo "notes: a bash script to manage my plaintext notes" 
+            SCRIPT_PATH=$(readlink -f -- "$BASH_SOURCE")
+            grep -Po '\s*--?\w+\|[^)]*' "$SCRIPT_PATH"
+            exit ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
-            shift # past argument
-            ;;
+            shift ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-cd "$DIR" || exit
-
-# QUERY=""
-if [ -n "$*" ]; then
-	QUERY="-q $@"
-else
-    QUERY=""
-fi
-
-finder()
-{
-    # find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' 
-    rg --files --sortr modified 
-}
-
-OUT=$(finder | fuzscope $QUERY )
-
-while [ -n "$OUT" ]; do 
-    # echo -e "$OUT" | filer
-    echo -e "$OUT" | peek
-    OUT=$(finder | fuzscope $QUERY )
-done
+browse $@
