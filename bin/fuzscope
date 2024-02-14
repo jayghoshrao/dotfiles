@@ -74,6 +74,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
     "$@" \
     --bind "ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@" \
     --bind "del:execute@rm -i {1}@+abort" \
+    --bind "ctrl-r:execute@$frifle {1}@" \
     --bind "ctrl-e:execute@$EDITOR {1}@" \
     --bind "ctrl-y:execute@echo {1} | xclip -i -selection clipboard@" \
     --bind "ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@") | sed "s@^@$BASEDIR@g"
