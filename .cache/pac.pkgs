@@ -51,12 +51,15 @@ doxygen
 dune
 dunst
 dust
+electron
 element-desktop
 eog
 evolution-ews
+evtest
 exfat-utils
 extra-cmake-modules
 feh
+filezilla
 firefox
 font-manager
 fortune-mod
@@ -122,7 +125,6 @@ krita
 kvantum-theme-materia
 lazygit
 libgnome-keyring
-libsixel
 licenses
 lightdm-gtk-greeter-settings
 lightdm-pantheon-greeter
@@ -160,7 +162,6 @@ networkmanager-openconnect
 networkmanager-openvpn
 networkmanager-pptp
 newsboat
-nextcloud-client
 nfs-utils
 nim
 nlopt
@@ -204,12 +205,9 @@ python-deepdiff
 python-gitpython
 python-gnupg
 python-google-api-core
-python-oauth2client
-python-praw
 python-pydbus
 python-pygithub
 python-scikit-learn
-python-seaborn
 qt5-networkauth
 qt5-xcb-private-headers
 qt5ct
@@ -278,7 +276,6 @@ vi
 vimiv
 virt-manager
 visidata
-vlc
 vscode-json-languageserver
 whois
 wmctrl
@@ -315,6 +312,7 @@ xournalpp
 xpdf
 xpra
 xscreensaver
+xsettingsd
 yq
 zellij
 zsh-autosuggestions

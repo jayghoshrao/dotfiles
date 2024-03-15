@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+OUTSTRING=
+
+while IFS= read -r line ; do
+    if [[ $line =~ "firefox" ]] ; then
+        OUTSTRING="${OUTSTRING} "
+    elif [[ $line =~ spotify|ncspot ]] ; then
+        OUTSTRING="${OUTSTRING} "
+    elif [[ $line =~ "mpv" ]] ; then
+        OUTSTRING="${OUTSTRING} "
+    else 
+        OUTSTRING="${OUTSTRING} "
+    fi
+done <<< $(playerctl -l)
+
+echo "$OUTSTRING"
