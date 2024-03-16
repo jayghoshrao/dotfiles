@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eu
+
+function main()
+{
+    local layouts="$(autorandr --list)"
+    local layout=$( (echo "${layouts}")  | rofi -dmenu -p "Layout:" -no-fixed-num-lines)
+    [[ -n "$layout" ]] && autorandr --load $layout
+}
+
+main
