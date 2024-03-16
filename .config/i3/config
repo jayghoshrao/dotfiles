@@ -514,7 +514,7 @@ bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screensh
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i zathura {}
 # bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
-bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
+bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.sh
 
 bindsym $mod+shift+g exec echo -e 'on\noff' | dmenu -i | xargs $SCRIPTS/game
 # }}}
