@@ -442,9 +442,9 @@ for_window [class="Wunderlistux"] focus
 for_window [class="feh"] floating enable
 # for_window [class="google-keep-nativefier-23ad36"] floating enable, resize set 1566 831, move to scratchpad
 # for_window [class="Chromium" instance="crx_hnpfjngllnobngcgfapefoaidbinmjnm"] floating enable, resize set 90ppt 80ppt, move position center, move to scratchpad
-for_window [class="mpv"] floating enable
+# for_window [class="mpv"] floating enable
 # for_window [class="mpv"] focus
-for_window [class="mpv"] floating enable, move to output right, fullscreen
+# for_window [class="mpv"] floating enable, move to output right, fullscreen
 for_window [instance="Navigator"] floating disable
 for_window [window_role="_float"] floating enable
 for_window [class="gnuplot_qt"] floating enable  
@@ -461,8 +461,7 @@ for_window [title="Zoom Meeting"] move to workspace  "Zoom Meeting"
 for_window [title="VNC authentication"] floating enable, move position center
 for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, move position center
 for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
-for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
-for_window [class="thunderbird"] floating enable, resize set 95 ppt 90 ppt, move position center 
+# for_window [class="thunderbird"] floating enable, resize set 95 ppt 90 ppt, move position center 
 
 for_window [window_role="PictureInPicture"] move to output right 
 
@@ -507,7 +506,7 @@ bindsym $mod+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p co
 bindsym $mod+shift+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p disconnect | awk '{print $2}') && bluetoothctl disconnect $DEV"
 bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
 bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
-bindsym $mod+x exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
+bindsym $mod+grave exec --no-startup-id echo -e "start\ntoggle\npause\nresume\nstop" | rofi -width 25 -dmenu -i -p Pomodoro -l 5 | xargs $SCRIPTS/pomodoro-client.py
 # bindsym F4 exec $SCRIPTS/transparency.sh
 # bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
 bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
@@ -549,20 +548,6 @@ bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'm
 
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -matching fuzzy -dmenu -p 'Workspace')"
 
-# Deprecated: {{{
-# bindsym $mod+shift+d exec --no-startup-id $SCRIPTS/display.sh &
-# bindsym $mod+shift+d exec --no-startup-id "find ~/.screenlayout -name '*.sh' | rofi -dmenu"
-# exec_always --no-startup-id feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png
-# exec_always --no-startup-id feh --bg-fill $HOME/Pictures/wallpapers/current-wall.png /home/jayghoshter/Pictures/wallpapers/hill-homes.jpg 
-# exec_always --no-startup-id exec i3wsr
-# exec_always --no-startup-id gnome-power-manager    
-# exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1  
-# exec --no-startup-id /usr/lib/gnome-settings-daemon/gsd-xsettings  
-# exec --no-startup-id gnome-flashback
-# bindsym $mod+Shift+space  exec i3-msg move container to workspace $(lsws | dmenu )
-# bindsym $mod+v exec --no-startup-id "rofi -show drun -font \\"DejaVu 9\\" -run-shell-command '{terminal} -e \\" {cmd}; read -n 1 -s\\"'"
-# bindsym $mod+grave [urgent=latest] focus
-# }}}
 
 # }}}
 
@@ -626,3 +611,6 @@ bindsym $mod+v exec kdocker -f
 # exec_always --no-startup-id kdocker -x $(pgrep -u $(whoami) thunderbird) -loq
 
 bindsym $mod+i focus mode_toggle
+
+bindsym $mod+shift+semicolon exec $SCRIPTS/lsws | rofi -dmenu -p "move to WS" -i -l 5| xargs i3-msg move container to workspace 
+# bindsym $mod+grave [urgent=latest] focus
