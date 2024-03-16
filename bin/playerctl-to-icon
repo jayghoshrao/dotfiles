@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+INSTRING=$(playerctl -l)
+
+[[ "$INSTRING" =~ "No players found" ]] && exit
+
 OUTSTRING=
 
 while IFS= read -r line ; do
@@ -10,8 +14,9 @@ while IFS= read -r line ; do
     elif [[ $line =~ "mpv" ]] ; then
         OUTSTRING="${OUTSTRING} "
     else 
-        OUTSTRING="${OUTSTRING} "
+        # OUTSTRING="${OUTSTRING} "
+        OUTSTRING="${OUTSTRING}${line} "
     fi
-done <<< $(playerctl -l)
+done <<< "$INSTRING"
 
 echo "$OUTSTRING"
