@@ -53,7 +53,6 @@
       markdownify
       numpy
       pip
-      papis-python-rofi
       pdfrw
       plumbum
       pulsectl
@@ -72,5 +71,7 @@
   ];
 
   programs.bat.enable = true;
+
+  targets.genericLinux.enable = true;
 
 }

@@ -8,8 +8,6 @@ arc-gtk-theme
 archlinux-keyring
 arp-scan
 at
-autoconf
-automake
 autorandr
 awesome-terminal-fonts
 b43-fwcutter
@@ -64,6 +62,7 @@ firefox
 font-manager
 fortune-mod
 fzy
+geckodriver
 gedit
 gifsicle
 gifski
@@ -89,6 +88,7 @@ gnome-sound-recorder
 gnome-system-monitor
 gnome-tweaks
 gnome-weather
+go
 gocr
 goimapnotify
 gparted
@@ -107,7 +107,6 @@ htop
 hub
 hugo
 hyperfine
-i3blocks
 imagescan
 inetutils
 inkscape
@@ -141,6 +140,7 @@ materia-gtk-theme
 meld
 mesa-utils
 mgba-qt
+mopidy
 moreutils
 mp3wrap
 mpc
@@ -179,7 +179,6 @@ openldap
 openvr
 otf-font-awesome
 owncloud-client
-pacman-contrib
 paperkey
 papirus-icon-theme
 paraview
@@ -190,7 +189,6 @@ pdftk
 pdftricks
 perl-devel-globaldestruction
 picard
-pkgconf
 pkgfile
 playerctl
 polybar
@@ -205,7 +203,6 @@ python-deepdiff
 python-gitpython
 python-gnupg
 python-google-api-core
-python-pydbus
 python-pygithub
 python-scikit-learn
 qt5-networkauth
