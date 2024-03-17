@@ -22,6 +22,20 @@ do
             cat "$BM_FILE" | fuzscope | peek
             exit
             ;;
+        --dump-youtube)
+            BM_FILE_YOUTUBE=${BM_FILE%.*}_youtube.txt
+
+            rm "$BM_FILE_YOUTUBE"
+            while IFS= read -r inlink ; do
+                [[ $inlink =~ youtube ]] || continue
+                title=$(curl -fsSL "$inlink" | grep -Pio '(?<=<title>)(.*?)(?=\s*</title>)')
+                echo "$title | $inlink" >> "$BM_FILE_YOUTUBE"
+            done <<< $(cat "$BM_FILE")
+            unset inlink
+            exit
+
+            shift
+            ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
             shift # past argument
