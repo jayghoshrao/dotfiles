@@ -62,6 +62,7 @@ chunk_size=$(( (${#sorted_files[@]} + NCHUNKS - 1) / NCHUNKS ))
 # Split the sorted array into chunks
 for ((i = 0; i < ${#sorted_files[@]}; i += chunk_size)); do
     chunk=("${sorted_files[@]:i:chunk_size}")
-    ICOMMAND=$(echo "$COMMAND" | sed "s/{ICHUNK}/$i/g")
+    ii=$(( i / chunk_size ))
+    ICOMMAND=$(echo "$COMMAND" | sed "s/{ICHUNK}/$ii/g")
     $ICOMMAND "${chunk[@]}"
 done
