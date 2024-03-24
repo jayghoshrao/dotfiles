@@ -48,7 +48,8 @@ fi
 
 # Create an array of file names matching the pattern
 # files=(*.pvtu)
-files=($FILEGLOB)
+# files=($FILEGLOB)
+files=($(eval "echo ${FILEGLOB}"))
 
 # Check if there are files matching the pattern
 if [ ${#files[@]} -eq 0 ]; then
