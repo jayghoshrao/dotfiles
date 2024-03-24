@@ -19,6 +19,9 @@ do
         -c|--command)
             COMMAND="$2"
             shift; shift ;;
+        -C|--command-all)
+            COMMAND="${@:2}"
+            shift $# ;;
         -t|--field-separator)
             FIELDSEP="$2"
             shift; shift ;;
