@@ -13,7 +13,10 @@ while IFS= read -r sink ; do
     SINKS_FOUND_ALIASED+=("${SINK_ALIASES[$sink]}")
 done <<< "$SINKS_FOUND"
 
-selected_sink_aliased=$((IFS=$'\n'; echo "${SINKS_FOUND_ALIASED[*]}") | rofi -dmenu -p Output -i -no-fixed-num-lines)
+NCHARS=$(echo "${SINKS_FOUND_ALIASED[@]}" | wc -m)
+ROFI_WIDTH=$(( NCHARS + 10 ))
+
+selected_sink_aliased=$((IFS=$'\n'; echo "${SINKS_FOUND_ALIASED[*]}") | rofi -theme-str "window {width:${ROFI_WIDTH}ch;}" -theme nord-horizontal -dmenu -p Output -i -no-fixed-num-lines)
 
 selected_sink=""
 for sink in "${!SINK_ALIASES[@]}"; do
