@@ -123,9 +123,10 @@ zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
 
 bindkey '  ' autosuggest-accept
-bindkey '^ ' autosuggest-clear
-bindkey '^ ' kill-line
-bindkey '^s' vi-forward-blank-word
+# bindkey '^v' autosuggest-clear
+# bindkey '^v' kill-line
+bindkey '^v' vi-backward-blank-word
+bindkey '^e' vi-forward-blank-word-end
 # bindkey '^v' vi-backward-blank-word
 bindkey '^p' up-history
 bindkey '^n' down-history
