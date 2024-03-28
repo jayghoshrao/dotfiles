@@ -40,7 +40,7 @@ export FZF_CTRL_T_COMMAND='fd -t f'
 export FZF_ALT_C_COMMAND='fd -t d'
 export FZF_ALT_C_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
 export FZF_CTRL_T_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
-export FZF_DEFAULT_OPTS="--bind 'ctrl-v:toggle,ctrl-s:toggle+down,ctrl-n:down,ctrl-p:up,ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@,ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@','ctrl-r:execute@frifle {}@','alt-j:half-page-down','alt-k:half-page-up','ctrl-f:jump' --color='bg+:#5E81AC,prompt:#EBCB8B' --reverse"
+export FZF_DEFAULT_OPTS="--preview-window wrap --preview 'peek -p {2}' --bind 'ctrl-v:toggle,ctrl-s:toggle+down,ctrl-n:down,ctrl-p:up,ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@,ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@','ctrl-r:execute@frifle {}@','alt-j:half-page-down','alt-k:half-page-up','ctrl-f:jump' --color='bg+:#5E81AC,prompt:#EBCB8B' --reverse"
 
 if [[ -x "$(command -v fd)" ]]; then 
     # Use fd (https://github.com/sharkdp/fd) instead of the default find
