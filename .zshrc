@@ -126,7 +126,7 @@ bindkey '  ' autosuggest-accept
 # bindkey '^v' autosuggest-clear
 # bindkey '^v' kill-line
 bindkey '^v' vi-backward-blank-word
-bindkey '^e' vi-forward-blank-word-end
+bindkey '^e' vi-forward-blank-word
 # bindkey '^v' vi-backward-blank-word
 bindkey '^p' up-history
 bindkey '^n' down-history
