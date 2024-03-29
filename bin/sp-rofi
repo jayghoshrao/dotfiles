@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+ARGS=$(rofi -theme nord-horizontal -theme-str 'window {width: 60ch;}' -p spotify -dmenu -i)
+
+[[ -z "$ARGS" ]] && exit
+sp $ARGS
