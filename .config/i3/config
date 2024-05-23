@@ -505,7 +505,8 @@ bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option al
 bindsym $mod+c exec "DEV=$(bluetoothctl devices | rofi -theme-str 'window {width: 60ch;}' -matching normal -dmenu -i -p connect | awk '{print $2}') && bluetoothctl connect $DEV"
 bindsym $mod+shift+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p disconnect | awk '{print $2}') && bluetoothctl disconnect $DEV"
 bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
-bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
+# bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
+bindsym $mod+shift+d exec --no-startup-id $SCRIPTS/rofi-autorandr
 bindsym $mod+grave exec $SCRIPTS/rofi-pomodoro.sh
 # bindsym F4 exec $SCRIPTS/transparency.sh
 # bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
