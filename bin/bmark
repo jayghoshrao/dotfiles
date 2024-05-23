@@ -23,18 +23,23 @@ do
             exit
             ;;
         --dump-youtube)
-            BM_FILE_YOUTUBE=${BM_FILE%.*}_youtube.txt
+            BM_FILE_YOUTUBE="$2"
 
-            rm "$BM_FILE_YOUTUBE"
+            if [[ -n "$BM_FILE_YOUTUBE" ]] && [[ -f "$BM_FILE_YOUTUBE" ]]; then
+                rm "$BM_FILE_YOUTUBE"
+            fi
+
             while IFS= read -r inlink ; do
                 [[ $inlink =~ youtube ]] || continue
                 title=$(curl -fsSL "$inlink" | grep -Pio '(?<=<title>)(.*?)(?=\s*</title>)')
-                echo "$title | $inlink" >> "$BM_FILE_YOUTUBE"
+                if [[ -n "$BM_FILE_YOUTUBE" ]] ; then
+                    echo "$title | $inlink" >> "$BM_FILE_YOUTUBE"
+                else 
+                    echo "$title | $inlink"
+                fi
             done <<< $(cat "$BM_FILE")
             unset inlink
             exit
-
-            shift
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later

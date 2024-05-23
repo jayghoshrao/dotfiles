@@ -2,7 +2,10 @@
 
 ## An upgrade to filer
 ## Because I'm bored and sometimes have OCD
-## Already added to zshrc, this is only for backup
+## NOTE: Already added to zshrc, this is only for backup
+
+# TODO: Add option for COMMAND type, not just files and urls
+# Thus I can use this for preview in command completions
 
 urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 DEBUG="OFF"
@@ -56,7 +59,8 @@ guiopen()
 
 special()
 {
-    FILE="$@"
+    # FILE="$@"
+    FILE=$(realpath "$@")
     FILEBASENAME=$(basename "$FILE")
     [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
     FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
@@ -75,7 +79,7 @@ special()
 
 driver()
 {
-    FILE="$@"
+    FILE=$(realpath "$@")
     FILEBASENAME=$(basename "$FILE")
     [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
     FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
@@ -106,14 +110,15 @@ driver()
         esac
     elif [[ "$MODE" == "PRINT" ]]; then
         case "$FILETYPE" in 
-            "inode/directory"         ) ls "$FILE"                    ; return ;;
+            "inode/directory"         ) ls --color "$FILE"                    ; return ;;
             "inode/x-empty"           ) cat "$FILE"                   ; return ;;
             "application/octet-stream") dex -p "$FILE"                ; return ;;
-            "text/html"               ) guiopen "$FILE"               ; return ;;
-            "application/pdf"         ) guiopen "$FILE"               ; return ;;
+            "text/html"               ) cat "$FILE"                   ; return ;;
+            "application/pdf"         ) pdftotext "$FILE" -           ; return ;;
             "application/json"        ) cat "$FILE"                   ; return ;;
             "text/plain"              ) cat "$FILE"                   ; return ;;
-            *                         ) special "$FILE"               ; return ;;
+            text/*                    ) cat "$FILE"                   ; return ;;
+            *                         ) file --mime-type "$FILE"      ; return ;;
         esac
     fi
 

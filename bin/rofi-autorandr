@@ -5,7 +5,7 @@ set -eu
 function main()
 {
     local layouts="$(autorandr --list)"
-    local layout=$( (echo "${layouts}")  | rofi -dmenu -p "Layout:" -no-fixed-num-lines)
+    local layout=$( (echo "${layouts}")  | rofi -dmenu -p "Layout:" -no-fixed-num-lines -theme-str "window {width: 60ch;}" -theme nord-horizontal -i )
     [[ -n "$layout" ]] && autorandr --load $layout
 }
 

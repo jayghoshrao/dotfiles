@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 MODE="OPEN"
+FILENAME_PREFIX=
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -11,6 +12,10 @@ do
         -p|--paste)
             MODE="PASTE"
             shift 
+            ;;
+        -fp|--filename-prefix)
+            FILENAME_PREFIX="$2"
+            shift; shift
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
@@ -44,7 +49,11 @@ function process()
         xopen "${1}"
     elif [[ "$MODE" == "PASTE" ]]; then
         echo "Pasting ${1}"
-        scp "${1}" .
+        OUTFILENAME="$(basename $1)"
+        if [[ -n "$FILENAME_PREFIX" ]]; then
+            OUTFILENAME="${FILENAME_PREFIX}${OUTFILENAME}"
+        fi
+        scp "${1}" "${OUTFILENAME}"
     fi
 }
 
