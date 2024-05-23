@@ -99,21 +99,15 @@ if [[ $LOAD_ZINIT != false ]] ; then
 
     ## Should be the last loaded due to compinit
     zinit lucid for \
-         wait"0b" atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
-         wait"0b" blockf @zsh-users/zsh-completions \
-         wait"0a" atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
+         atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" @zdharma-continuum/fast-syntax-highlighting \
+         blockf @zsh-users/zsh-completions \
+         atload"!_zsh_autosuggest_start" @zsh-users/zsh-autosuggestions
 
 fi
 
 # }}}
 
 # Package Manager: }}}
-
-# # Autocompletion for some scripts: moved to zcl
-# # autoload -Uz compinit; compinit
-# compdef '_files -W $NOTES_DIR' note
-# compdef '_files -W $NOTES_DIR' notes
-# compdef '_files -W $HOME/bin' se
 
 # Bindkeys: {{{
 # Allow v to edit the command line
@@ -123,13 +117,13 @@ zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
 
 bindkey '  ' autosuggest-accept
-# bindkey '^v' autosuggest-clear
-# bindkey '^v' kill-line
+bindkey '^s' vi-kill-line
 bindkey '^v' vi-backward-blank-word
-bindkey '^e' vi-forward-blank-word
-# bindkey '^v' vi-backward-blank-word
-bindkey '^p' up-history
-bindkey '^n' down-history
+bindkey '^e' vi-forward-blank-word-end
+# bindkey '^p' up-history
+# bindkey '^n' down-history
+bindkey '^p' history-search-backward # only searches for typed commands, not full history
+bindkey '^n' history-search-forward
 
 bindkey -M vicmd 'H' beginning-of-line
 bindkey -M vicmd 'L' end-of-line
@@ -170,16 +164,13 @@ setopt EXTENDED_GLOB        # Use extended globbing syntax.
 unsetopt GLOB_DOTS
 unsetopt AUTO_NAME_DIRS     # Don't add variable-stored paths to ~ list
 
-
-
-
-## Jobs
-setopt LONG_LIST_JOBS     # List jobs in the long format by default.
-setopt AUTO_RESUME        # Attempt to resume existing job before creating a new process.
-setopt NOTIFY             # Report status of background jobs immediately.
-unsetopt BG_NICE          # Don't run all background jobs at a lower priority.
-unsetopt HUP              # Don't kill jobs on shell exit.
-unsetopt CHECK_JOBS       # Don't report on jobs when shell exit.
+# ## Jobs
+# setopt LONG_LIST_JOBS     # List jobs in the long format by default.
+# setopt AUTO_RESUME        # Attempt to resume existing job before creating a new process.
+# setopt NOTIFY             # Report status of background jobs immediately.
+# unsetopt BG_NICE          # Don't run all background jobs at a lower priority.
+# unsetopt HUP              # Don't kill jobs on shell exit.
+# unsetopt CHECK_JOBS       # Don't report on jobs when shell exit.
 
 # setopts: }}}
 
@@ -209,31 +200,32 @@ function! appendToEnv()
 
 # zstyle completions: {{{
 
-# zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:*:vim:*:*files' ignored-patterns '*.o'
-zstyle ':completion:*:*:nvim:*:*files' ignored-patterns '*.o'
+zstyle ':completion:*' menu no ## Disables menu since we use fzf
+zstyle ':completion:*:(vim|nvim):*:*' ignored-patterns '*.aux' '*.toc' '*.bbl' '*.dvi' '*.blg' '*.spl' '*.o' 
 
-zstyle '*' single-ignored complete
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
-zstyle -e ':completion:*:approximate:*' \
-  max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
+
+# zstyle '*' single-ignored complete
+# zstyle ':completion:*' completer _complete _match _approximate
+# zstyle ':completion:*:match:*' original only
+# zstyle -e ':completion:*:approximate:*' \
+#   max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
 # Have the completion system announce what it is completing
 # zstyle ':completion:*' format 'Completing %d'
 # In menu-style completion, give a status bar
 zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+zstyle ':completion:*' completer _expand _complete _match _ignored _approximate
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' # allows matching lower case for normal completion
 
-# zstyle ':completion:*' completer _expand _complete _ignored _approximate
-# zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'peek -p $realpath'
+
 # zstyle ':completion:*' menu select=2
 # zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
-# zstyle ':completion:*:descriptions' format '-- %d --'
 # zstyle ':completion:*:processes' command 'ps -au$USER'
-# zstyle ':completion:complete:*:options' sort false
-# zstyle ':fzf-tab:complete:_zlua:*' query-string input
+# # zstyle ':completion:complete:*:options' sort false
 # zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
+# zstyle ':fzf-tab:complete:_zlua:*' query-string input
 # zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
-# zstyle ":completion:*:git-checkout:*" sort false
+# # zstyle ":completion:*:git-checkout:*" sort false
 # zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # }}}
@@ -326,11 +318,6 @@ alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=y
 # xdg-open:{{{
 xo()
 {
-	# arg=""
-	# for value in "$@"; do
-	# 	arg="$arg$value"
-	# done
-
     for ARG in "$@"; do 
         if [[ "$ARG" =~ ":" ]];
         then
@@ -349,96 +336,39 @@ xo()
 
 }
 
-xx()
-{
-	# arg=""
-	# for value in "$@"; do
-	# 	arg="$arg$value"
-	# done
-
-    if [[ "$1" =~ ":" ]];
-    then
-        EXT=${1##*.}
-        scp -rC "$1" "/tmp/remotefile.$EXT"
-        if [[ $? -eq 0 ]] ; then 
-            nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
-            exit
-        else
-            >&2 echo "file not found!"
-            return -1
-        fi
-    else
-        nohup xdg-open "$@" >/dev/null 2>&1 & disown
-        exit
-    fi
-
-}
-
 #}}}
 # eXecute: {{{
 x()
 {
-	# arg=""
-	# for value in $@; do
-	# 	arg="$arg$value"
-	# done
-    # nohup "$@" >/dev/null 2>&1 & disown
+    local OPENER
+    OPENER=$1
+    shift 
 
-    if [[ "$2" =~ ":" ]];
-    then
-        EXT=${2##*.}
-        scp -rC "$2" "/tmp/remotefile.$EXT"
-        if [[ $? -eq 0 ]] ; then 
-            nohup "$1" "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+    for ARG in "$@"; do 
+        if [[ "$ARG" =~ ":" ]];
+        then
+            EXT=${ARG##*.}
+            scp -rC "$ARG" "/tmp/remotefile.$EXT"
+            if [[ $? -eq 0 ]] ; then 
+                nohup $OPENER "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+            else
+                >&2 echo "file not found!"
+                return -1
+            fi
         else
-            >&2 echo "file not found!"
-            return -1
+            nohup $OPENER "$ARG" >/dev/null 2>&1 & disown
         fi
-    else
-        nohup "$@" >/dev/null 2>&1 & disown
-    fi
+    done
+}
+#}}}
 
-}
-#}}}
-#CHT.SH:{{{
-function cht()
-{
-    curl cht.sh/$1
-}
-#}}}
-# C-Z: {{{
+function cht() { curl cht.sh/$1 }
 fgkey() { fg }
 zle -N fgkey
 bindkey '^Z' fgkey
-# }}}
-#panwebmark: {{{
-# Pandoc convert web html to markdown
-function pwm()
-{
-    curl --silent "$1" | pandoc --wrap=preserve --strip-comments --reference-links --from html-raw_html --to markdown_strict -o "$2"
-    sed -i '0,/===/d' "$2"
-    sed -i '/-----/,$d' "$2"
-}
-#}}}
-# vimwhich - vimw: {{{
-vimw()
-{
-    vim $(readlink -f $(which "$@"))
-}
-# }}}
-# vim-rg-to-quickfix:{{{
-function! vq()
-{
-    nvim -q <( rg -S --vimgrep "$@" )
-}
-# }}}
-# mkc: {{{
-function mkc()
-{
-    mkdir "$1" && cd "$1"
-}
-# }}}
-# yank-path and yank-dirs: {{{
+function vimw() { vim $(readlink -f $(which "$@")) }
+function! vq() { nvim -q <( rg -S --vimgrep "$@" ) }
+function mkc() { mkdir "$1" && cd "$1" }
 function yp() {echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard}
 function yd() {echo "$PWD" | tr -d '\n' | xclip -i -selection clipboard}
 #}}}
@@ -465,25 +395,7 @@ function man() {
     man "${@}"
 }
 # MAN: }}}
-# ranger-cd: {{{
-function ranger-cd {
-    tempfile="$(mktemp -t tmp.XXXXXX)"
-    ranger --choosedir="$tempfile" "${@:-$(pwd)}"
-    test -f "$tempfile" &&
-    if [ "$(cat -- "$tempfile")" != "$(echo -n `pwd`)" ]; then
-        cd -- "$(cat "$tempfile")"
-    fi
-    rm -f -- "$tempfile"
-}
 
-# function ranger-shell {
-#     ranger && exit
-# }
-
-[[ -n $RANGERSHELL ]] && unset RANGERSHELL && ranger && exit
-[[ -n $RANGERCD ]] && unset RANGERCD && ranger-cd && exit
-
-#}}}
 # nnn: cd on quit: {{{
 f()
 {
@@ -640,7 +552,8 @@ peek()
 
     special()
     {
-        FILE="$@"
+        # FILE="$@"
+        FILE=$(realpath "$@")
         FILEBASENAME=$(basename "$FILE")
         [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
         FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
@@ -659,7 +572,8 @@ peek()
 
     driver()
     {
-        FILE="$@"
+        # FILE="$@"
+        FILE=$(realpath "$@")
         FILEBASENAME=$(basename "$FILE")
         [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
         FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
@@ -754,17 +668,7 @@ function vimfu()
     fi
 }
 
-## Fuzzy pass browser
-fpass() {
-    local DIR=${PWD}
-    cd ~/.password-store
-    fzf --bind="enter:execute@dex -p {}@,ctrl-d:execute@rm {}@,ctrl-b:execute@echo {} | sed 's/.gpg//' | xargs pass | grep url | awk '{print \$2}' | xargs firefox --new-tab@,ctrl-o:execute@echo {} | sed 's/.gpg//' | xargs pass edit@" | less
-    cd "$DIR"
-}
-
 alias F="sudo -E nnn -dH" # sudo file browser
-
-
 
 alias ma="mamba"
 alias maa="mamba activate"
@@ -776,34 +680,14 @@ alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 
-# alias ns="nix-shell"
-# alias ne="nix-env"
-# alias neq="nix-env -q"
-# alias neqas="nix-env -qas"
-# alias neqm="nix-env -qa --meta --json -A"
-# alias neia="nix-env -iA"
-# alias neu="nix-env --uninstall"
-
 alias znix="module load nix && nix-shell --command zsh"
 
-function nsd(){
-    nix show-derivation $(nix path-info --derivation "nixpkgs#$1")
-}
-
-function nsp(){
-    storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath')
-    echo $storepath
-}
-
-function ned(){
-    nix edit 'nixpkgs#'$1
-}
-
 alias an="archlinux-nix"
+function nsd(){ nix show-derivation $(nix path-info --derivation "nixpkgs#$1") }
+function nsp(){ storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath'); echo $storepath }
+function ned(){ nix edit 'nixpkgs#'$1 }
 
-function fml(){
-    module load $(fmod $@)
-}
+function fml(){ module load $(fmod $@) }
 
 ## Use this to trace the libs loaded at runtime
 ## LDTRACE ./main
@@ -824,20 +708,9 @@ alias newsc="vim ~/.newsboat/config"
 alias newsu="vim ~/.newsboat/urls"
 
 alias sst="ssh -O stop"
-
-function ssr() { 
-    ssh -O stop "$1"
-    ssh "$1"
-}
-
-function rep(){
-    repeat "$1" { echo "${@:2}" }
-}
-
-function ff()
-{
-    fuzscope "$@" | peek
-}
+function ssr() { ssh -O stop "$1"; ssh "$1" }
+function rep() { repeat "$1" { echo "${@:2}" } }
+function ff() { fuzscope "$@" | peek }
 
 # I've generally avoided setting PATH in this file
 # and delegated that to the zsh-local file, but it's 
