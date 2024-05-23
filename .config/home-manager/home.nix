@@ -29,6 +29,8 @@
 
     neomutt
     # rr
+ 
+    autojump
 
     # glibc
     gmsh_with_libs
@@ -52,7 +54,6 @@
       magic
       markdownify
       numpy
-      pip
       pdfrw
       plumbum
       pulsectl
