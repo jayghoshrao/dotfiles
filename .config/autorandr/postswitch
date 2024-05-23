@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+$HOME/bin/run --notification --keyboard --pulseaudio --polybar --wallpaper
