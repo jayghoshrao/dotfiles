@@ -340,6 +340,11 @@ xo()
 # eXecute: {{{
 x()
 {
+    if [[ -z "$2" ]]; then
+        nohup $1 >/dev/null 2>&1 & disown
+        return
+    fi
+
     local OPENER
     OPENER=$1
     shift 
