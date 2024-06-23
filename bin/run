@@ -134,6 +134,12 @@ save_display_layout(){
 
 }
 
+lock(){
+    if [[ "$(systemctl is-enabled gdm.service)" == "enabled" ]] && [[ -n "$(pgrep -f gnome-screensaver)" ]]; then
+        dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock
+    fi
+}
+
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
@@ -182,6 +188,10 @@ do
             save_display_layout "$2"
             shift
             shift
+            ;;
+        --lock)
+            lock &
+            exit
             ;;
         --all)
             set_keymap &
