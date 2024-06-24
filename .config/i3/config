@@ -217,24 +217,28 @@ exec --no-startup-id nm-applet &
 exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
 exec --no-startup-id dropbox &
-# exec --no-startup-id owncloud &
-# exec --no-startup-id nextcloud &
 exec --no-startup-id recollindex &
-# exec --no-startup-id rocketchat-desktop & 
 exec --no-startup-id discord & 
 exec --no-startup-id playerctld daemon &
 
-exec --no-startup-id mopidy &
-exec --no-startup-id mpd ~/.config/mpd/mpd.conf &
+# exec --no-startup-id owncloud &
+# exec --no-startup-id nextcloud &
+# exec --no-startup-id rocketchat-desktop & 
+# exec --no-startup-id mopidy &
+# exec --no-startup-id mpd ~/.config/mpd/mpd.conf &
 
+# # NOTE: Should now be handled in keyd
 # exec_always --no-startup-id setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
+# exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Control_L=Escape'
+# # This is still used since I haven't migrated umlauts handling to keyd
 exec_always --no-startup-id xmodmap ~/.local/etc/xmodmap/xmodmap.modified
-exec_always --no-startup-id xcape -e 'Caps_Lock=Escape;Control_L=Escape'
 
-exec_always --no-startup-id xset -dpms &
+# Display power management and screensaver settings
+exec_always --no-startup-id xset +dpms && xset dpms 300 600 1200 &
 exec_always --no-startup-id xset s off &
 
-set $Locker dm-tool lock
+# set $Locker dm-tool lock
+set $Locker xdg-screensaver lock
 
 # }}}
 
@@ -283,19 +287,19 @@ bindsym $mod+bracketleft workspace prev_on_output
 
 # Screens :{{{
 
-workspace  $ws1   output  DP1-2
-workspace  $ws2   output  DP1-2
-workspace  $ws3   output  DP1-2
-workspace  $ws4   output  DP1-2
-workspace  $ws5   output  DP1-2
-workspace  $ws6   output  DP1-2
-workspace  $ws7   output  DP1-2
-workspace  $ws8   output  DP1-2
-workspace  $ws9   output  DP1-2
-workspace  $ws10  output  DP1-2
+workspace  $ws1   output  DP-1-2
+workspace  $ws2   output  DP-1-2
+workspace  $ws3   output  DP-1-2
+workspace  $ws4   output  DP-1-2
+workspace  $ws5   output  DP-1-2
+workspace  $ws6   output  DP-1-2
+workspace  $ws7   output  DP-1-2
+workspace  $ws8   output  DP-1-2
+workspace  $ws9   output  DP-1-2
+workspace  $ws10  output  DP-1-2
 
-workspace  "log"  output  DP1-1
-workspace  "Zoom Meeting"  output  DP1-1
+workspace  "log"  output  DP-1-1
+workspace  "Zoom Meeting"  output  DP-1-1
 
 # bindsym $mod+Tab focus output up
 # bindsym $mod+Shift+Tab move workspace to left right
@@ -583,14 +587,15 @@ bindsym $mod+d mode "$mode_deskenv"
 bindsym $alt+period exec --no-startup-id dunstctl history-pop &
 bindsym Control+period exec --no-startup-id dunstctl close &
 
-
+# # Some gnome settings
+# exec --no-startup-id /usr/lib/gnome-settings-daemon/gnome-settings-daemon
+# exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
 ## NOTE: Deactivates lxappearance
 # exec --no-startup-id /usr/lib/gsd-xsettings
 
 # Workaround for a recent-ish bug/update
 for_window [all] border pixel 1
 # for_window [class="Zathura"] move to workspace "temp"
-
 
 bindsym F12 exec $SCRIPTS/xc
 
@@ -616,3 +621,9 @@ bindsym $mod+i focus mode_toggle
 
 bindsym $mod+shift+semicolon exec $SCRIPTS/lsws | rofi -dmenu -p "move to WS" -i -l 5| xargs i3-msg move container to workspace 
 # bindsym $mod+grave [urgent=latest] focus
+
+# Locking under GDM
+# exec --no-startup-id gnome-screensaver &
+# dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock
+# OR
+# xdg-screensaver lock
