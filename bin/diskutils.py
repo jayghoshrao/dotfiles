@@ -3,6 +3,7 @@
 import ctypes
 import ctypes.util
 import os
+import sys
 import argparse
 from pathlib import Path
 
@@ -55,7 +56,8 @@ class StructBlkidStructDev(ctypes.Structure):
 
     def __repr__(self):
         str = f"{self.bid_name.decode()}" 
-        str += f" \"{self.bid_label.decode()}\"" if self.bid_label else ''
+        str += f" \"{self.bid_label.decode()}\"" if self.bid_label else ' -'
+        str += f" {self.bid_uuid.decode()}"
         str += f" ({self.bid_type.decode()})"
         str += f" --> {get_mountpoint(self.bid_name.decode())}" if is_disk_mounted(self.bid_name.decode()) else ''
         return str
@@ -85,7 +87,7 @@ blkid_evaluate_tag = libblkid.blkid_evaluate_tag
 libblkid.blkid_evaluate_tag.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p]
 libblkid.blkid_evaluate_tag.restype = ctypes.c_char_p
 
-def mount(source, target, options=0, data=None):
+def mount(source, target=None, options=0, data=None):
     if not source:
         cache = ctypes.POINTER(StructBlkidCache)()
         ret = blkid_get_cache(ctypes.byref(cache), 0)
@@ -111,6 +113,8 @@ def mount(source, target, options=0, data=None):
     if ret < 0:
         errno = ctypes.get_errno()
         raise OSError(errno, f"Error mounting {source} ({fs}) on {target} with options {options}, data {data}: {os.strerror(errno)}")
+
+    return target
 
 def umount(target):
     if not target:
@@ -162,7 +166,7 @@ def find_disk_by_uuid(uuid):
     devname = blkid_evaluate_tag(b'UUID', uuid.encode(), 0)
     if devname:
         return devname.decode()
-    raise ValueError(f"Could not determine filesystem name for {uuid}")
+    return ''
 
 
 def major(devno):
@@ -232,7 +236,10 @@ def main():
     elif args.mode == 'fstype':
         print(get_fstype(args.device))
     elif args.mode == 'uuid':
-        print(find_disk_by_uuid(args.uuid))
+        devname = find_disk_by_uuid(args.uuid)
+        print(devname)
+        if not devname:
+            sys.exit(-1)
     else:
         raise ValueError(args.mode)
 
