@@ -588,8 +588,8 @@ bindsym $alt+period exec --no-startup-id dunstctl history-pop &
 bindsym Control+period exec --no-startup-id dunstctl close &
 
 # # Some gnome settings
-# exec --no-startup-id /usr/lib/gnome-settings-daemon/gnome-settings-daemon
 # exec --no-startup-id /usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
+# exec --no-startup-id /usr/lib/gnome-settings-daemon/gnome-settings-daemon
 ## NOTE: Deactivates lxappearance
 # exec --no-startup-id /usr/lib/gsd-xsettings
 
@@ -623,7 +623,7 @@ bindsym $mod+shift+semicolon exec $SCRIPTS/lsws | rofi -dmenu -p "move to WS" -i
 # bindsym $mod+grave [urgent=latest] focus
 
 # Locking under GDM
-# exec --no-startup-id gnome-screensaver &
+exec --no-startup-id gnome-screensaver &
 # dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock
 # OR
 # xdg-screensaver lock

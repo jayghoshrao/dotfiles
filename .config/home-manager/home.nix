@@ -25,7 +25,7 @@
     nix-direnv
     cachix
 
-    vscode-extensions.ms-vscode.cpptools
+    # vscode-extensions.ms-vscode.cpptools
 
     neomutt
     # rr
@@ -34,40 +34,42 @@
 
     # glibc
     gmsh_with_libs
+    rclone
     comma
     ffsend
 
     nix-info
+    rclone
 
-    # Global python packages for my scripts
-    (python311.withPackages(ps: with ps; [ 
-      argcomplete
-      beautifulsoup4
-      deepdiff
-      gpgme
-      i3-py
-      i3ipc
-      icalendar # For use with mutt-ics
-      ipython 
-      joblib
-      lz4
-      magic
-      markdownify
-      numpy
-      pdfrw
-      plumbum
-      pulsectl
-      pyfzf
-      pygithub
-      python-gnupg
-      requests
-      rich
-      ruamel_yaml
-      scipy
-      spotipy
-      wget
-      xdg
-    ]))
+    # # Global python packages for my scripts
+    # (python311.withPackages(ps: with ps; [ 
+    #   argcomplete
+    #   beautifulsoup4
+    #   deepdiff
+    #   gpgme
+    #   i3-py
+    #   i3ipc
+    #   icalendar # For use with mutt-ics
+    #   ipython 
+    #   joblib
+    #   lz4
+    #   magic
+    #   markdownify
+    #   numpy
+    #   pdfrw
+    #   plumbum
+    #   pulsectl
+    #   pyfzf
+    #   pygithub
+    #   python-gnupg
+    #   requests
+    #   rich
+    #   ruamel_yaml
+    #   scipy
+    #   spotipy
+    #   wget
+    #   xdg
+    # ]))
 
   ];
 
