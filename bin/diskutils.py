@@ -9,6 +9,9 @@ from pathlib import Path
 
 from iterfzf import iterfzf
 
+## TODO: Properly manage blkid cache. Get and put, use single (global?) cache.
+## TODO: Reconsider design: Pure python-c binding library? Or utilities? No official bindings exist.
+
 DEFAULT_MOUNT_ROOT = Path('/media')
 
 libc = ctypes.CDLL(ctypes.util.find_library('c'), use_errno=True)
@@ -79,13 +82,21 @@ blkid_get_cache = libblkid.blkid_get_cache
 blkid_get_cache.restype = ctypes.c_int
 blkid_get_cache.argtypes = [ctypes.POINTER(ctypes.POINTER(StructBlkidCache)), ctypes.c_void_p]
 
+blkid_put_cache = libblkid.blkid_put_cache
+blkid_put_cache.argtypes = [ctypes.c_void_p]
+blkid_put_cache.restype = None
+
 blkid_get_tag_value = libblkid.blkid_get_tag_value
 blkid_get_tag_value.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_char_p]
 blkid_get_tag_value.restype = ctypes.c_char_p
 
 blkid_evaluate_tag = libblkid.blkid_evaluate_tag
-libblkid.blkid_evaluate_tag.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p]
-libblkid.blkid_evaluate_tag.restype = ctypes.c_char_p
+blkid_evaluate_tag.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p]
+blkid_evaluate_tag.restype = ctypes.c_char_p
+
+blkid_probe_all = libblkid.blkid_probe_all
+blkid_probe_all.argtypes = [ctypes.c_void_p]
+blkid_probe_all.restype = ctypes.c_int
 
 def mount(source, target=None, options=0, data=None):
     if not source:
@@ -175,6 +186,7 @@ def major(devno):
 # Python function to iterate over all devices
 def iterate_over_devices(devno=None):
     cache = get_blkid_cache()
+    blkid_probe_all(cache)
     iter_handle = blkid_dev_iterate_begin(cache)
     if not iter_handle:
         raise RuntimeError("Failed to begin device iteration")
