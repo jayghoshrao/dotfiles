@@ -212,7 +212,8 @@ exec --no-startup-id redshift &
 # exec --no-startup-id redshift -l 12.97:77.59 -t 5000:2500 & ## India
 
 # exec --no-startup-id picom &
-exec --no-startup-id xbacklight -set 40 &
+# exec --no-startup-id xbacklight -set 40 &
+exec --no-startup-id light -S 40 &
 exec --no-startup-id nm-applet &
 exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
@@ -318,8 +319,8 @@ bindsym $mod+Shift+Tab move workspace to output right
 
 # Volume & Media Bindings: {{{
 
-bindsym XF86MonBrightnessDown exec xbacklight -dec 5
-bindsym XF86MonBrightnessUp   exec xbacklight -inc 5
+bindsym XF86MonBrightnessDown exec light -U 5
+bindsym XF86MonBrightnessUp   exec light -A 5
 
 bindsym  XF86AudioRaiseVolume  exec  "amixer  -q  sset   Master,0  10%+    unmute"
 bindsym  XF86AudioLowerVolume  exec  "amixer  -q  sset   Master,0  10%-    unmute"
