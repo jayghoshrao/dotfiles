@@ -3,7 +3,7 @@
 urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
 link="${1:-$(xclip -o -selection clipboard)}"
-BM_FILE=$HOME/Documents/Notes/local_bookmarks.txt
+BM_FILE=$HOME/local/share/local_bookmarks.txt
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
