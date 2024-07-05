@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-## Run a command within each subdirectory
-## Usage: fordir pwd
+## Run a command within several args
+## Usage: forargs -c echo 
 
 ROOT=$PWD
 PARALLEL=0
@@ -14,29 +14,27 @@ do
     key="$1"
     case $key in
         -p|--parallel)
-            PARALLEL=1
-            shift # past value
-            ;;
+            PARALLEL=1; shift ;;
         -c|--cmd|--command)
-            CMD="$2"
-            shift # past value
-            shift # past value
-            ;;
-        *)    # unknown option
-            POSITIONAL+=("$1") # save it in an array for later
-            shift # past argument
-            ;;
+            CMD="$2"; shift 2 ;;
+        *)
+            POSITIONAL+=("$1"); shift ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 
-for ARG in "$@"; do
-    if [[ $PARALLEL == 0 ]]; then
-        eval "$CMD $ARG"
-    else
-        eval nohup "$CMD $ARG" >out.log 2>&1 &
-    fi
-done
+if [[ $PARALLEL == 0 ]]; then
+    for ARG in "$@"; do
+        $CMD "$ARG"
+    done
+elif command -v parallel; then
+    export CMD
+    parallel $CMD ::: "$@"
+else
+    for ARG in "$@"; do
+        $CMD "$ARG" >out.log 2>&1 &
+    done
+    wait
+fi
 
-wait
