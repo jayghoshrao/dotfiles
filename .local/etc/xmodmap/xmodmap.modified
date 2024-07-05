@@ -1,24 +1,24 @@
-!
-! Swap Caps_Lock and Control_L
-! Use xcape to make Caps_Lock temporarily behave like Esc
-! xcape -e 'Caps_Lock=Escape;Control_L=Escape'
-!
-remove Lock = Caps_Lock
-remove Control = Control_L
-keysym Caps_Lock = Control_L
-keysym Control_L = Control_L
-add Control = Control_L
-add Lock = Caps_Lock
+! ! NOTE: Handled in keyd now
+! ! Swap Caps_Lock and Control_L
+! ! Use xcape to make Caps_Lock temporarily behave like Esc
+! ! xcape -e 'Caps_Lock=Escape;Control_L=Escape'
+! !
+! remove Lock = Caps_Lock
+! remove Control = Control_L
+! keysym Caps_Lock = Control_L
+! keysym Control_L = Control_L
+! add Control = Control_L
+! add Lock = Caps_Lock
 
-!
-! Swap Alt and Windows Key
-!
-remove Mod1 = Alt_L
-remove Mod4 = Super_L
-keysym Alt_L = Super_L
-keysym Super_L = Alt_L
-add Mod1 = Alt_L
-add Mod4 = Super_L
+! !
+! ! Swap Alt and Windows Key
+! !
+! remove Mod1 = Alt_L
+! remove Mod4 = Super_L
+! keysym Alt_L = Super_L
+! keysym Super_L = Alt_L
+! add Mod1 = Alt_L
+! add Mod4 = Super_L
 
 !
 ! German umlauts
@@ -27,4 +27,3 @@ keycode  30 = u U udiaeresis Udiaeresis
 keycode  32 = o O odiaeresis Odiaeresis
 keycode  38 = a A adiaeresis Adiaeresis
 keycode 108 = Mode_switch
-

@@ -55,6 +55,9 @@ launch_polybar(){
 
 rename_pulseaudio_sinks(){
 
+    return 
+    ## FIXME: pacmd not available with pipewire
+
     start_time=$SECONDS
     max_duration=60 #in seconds
 
@@ -87,8 +90,12 @@ set_wallpaper(){
 }
 
 set_keymap(){
+    # Umlauts
     xmodmap ~/.local/etc/xmodmap/xmodmap.modified
-    xcape -e 'Caps_Lock=Escape;Control_L=Escape'
+
+    # # NOTE: Handled in keyd
+    # setxkbmap -option altwin:swap_lalt_lwin,caps:ctrl_modifier
+    # xcape -e 'Caps_Lock=Escape;Control_L=Escape'
 }
 
 launch_dunst(){
