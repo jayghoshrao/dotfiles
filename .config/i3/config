@@ -330,7 +330,7 @@ bindsym  XF86AudioMute         exec  "amixer  -D  pulse  set       Master  Playb
 # bindsym  $mod+shift+i  exec  "amixer  -q  sset   Master,0  10%-    unmute"
 bindsym  $mod+plus  exec  "amixer  -q  sset   Master,0  10%+    unmute"
 bindsym  $mod+minus  exec  "amixer  -q  sset   Master,0  10%-    unmute"
-bindsym  $mod+m exec  "amixer  -D  pulse  set       Master  Playback  Switch  toggle"
+bindsym  $mod+m exec  "amixer set Master Playback Switch toggle"
 bindsym  $mod+shift+m exec "$SCRIPTS/mic -m toggle"
 bindsym  $mod+$alt+m exec "$SCRIPTS/mic -ma 1"
 
