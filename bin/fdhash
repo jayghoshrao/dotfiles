@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+die(){
+    echo -e "ERROR: $@" >&2
+    exit -1
+}
+
+TARGET=${1:-$PWD}
+HASH_COMMAND="sha256sum"
+
+if [ -d "$TARGET" ]; then
+    fd --full-path "$TARGET" --base-directory "$TARGET" -t f -x "$HASH_COMMAND" | sort | $HASH_COMMAND | awk '{print $1}'
+elif [ -f "$TARGET" ]; then
+    $HASH_COMMAND "$TARGET" | awk '{print $1}'
+fi

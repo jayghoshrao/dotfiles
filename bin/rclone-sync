@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+function preFlightCheck()
+{
+    TOOLS=(rclone date)
+    exit_flag=false
+    for TOOL in ${TOOLS[@]}; do 
+        if [ ! -x "$(command -v $TOOL )" ]; then
+            msg "${TOOL} not found!"
+        fi
+    done
+
+    ${exit_flag} && die "Please install the above prerequisites before running this script"
+}
+
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+function die(){
+    echo "ERROR: $@" 
+    exit
+}
+
+# DEFAULT_DIRS=(dev/personal Nextcloud ownCloud Dropbox Pictures Music Documents scratch raspi .fonts .mutt .mozilla/firefox/jayghoshter .screenlayout .ssh .terminfo .local/share/mail .password-store .pass.gpg .my-pwds.gpg .zsh-local)
+
+# TODO: add scratch
+SYNC_DIRS=(Data Documents Downloads Media bin dev local/share local/config)
+EXCLUDE_PATTERN="/Literature/**"
+REMOTE_NAME=frostheim-encrypted
+REMOTE_PATH=IBT918
+LOG_DIR=$HOME/local/logs/rclone-sync
+LOG_FILE="${LOG_DIR}/$(date +%Y-%m-%d_%H%M%S).log"
+
+mkdir -p ${LOG_DIR}
+
+cd $HOME
+for DIR in ${SYNC_DIRS[@]}; do
+    rclone sync "${DIR}" "${REMOTE_NAME}:${REMOTE_PATH}/${DIR}" --log-file "${LOG_FILE}" --log-level=DEBUG --progress --transfers 4 --sftp-concurrency 4 --rc --check-first --exclude="${EXCLUDE_PATTERN}"
+done
