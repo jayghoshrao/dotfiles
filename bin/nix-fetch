@@ -11,7 +11,7 @@ print(){
     printf "%s\n" "$@"
 }
 
-BRANCH=
+BRANCH=nixpkgs-unstable
 TAG=
 VERBOSE=0
 
