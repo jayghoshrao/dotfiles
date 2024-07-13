@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
-## nsh: global nix devShell using project flakes
+## Find and run nix flake devShells from anywhere
 
-projects_dir=$HOME/templates/nix-flakes
+die(){
+    echo -e "ERROR: $@" >&2
+    exit -1
+}
 
-project=$(ls "$projects_dir" | fzf)
+FIND_DIR=$HOME/dev
+FLAKE=$(fd --full-path '/flake.nix' "$FIND_DIR" | fzf)
 
-[ -z $project ] && return
+[ -n "$FLAKE" ] || exit 0
+[ -f "$FLAKE" ] || die "$FLAKE is not a file!"
 
-fullpath=$projects_dir/$project
-nix develop --impure "$fullpath" --command zsh
+nix develop --impure "$FLAKE" --command zsh
