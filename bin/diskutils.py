@@ -6,6 +6,7 @@ import os
 import sys
 import argparse
 from pathlib import Path
+import pwd
 
 from iterfzf import iterfzf
 
@@ -119,8 +120,14 @@ def mount(source, target=None, options=0, data=None):
 
     if fs == 'ntfs':
         fs = 'ntfs3' # use ntfs3 kernel driver
+    elif fs == 'exfat':
+        # Mount exfat with uid,gid set
+        if os.getuid() == 0 and os.environ.get('SUDO_USER', None):
+            pwd_entry = pwd.getpwnam(os.getlogin())
+            if not data:
+                data=f"uid={pwd_entry.pw_uid},gid={pwd_entry.pw_gid}"
 
-    ret = libc.mount(source.encode(), target.encode(), fs.encode(), options, data)
+    ret = libc.mount(source.encode(), target.encode(), fs.encode(), options, data.encode() if data else None)
     if ret < 0:
         errno = ctypes.get_errno()
         raise OSError(errno, f"Error mounting {source} ({fs}) on {target} with options {options}, data {data}: {os.strerror(errno)}")
@@ -222,6 +229,7 @@ def parse_args():
     sub_mount= subparsers.add_parser('mount', help='mount device')
     sub_mount.add_argument('device', nargs='?', help="device to mount")
     sub_mount.add_argument('target', nargs='?', help="target directory")
+    sub_mount.add_argument('-o', '--options', help='Options to pass while mounting (NOT mountflags)')
 
     sub_unmount= subparsers.add_parser('unmount', help='unmount device')
     sub_unmount.add_argument('target', nargs='?', help="target dir to unmount")
@@ -239,7 +247,7 @@ def main():
     args = parse_args()
 
     if args.mode == 'mount':
-        mount(args.device, args.target)
+        mount(args.device, args.target, 0, args.options)
     elif args.mode == 'unmount':
         umount(args.target)
     elif args.mode == 'list':
