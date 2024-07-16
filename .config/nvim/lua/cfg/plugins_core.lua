@@ -157,7 +157,10 @@ return {
 
     {
         "rcarriga/nvim-dap-ui",
-        dependencies = "mfussenegger/nvim-dap",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "nvim-neotest/nvim-nio"
+        },
         config = function()
             local dap = require("dap")
             local dapui = require("dapui")
@@ -304,7 +307,7 @@ return {
 
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 
-    { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki'}},
+    { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
     {
         'skywind3000/asynctasks.vim',

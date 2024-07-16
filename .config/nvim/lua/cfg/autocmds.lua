@@ -46,10 +46,10 @@ vim.api.nvim_create_autocmd('FileChangedShellPost', {
 --     }
 -- )
 
-vim.api.nvim_create_autocmd(
-    'FileType', {
-        group = group,
-        pattern = "pandoc",
-        command = [[ setlocal commentstring=%%\ %s ]],
-    }
-)
+-- vim.api.nvim_create_autocmd(
+--     'FileType', {
+--         group = group,
+--         pattern = "pandoc",
+--         command = [[ setlocal commentstring=%%\ %s ]],
+--     }
+-- )

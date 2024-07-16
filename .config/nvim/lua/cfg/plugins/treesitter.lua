@@ -4,7 +4,7 @@ require('nvim-treesitter.configs').setup {
         enable = true,
         use_languagetree = true,
         additional_vim_regex_highlighting = false,
-        disable = {'pandoc', 'vimwiki', 'markdown', 'tex'},
+        disable = {'pandoc', 'vimwiki', 'markdown', 'tex', 'latex'},
     },
     indent = {
         enable = true,

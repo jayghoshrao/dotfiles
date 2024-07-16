@@ -92,8 +92,8 @@ function M.on_attach(client, bufnr)
 
   -- Set up keymaps
   local opts = { noremap = true, silent = false }
-  buf_map('n', '<c-]>', [[<cmd>lua require('cfg.plugins.lsp').definitions()<cr>]], opts)
-  -- buf_map('n', '<c-]>', [[<cmd>lua vim.lsp.buf.definition()<cr>]], opts)
+  -- buf_map('n', '<c-]>', [[<cmd>lua require('cfg.plugins.lsp').definitions()<cr>]], opts)
+  buf_map('n', '<c-]>', [[<cmd>lua vim.lsp.buf.definition()<cr>]], opts)
   buf_map('n', 'gd', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
   buf_map('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
   buf_map('n', 'gD', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
