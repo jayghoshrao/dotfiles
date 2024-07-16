@@ -120,7 +120,7 @@ def mount(source, target=None, options=0, data=None):
 
     if fs == 'ntfs':
         fs = 'ntfs3' # use ntfs3 kernel driver
-    elif fs == 'exfat':
+    elif fs == 'exfat' or fs == 'vfat':
         # Mount exfat with uid,gid set
         if os.getuid() == 0 and os.environ.get('SUDO_USER', None):
             pwd_entry = pwd.getpwnam(os.getlogin())
@@ -130,6 +130,7 @@ def mount(source, target=None, options=0, data=None):
     ret = libc.mount(source.encode(), target.encode(), fs.encode(), options, data.encode() if data else None)
     if ret < 0:
         errno = ctypes.get_errno()
+        print(f"uid={os.getuid()} gid={os.getgid()}")
         raise OSError(errno, f"Error mounting {source} ({fs}) on {target} with options {options}, data {data}: {os.strerror(errno)}")
 
     return target
