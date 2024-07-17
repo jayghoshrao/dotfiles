@@ -77,7 +77,7 @@ require("nvim-tree").setup {
     on_attach = my_on_attach,
 }
 
-map('n', '<space>v', [[:NvimTreeToggle<CR>]])
+-- map('n', '<space>v', [[:NvimTreeToggle<CR>]])
 map('n', '<leader>e', [[:NvimTreeFindFileToggle<CR>]])
 
 vim.g.loaded_netrwPlugin = 1

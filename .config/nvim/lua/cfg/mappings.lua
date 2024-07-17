@@ -137,12 +137,15 @@ map('i', '<a-k>', '<esc>:m .-2<CR>==i')
 map('v', '<a-j>', ":m '>+1<CR>gv=gv" )
 map('v', '<a-k>', ":m '<-2<CR>gv=gv" )
 
--- Quick German mappings
-map('i', '<a-s>', 'ß')
-map('i', '<a-a>', 'ä')
-map('i', '<a-o>', 'ö')
-map('i', '<a-u>', 'ü')
-map('i', '<a-s-a>', 'Ä')
-map('i', '<a-s-o>', 'Ö')
-map('i', '<a-s-u>', 'Ü')
+-- -- Quick German mappings
+-- map('i', '<a-s>', 'ß')
+-- map('i', '<a-a>', 'ä')
+-- map('i', '<a-o>', 'ö')
+-- map('i', '<a-u>', 'ü')
+-- map('i', '<a-s-a>', 'Ä')
+-- map('i', '<a-s-o>', 'Ö')
+-- map('i', '<a-s-u>', 'Ü')
 
+map("n", "<space>c", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
+map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
+map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")

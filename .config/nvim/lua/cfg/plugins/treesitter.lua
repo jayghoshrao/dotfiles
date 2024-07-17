@@ -91,7 +91,6 @@ require('nvim-treesitter.configs').setup {
         'http',
         'json',
         'json5',
-        'latex',
         'llvm',
         'lua',
         'markdown',
