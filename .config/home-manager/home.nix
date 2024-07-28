@@ -37,6 +37,7 @@
     rclone
     comma
     ffsend
+    cadet44
 
     nix-info
     rclone
