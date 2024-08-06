@@ -66,14 +66,14 @@ return {
         },
     },
 
-    {
-        'jose-elias-alvarez/null-ls.nvim',
-        ft = {"python"},
-        config = function()
-            require 'cfg.plugins.lsp.null_ls'
-        end,
-        requires = { "nvim-lua/plenary.nvim" },
-    },
+    -- {
+    --     'jose-elias-alvarez/null-ls.nvim',
+    --     ft = {"python"},
+    --     config = function()
+    --         require 'cfg.plugins.lsp.null_ls'
+    --     end,
+    --     requires = { "nvim-lua/plenary.nvim" },
+    -- },
 
     -- TODO: 'https://github.com/sustech-data/wildfire.nvim'
     -- https://github.com/echasnovski/mini.nvim
@@ -281,20 +281,10 @@ return {
     {
         'andersevenrud/nordic.nvim',
         config = function()
-            -- The table used in this example contains the default settings.
-            -- Modify or remove these to your liking:
             require('nordic').colorscheme({
-                -- Underline style used for spelling
-                -- Options: 'none', 'underline', 'undercurl'
                 underline_option = 'undercurl',
-                -- Italics for certain keywords such as constructors,
-                -- functions,
-                -- labels and namespaces
                 italic = true,
-                -- Italic styled comments
                 italic_comments = true,
-                -- Minimal mode: different choice of colors for Tabs and
-                -- StatusLine
                 minimal_mode = false
             })
             -- require('cfg.utils').create_augroups {
@@ -402,54 +392,5 @@ return {
         },
     },
 
-    {
-        'jpmcb/nvim-llama',
-        config = function()
-            require("nvim-llama").setup {
-                model = 'llama2',
-            }
-        end
-    },
-
-    {
-        "David-Kunz/gen.nvim",
-        cmd = { "Gen" },
-        config = function()
-            local gen = require("gen")
-            gen.setup({
-                model = "llama3:8b", -- The default model to use.
-                host = '0.0.0.0',
-                port = 11434,
-                display_mode = "float", -- The display mode. Can be "float" or "split".
-                show_prompt = false, -- Shows the Prompt submitted to Ollama.
-                show_model = true, -- Displays which model you are using at the beginning of your chat session.
-                no_auto_close = false, -- Never closes the window automatically.
-                -- init = function(options)
-                --     pcall(io.popen, "ollama serve > /dev/null 2>&1 &")
-                -- end,
-                -- Function to initialize Ollama
-                command = function(options)
-                    return "curl --silent --no-buffer -X POST http://"
-                        .. options.host
-                        .. ":"
-                        .. options.port
-                        .. "/api/chat -d $body"
-                end,
-                -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
-                -- This can also be a lua function returning a command string, with options as the input parameter.
-                -- The executed command must return a JSON object with { response, context }
-                -- (context property is optional).
-                debug = false,
-            })
-        end,
-        dependencies = {
-            {
-                'dj95/telescope-gen.nvim',
-                config=function()
-                    require('telescope').load_extension('gen')
-                end
-            }
-        }
-    },
 
 }

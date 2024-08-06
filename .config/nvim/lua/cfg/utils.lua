@@ -2,35 +2,35 @@
 local M = {}
 
 function M.map(modes, lhs, rhs, opts)
-  opts = opts or {}
-  opts.noremap = opts.noremap == nil and true or opts.noremap
-  if type(modes) == 'string' then
-    modes = { modes }
-  end
-  for _, mode in ipairs(modes) do
-    if type(rhs) == 'string' then
-      vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
-    else
-      opts.callback = rhs
-      vim.api.nvim_set_keymap(mode, lhs, '', opts)
+    opts = opts or {}
+    opts.noremap = opts.noremap == nil and true or opts.noremap
+    if type(modes) == 'string' then
+        modes = { modes }
     end
-  end
+    for _, mode in ipairs(modes) do
+        if type(rhs) == 'string' then
+            vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+        else
+            opts.callback = rhs
+            vim.api.nvim_set_keymap(mode, lhs, '', opts)
+        end
+    end
 end
 
 function M.buf_map(buffer, modes, lhs, rhs, opts)
-  opts = opts or {}
-  opts.noremap = opts.noremap == nil and true or opts.noremap
-  if type(modes) == 'string' then
-    modes = { modes }
-  end
-  for _, mode in ipairs(modes) do
-    if type(rhs) == 'string' then
-      vim.api.nvim_buf_set_keymap(buffer, mode, lhs, rhs, opts)
-    else
-      opts.callback = rhs
-      vim.api.nvim_buf_set_keymap(buffer, mode, lhs, '', opts)
+    opts = opts or {}
+    opts.noremap = opts.noremap == nil and true or opts.noremap
+    if type(modes) == 'string' then
+        modes = { modes }
     end
-  end
+    for _, mode in ipairs(modes) do
+        if type(rhs) == 'string' then
+            vim.api.nvim_buf_set_keymap(buffer, mode, lhs, rhs, opts)
+        else
+            opts.callback = rhs
+            vim.api.nvim_buf_set_keymap(buffer, mode, lhs, '', opts)
+        end
+    end
 end
 
 function M.create_augroups(definitions)
@@ -46,45 +46,45 @@ function M.create_augroups(definitions)
 end
 
 function M.termcode(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
 -- Bust the cache of all required Lua files.
 -- After running this, each require() would re-run the file.
 local function unload_all_modules()
-  -- Lua patterns for the modules to unload
-  local unload_modules = {
-    '^cfg.',
-  }
+    -- Lua patterns for the modules to unload
+    local unload_modules = {
+        '^cfg.',
+    }
 
-  for k, _ in pairs(package.loaded) do
-    for _, v in ipairs(unload_modules) do
-      if k:match(v) then
-        package.loaded[k] = nil
-        break
-      end
+    for k, _ in pairs(package.loaded) do
+        for _, v in ipairs(unload_modules) do
+            if k:match(v) then
+                package.loaded[k] = nil
+                break
+            end
+        end
     end
-  end
 end
 
 function M.reload()
-  -- Stop LSP
-  vim.cmd.LspStop()
+    -- Stop LSP
+    vim.cmd.LspStop()
 
-  -- Unload all already loaded modules
-  unload_all_modules()
+    -- Unload all already loaded modules
+    unload_all_modules()
 
-  -- Source init.lua
-  vim.cmd.luafile '$MYVIMRC'
+    -- Source init.lua
+    vim.cmd.luafile '$MYVIMRC'
 end
 
 -- Restart Vim without having to close and run again
 function M.restart()
-  -- Reload config
-  M.reload()
+    -- Reload config
+    M.reload()
 
-  -- Manually run VimEnter autocmd to emulate a new run of Vim
-  vim.cmd.doautocmd 'VimEnter'
+    -- Manually run VimEnter autocmd to emulate a new run of Vim
+    vim.cmd.doautocmd 'VimEnter'
 end
 
 function M.toggle_quickfix()
@@ -110,21 +110,19 @@ end
 -- Useful function for debugging
 -- Print the given items
 function _G.P(...)
-  local objects = vim.tbl_map(vim.inspect, { ... })
-  print(unpack(objects))
+    local objects = vim.tbl_map(vim.inspect, { ... })
+    print(unpack(objects))
 end
 
-function M.cd_root()
-    local path=vim.fn.getcwd()
-    local root_markers = { '.git', '.tasks', 'compile_commands.json', 'requirements.txt', 'setup.py'}
+function M.find_root()
+    local path = vim.fn.getcwd()
+    local root_markers = { '.git', '.tasks', 'compile_commands.json', 'requirements.txt', 'setup.py' }
 
     while true do
-        for _,  marker in ipairs(root_markers) do
+        for _, marker in ipairs(root_markers) do
             local marker_path = path .. '/' .. marker
             if vim.fn.isdirectory(marker_path) == 1 or vim.fn.filereadable(marker_path) == 1 then
-                vim.cmd('cd ' .. path)
-                print('Changed directory to: ' .. path)
-                return
+                return path
             end
         end
 
@@ -138,6 +136,13 @@ function M.cd_root()
     end
 end
 
+function M.cd_root()
+    local root = M.find_root()
+    vim.cmd('cd ' .. root)
+    print("Changed dir to root: " .. root)
+end
+
+
 -- Open init.lua and change working directory to its location
 function M.editrc()
     local init_lua_path = vim.fn.stdpath('config') .. '/init.lua'
@@ -146,9 +151,22 @@ function M.editrc()
     if vim.fn.filereadable(init_lua_path) == 1 then
         vim.cmd('silent! edit ' .. init_lua_path) -- Open init.lua
         local init_lua_dir = vim.fn.fnamemodify(init_lua_path, ':h')
-        vim.cmd('cd ' .. init_lua_dir) -- Change working directory to init.lua's location
+        vim.cmd('cd ' .. init_lua_dir)            -- Change working directory to init.lua's location
     else
         print('init.lua not found.')
+    end
+end
+
+function M.LlamaRun(prompt_tag, opts)
+    if opts.replace then
+        vim.cmd('normal! vipd')
+        vim.cmd('Gen ' .. prompt_tag)
+    elseif opts.yank then
+        vim.cmd('normal! vipy')
+        vim.cmd('Gen ' .. prompt_tag)
+    elseif opts.visual then
+        local prompts = require("gen.prompts")
+        require('gen').exec(vim.tbl_deep_extend("force", { mode = 'v' }, prompts[prompt_tag]))
     end
 end
 

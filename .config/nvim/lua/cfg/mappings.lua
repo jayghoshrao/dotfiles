@@ -89,10 +89,11 @@ map('n', '<leader>r', ":lua require('cfg.utils').cd_root()<CR>")
 -- map('n', '<F2>', ':%s/\s*$//e<CR>')
 
 map('n', '<space><space>', '<c-^>')
-map('n', '<BS><space>', '<c-^>')
+map('n', '<BS><BS>', '<c-^>')
 
 map('n', '<Tab>', ':bnext<CR>' )
 map('n', '<S-Tab>', ':bprevious<CR>' )
+
 map('n', '<space>x', ':bdelete!<CR>' )
 map('n', '<space>l', ':Buffers<CR>' )
 
@@ -145,7 +146,3 @@ map('v', '<a-k>', ":m '<-2<CR>gv=gv" )
 -- map('i', '<a-s-a>', 'Ä')
 -- map('i', '<a-s-o>', 'Ö')
 -- map('i', '<a-s-u>', 'Ü')
-
-map("n", "<space>c", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
-map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
-map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")

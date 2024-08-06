@@ -105,32 +105,10 @@ function M.on_attach(client, bufnr)
   buf_map('n', 'gs', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
   -- buf_map('n', '<space>y', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
 
-  -- Navigate diagnostics
-
-  buf_map('n', '[g', [[<cmd>lua vim.diagnostic.goto_prev({popup_opts = {border = 'single'}})<cr>]], opts)
-  buf_map('n', ']g', [[<cmd>lua vim.diagnostic.goto_next({popup_opts = {border = 'single'}})<cr>]], opts)
-
   buf_map('n', '[d', [[<cmd>lua vim.diagnostic.goto_prev()<cr>]], opts)
   buf_map('n', ']d', [[<cmd>lua vim.diagnostic.goto_next()<cr>]], opts)
 
--- TODO: 
--- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
--- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
-
-  -- Show diagnostics popup with <leader>d
-  -- TODO: Remap
-  -- buf_map('n', '<space>ld', [[<cmd>lua vim.lsp.diagnostic.show_line_diagnostics({ border = 'single' })<cr>]], opts)
-
-  -- -- TODO: Ideally swap keys with <space>f find
-  buf_map('n', '<space>g', [[<cmd>lua vim.lsp.buf.format()<cr>]], opts)
-
-  -- -- Auto formatting
-  -- if client.resolved_capabilities.document_formatting then
-  --   vim.cmd [[augroup LspFormatting]]
-  --   vim.cmd [[autocmd! * <buffer>]]
-  --   vim.cmd [[autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()]]
-  --   vim.cmd [[augroup END]]
-  -- end
+  -- buf_map('n', '<leader>ff', [[<cmd>lua vim.lsp.buf.format()<cr>]], opts)
 
 end
 
