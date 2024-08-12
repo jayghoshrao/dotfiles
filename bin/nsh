@@ -8,9 +8,11 @@ die(){
 }
 
 FIND_DIR=$HOME/dev
-FLAKE=$(fd --full-path '/flake.nix' "$FIND_DIR" | fzf)
+FLAKE_FILE=$(fd --full-path '/flake.nix' "$FIND_DIR" | fzf)
+[ -n "$FLAKE_FILE" ] || exit 0
+[ -f "$FLAKE_FILE" ] || die "$FLAKE_FILE is not a file!"
 
-[ -n "$FLAKE" ] || exit 0
-[ -f "$FLAKE" ] || die "$FLAKE is not a file!"
+FLAKE=$(dirname "$FLAKE_FILE")
+[ -d "$FLAKE" ] || die "$FLAKE is not a dir!"
 
 nix develop --impure "$FLAKE" --command zsh
