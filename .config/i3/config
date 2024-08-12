@@ -234,8 +234,10 @@ exec --no-startup-id playerctld daemon &
 # # This is still used since I haven't migrated umlauts handling to keyd
 exec_always --no-startup-id xmodmap ~/.local/etc/xmodmap/xmodmap.modified
 
-# Display power management and screensaver settings
-exec_always --no-startup-id xset +dpms && xset dpms 300 600 1200 &
+# # Display power management and screensaver settings
+# exec_always --no-startup-id xset +dpms && xset dpms 300 600 1200 &
+
+exec_always --no-startup-id xset -dpms &
 exec_always --no-startup-id xset s off &
 
 # set $Locker dm-tool lock
