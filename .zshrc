@@ -52,7 +52,8 @@ if [[ $LOAD_ZINIT != false ]] ; then
         OMZL::directories.zsh  \
         OMZL::termsupport.zsh \
         OMZL::completion.zsh \
-        OMZP::git
+        OMZP::git \
+        OMZP::systemd
 
     # TODO: 
     # OMZP::git-extras
