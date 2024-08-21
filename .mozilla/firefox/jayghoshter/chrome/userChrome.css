@@ -3,6 +3,8 @@ Author: dpcdpc11.deviantart.com
 ENJOY!
 */
 
+/* Remove close button*/ .titlebar-buttonbox-container{ display:none } 
+
 /*================ GLOBAL COLORS ================*/
 :root {
 	--night_color1: #2E3440;
