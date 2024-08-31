@@ -26,7 +26,7 @@ function die(){
 
 # TODO: add scratch
 SYNC_DIRS=(Data Documents Downloads Media bin dev local/share local/config)
-EXCLUDE_PATTERN="/Literature/**"
+EXCLUDE_PATTERN="/Literature/**" # Excluded because of obscenely long filenames
 REMOTE_NAME=frostheim-encrypted
 REMOTE_PATH=IBT918
 LOG_DIR=$HOME/local/logs/rclone-sync

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Also see https://github.com/pystardust/ytfzf
+
 import requests
 from bs4 import BeautifulSoup as bs
 import json
