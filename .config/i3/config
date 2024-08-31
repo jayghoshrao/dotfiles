@@ -286,6 +286,9 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+bracketright workspace next_on_output
 bindsym $mod+bracketleft workspace prev_on_output
 
+bindsym $mod+shift+braceright focus output right
+bindsym $mod+shift+braceleft focus output left
+
 # }}}
 
 # Screens :{{{
@@ -309,13 +312,13 @@ workspace  "Zoom Meeting"  output  DP-1-1
 
 bindsym $mod+Tab focus output right
 bindsym $mod+Shift+Tab move workspace to output right
-# bindsym $mod+period move workspace to output right
-# bindsym $mod+comma move workspace to output left
+bindsym $mod+period move container to output right
+bindsym $mod+comma move container to output left
 
 # bindsym $mod+Tab focus output up
 # bindsym $mod+Shift+Tab move workspace to up
-# bindsym $mod+period move workspace to output right
-# bindsym $mod+comma move workspace to output left
+bindsym $mod+shift+period move workspace to output right
+bindsym $mod+shift+comma move workspace to output left
 
 #}}}
 
