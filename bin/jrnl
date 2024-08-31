@@ -34,25 +34,22 @@ do
     case $key in
         -l|--last)
             MODE="LAST"
-            shift
-            ;;
+            shift ;;
         -b|--browse)
             MODE="BROWSE"
-            shift
-            ;;
+            shift ;;
         -D|--directory)
             JRNL_DIR="$2"
-            shift
-            shift
-            ;;
+            shift; shift ;;
         +e|-ne|--no-encrypt-new)
             ENCRYPTION=false
-            shift
-            ;;
+            shift ;;
+        -u|--unlock)
+            MODE="UNLOCK"
+            shift ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
-            shift # past argument
-            ;;
+            shift ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -80,6 +77,8 @@ elif [[ $MODE == "BROWSE" ]]; then
             break
         fi
     done
+elif [[ $MODE == "UNLOCK" ]]; then
+    dex --unlock "$JRNL_FILE"
 else
     if ${ENCRYPTION}; then
         # Decrypt and edit

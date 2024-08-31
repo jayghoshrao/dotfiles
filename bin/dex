@@ -35,24 +35,22 @@ do
     case $key in
         -E|--encrypt)
             MODE='ENCRYPT'
-            shift # past value
-            ;;
+            shift ;;
         -D|--DECRYPT)
             MODE='DECRYPT'
-            shift # past value
-            ;;
+            shift ;;
         -e|--edit)
             MODE='EDIT'
-            shift # past value
-            ;;
+            shift ;;
+        -u|--unlock)
+            MODE="UNLOCK"
+            shift ;;
         -n|--noencrypt-nonexist)
             ENCRYPT_NONEXIST=false
-            shift
-            ;;
+            shift ;;
         -p|--print)
             MODE='PRINT'
-            shift # past value
-            ;;
+            shift ;;
         -clf|--clean-lockfiles)
             for FILE in $LOCKFOLDER/*; do 
                 LOCK_STATUS=$(flock -n -x "$FILE" echo 'unlocked!')
@@ -62,16 +60,14 @@ do
             ;;
         --pager)
             MODE='PAGER'
-            shift # past value
-            ;;
+            shift ;;
         -?*) 
             echo "Unknown option: $1"
             exit
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
-            shift # past argument
-            ;;
+            shift ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -105,12 +101,18 @@ elif [[ "$MODE" == "PRINT" ]]; then
     else
         cat "$FILENAME"
     fi
+elif [[ "$MODE" == "UNLOCK" ]]; then
+    if [[ -f "$LOCKFILE" ]]; then
+        flock -u "$LOCKFILE"
+    fi
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
         # Uses lockfiles to ensure file is not multiply modified
         ( flock -n 9 || die "Failure to acquire lockfile: $LOCKFILE."
+        echo "Acquiring lock..."
         data=$(gpg -dq "$FILENAME" | vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
         unset data
+        echo "Releasing lock..."
         ) 9>"$LOCKFILE"
     elif [ -f "$FILENAME" ]; then
         # If file exists and not encrypted
