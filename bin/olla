@@ -1,0 +1,47 @@
+#!/usr/bin/bash
+
+function ensure_commands()
+{
+    for ARG in "$@"; do
+        [[ -x $(command -v "$ARG") ]] || die "no such command: $1"
+    done
+}
+
+SERVER_URL="http://192.168.2.31:11434"
+MODEL="llama3.1:8b"
+STREAM=true
+ENDPOINT=generate #generate, chat
+
+SEQ_CLS=$'\33[2K'
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        +s|--no-stream) 
+            STREAM=false; shift ;;
+        -m|--model) 
+            MODEL="$2"; shift 2 ;;
+        -p|--pull) 
+            curl --silent --no-buffer ${SERVER_URL}/api/pull \
+                -d "$(jq --arg name "$2" '. + {name: $name}' <<< '{}')" \
+                | jq --arg seq_cls $SEQ_CLS -j --unbuffered '"\r\($seq_cls)\(.status): \(.completed)/\(.total)"'; exit;;
+        -d|--delete) 
+            curl --silent --no-buffer -X DELETE ${SERVER_URL}/api/delete -d "$(jq --arg name "$2" '. + {name: $name}' <<< '{}')"; exit;;
+        -l|--list) 
+            curl --silent ${SERVER_URL}/api/tags | jq -r '.models[] | .name'; exit;;
+        *) POSITIONAL+=("$1"); shift ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+read -p "prompt: " PROMPT
+BODY=$(jq --arg prompt "$PROMPT" --arg model "$MODEL" --argjson stream "$STREAM" '. + {model: $model, prompt: $prompt, stream: $stream}' <<< '{}')
+
+if [[ "$STREAM" == "true" ]]; then
+    curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j --unbuffered '.response'
+else
+    ensure_commands glow
+    curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j '.response' | glow
+fi
