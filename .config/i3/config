@@ -283,11 +283,18 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 
 # bindsym $mod+m workspace next
 # bindsym $mod+n workspace prev
-bindsym $mod+bracketright workspace next_on_output
-bindsym $mod+bracketleft workspace prev_on_output
 
-bindsym $mod+shift+braceright focus output right
-bindsym $mod+shift+braceleft focus output left
+bindsym $alt+bracketright workspace next_on_output
+bindsym $alt+bracketleft workspace prev_on_output
+bindsym $mod+shift+braceright workspace next_on_output
+bindsym $mod+shift+braceleft workspace prev_on_output
+bindsym $mod+bracketright focus output right
+bindsym $mod+bracketleft focus output left
+
+# bindsym $mod+bracketright workspace next_on_output
+# bindsym $mod+bracketleft workspace prev_on_output
+# bindsym $mod+shift+braceright focus output right
+# bindsym $mod+shift+braceleft focus output left
 
 # }}}
 
