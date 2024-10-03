@@ -84,3 +84,52 @@ msg "${RED}Read parameters:${NOFORMAT}"
 msg "- flag: ${flag}"
 msg "- param: ${param}"
 msg "- arguments: ${args[*]-}"
+
+function die(){
+    echo -e "ERROR: $@" >&2
+    exit -1
+}
+
+function ensure_run(){
+    [ -x $(command -v "$1") ] || die "no such command: $1"
+    "$@"
+    [[ $? == 0 ]] || die "command exited with error: $@"
+}
+
+function ensure_commands()
+{
+    for ARG in "$@"; do
+        [[ -x $(command -v "$ARG") ]] || die "no such command: $1"
+    done
+}
+
+function ensure_files()
+{
+    for ARG in "$@"; do
+        [[ -f "$ARG" ]] || die "File not found: $ARG"
+    done
+}
+
+function ensure_match()
+{
+    CMP_STR="$1"
+    shift
+    for ARG in "$@"; do
+        [[ "$ARG" =~ $CMP_STR ]] || die "$ARG doesn't match $CMP_STR"
+    done
+}
+
+function check_files()
+{
+    for ARG in "$@"; do
+        [[ -f "$ARG" ]] || return -1
+    done
+    return 0
+}
+
+function ensure_dirs()
+{
+    for ARG in "$@"; do
+        [[ -d "$ARG" ]] || die "Dir not found: $ARG"
+    done
+}
