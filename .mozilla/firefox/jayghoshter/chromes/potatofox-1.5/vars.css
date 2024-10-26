@@ -1,0 +1,50 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+@import url("overrides.css");
+
+:root {
+    --uc-transition: 150ms ease-in-out;
+    --uc-mouseout-delay: 150ms;
+    
+    --uc-radius: 5px;
+    --uc-button-radius: 5px;
+    --uc-content-radius: 5px;
+    
+    --uc-panel-hint-size: clamp(2px, calc(var(--uc-content-margin)*0.5), 5px);
+    
+    --uc-content-margin: 10px;
+    --uc-sidebar-margin: 4px;
+     
+    &[uidensity="compact"] {
+        --uc-content-margin: 8px;
+        --uc-sidebar-margin: 3px;
+    }
+    
+    /* sidebar vars */
+    --uc-sidebar-hover-width: 180px;
+    
+    --uc-sidebar-width: 40px;
+    &[uidensity=compact] {
+        --uc-sidebar-width: 34px;
+    }
+    
+    /* linux window controls */
+    --gtk-window-control-single: 38px;
+    --gtk-window-control-dual: 76px;
+    --gtk-window-control-tri: 114px;
+    /* linux window controls w/ firefox color extension enabled*/
+    &[lwtheme="true"] {
+        --gtk-window-control-single: 35px;
+        --gtk-window-control-dual: 73px;
+        --gtk-window-control-tri: 114px;
+        &[uidensity=compact] {
+            --gtk-window-control-single: 31px;
+            --gtk-window-control-dual: 65px;
+            --gtk-window-control-tri: 99px;
+        }
+    }
+}
