@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# sudo pacman -S --needed base-devel
+PKG=$1
+
+cd /tmp
+
+if [[ ! -d /tmp/$PKG ]]; then
+    git clone https://aur.archlinux.org/$PKG.git
+fi
+
+cd $PKG
+makepkg -si
+cd /tmp
+rm -rf $PKG
