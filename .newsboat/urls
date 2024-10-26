@@ -6,6 +6,7 @@
 "query:Blogs:tags # \"blog\""
 "query:Releases:tags # \"releases\""
 "query:DockerHub:tags # \"dockerhub\""
+"query:Youtube:tags # \"youtube\""
 # "query:Containers:tags # \"containers\""
 
 https://hnrss.org/frontpage tech hn
@@ -24,12 +25,12 @@ https://www.archlinux.org/feeds/news/ linux arch
 # https://eli.thegreenplace.net/feeds/all.atom.xml blog programming
 # https://fasterthanli.me/index.xml blog programming 
 
-# HPC
-https://scicomp.stackexchange.com/feeds scicomp hpc !hpc
-https://www.hpcwire.com/feed hpc !hpc
-https://www.reddit.com/r/HPC/.rss?format=xml hpc reddit !hpc
-https://insidehpc.com/feed hpc !hpc
-https://www.scientific-computing.com/feed/news.xml hpc !hpc
+# # HPC
+# https://www.hpcwire.com/feed hpc !hpc
+# https://scicomp.stackexchange.com/feeds scicomp hpc !hpc
+# https://www.reddit.com/r/HPC/.rss?format=xml hpc reddit !hpc
+# https://insidehpc.com/feed hpc !hpc
+# https://www.scientific-computing.com/feed/news.xml hpc !hpc
 
 # Techstack
 https://www.reddit.com/r/nix.rss reddit techstack !techstack
@@ -54,24 +55,21 @@ https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/0E563F45
 https://feeds.megaphone.fm/hubermanlab podcast !podcast
 
 # Blogs
-https://rachelbythebay.com/w/atom.xml !blog blog
+# https://rachelbythebay.com/w/atom.xml !blog blog
 
 # Releases
-https://github.com/hay-kot/mealie/releases.atom !releases releases
+# https://github.com/hay-kot/mealie/releases.atom !releases releases
+# https://github.com/tmux/tmux/releases.atom !releases releases
 https://github.com/neovim/neovim/releases.atom !releases releases
-https://github.com/tmux/tmux/releases.atom !releases releases
 https://github.com/zsh-users/zsh/tags.atom !releases releases
 https://github.com/NixOS/nix/tags.atom !releases releases
+https://github.com/immich-app/immich/releases.atom !releases releases
+
+https://rss-bridge.jrao.xyz/?action=display&bridge=FinanzflussBridge&format=Atom 
 
 # Dockerhub containers
 # See RSS-Bridge
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyterhub&repo=jupyterhub&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=jupyter&repo=scipy-notebook&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=nextcloud&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=linuxserver&repo=swag&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=zadam&repo=trilium&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=hkotel&repo=mealie&format=Atom !dockerhub dockerhub
-https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=vaultwarden&repo=server&format=Atom !dockerhub dockerhub
+https://rss-bridge.jrao.xyz/?action=display&bridge=DockerHubBridge&context=User+Submitted+Image&user=vaultwarden&repo=server&format=Atom !dockerhub dockerhub
 
 # "query:Youtube:tags # \"youtube\""
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCweFJojRAFuxyYxe4KHL8vw !youtube youtube Runesmith DND
@@ -81,12 +79,28 @@ https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&contex
 
 # https://hnrss.org/replies?id=bronzecarnage
 
+https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw !youtube youtube YT-Tech "Linus Tech Tips"                  
+https://www.youtube.com/feeds/videos.xml?channel_id=UCgdTVe88YVSrOZ9qKumhULQ !youtube youtube YT-Tech "Hardware Haven"
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UC3XTzVzaHQEd30rQbuvCtTQ !youtube youtube YT-CurrentNews LastWeekTonight                  
+https://www.youtube.com/feeds/videos.xml?channel_id=UCT3v6vL2H5HK4loLMc8pmCw !youtube youtube YT-CurrentNews "VisualPolitik EN"                 
+https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A !youtube youtube YT-CurrentNews ColdFusion                       
+https://www.youtube.com/feeds/videos.xml?channel_id=UCLXo7UDZvByw2ixzpQCufnA !youtube youtube YT-CurrentNews Vox                              
+https://www.youtube.com/feeds/videos.xml?channel_id=UCW39zufHfsuGgpLviKh297Q !youtube youtube YT-CurrentNews "DW Documentary"                   
+
+https://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A !youtube youtube YT-Learning "National Geographic"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw !youtube youtube YT-Learning "3Blue1Brown"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCzR-rom72PHN9Zg7RML9EbA !youtube youtube YT-Learning "PBS Eons"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q !youtube youtube YT-Learning "Kurzgesagt – In a Nutshell"
+https://www.youtube.com/feeds/videos.xml?channel_id=UC2LZO6swZ9SLUEOks3WnsfA !youtube youtube YT-Learning "2veritasium"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA !youtube youtube YT-Learning "Veritasium"
+https://www.youtube.com/feeds/videos.xml?channel_id=UCZYTClx2T1of7BRZ86-8fow !youtube youtube YT-Learning "SciShow"
+
 # https://www.youtube.com/feeds/videos.xml?playlist_id=PL8qcvQ7Byc3OJ02hbWJbHWePh4XEg3cvo !youtube youtube impact theory
 # https://www.youtube.com/feeds/videos.xml?playlist_id=PLNmACol6lYY5_S8I4K29V2oI95nOCzQU8 !youtube youtube fortran programming
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCLtTf_uKt0Itd0NG7txrwXA !youtube youtube podcast
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCJ24N4O0bP7LGLBDvye7oCA !youtube youtube Matt D'Avella                    
 # https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA !youtube youtube Luke Smith                       
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw !youtube youtube Linus Tech Tips                  
 # https://www.youtube.com/feeds/videos.xml?channel_id=UC6nSFpj9HTCZ5t-N3Rm3-HA !youtube youtube Vsauce                           
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCNJcSUSzUeFm8W9P7UUlSeQ !youtube youtube The Viral Fever                  
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCG-KntY7aVnIGXYEBQvmBAQ !youtube youtube Thomas Frank                     
@@ -96,22 +110,14 @@ https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&contex
 # https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA !youtube youtube Computerphile                    
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCkRMqL3hLrIYhxNCac4vR3w !youtube youtube Art of Manliness                 
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCeh-pJYRZTBJDXMNZeWSUVA !youtube youtube Artifexian                       
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCzR-rom72PHN9Zg7RML9EbA !youtube youtube PBS Eons                         
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCsooa4yRKGN_zEE8iknghZA !youtube youtube TED-Ed                           
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A !youtube youtube National Geographic              
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw !youtube youtube 3Blue1Brown                      
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCialsmUlTRABKPw31VDx1eQ !youtube youtube Foundation for Economic Education
-# https://www.youtube.com/feeds/videos.xml?channel_id=UC2LZO6swZ9SLUEOks3WnsfA !youtube youtube 2veritasium                      
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCl8zB2LZOiLLV0jYUMpTEgA !youtube youtube Scroll.in                        
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCFgyqmNGPAYNgubHmGHJEMg !youtube youtube Rabia Kapoor - Topic             
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCwWhs_6x42TyRM4Wstoq8HA !youtube youtube The Daily Show with Trevor Noah  
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCJkMlOu7faDgqh4PfzbpLdg !youtube youtube Nerdwriter1                      
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCRLZb8PpI9N7COmYqHiDH7A !youtube youtube Sofar Sounds                     
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCbmNph6atAoGfqLoCL_duAg !youtube youtube Talks at Google                  
-# https://www.youtube.com/feeds/videos.xml?channel_id=UC3XTzVzaHQEd30rQbuvCtTQ !youtube youtube LastWeekTonight                  
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q !youtube youtube Kurzgesagt – In a Nutshell       
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA !youtube youtube Veritasium                       
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCZYTClx2T1of7BRZ86-8fow !youtube youtube SciShow                          
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCFQMO-YL87u-6Rt8hIVsRjA !youtube youtube Hello Future Me                  
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCTAgbu2l6_rBKdbTvEodEDw !youtube youtube Nerdist                          
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCodbH5mUeF-m_BsNueRDjcw !youtube youtube Overly Sarcastic Productions     
@@ -120,9 +126,5 @@ https://rss-bridge.jayghoshrao.xyz/?action=display&bridge=DockerHubBridge&contex
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCUHW94eEFW7hkUMVaZz4eDg !youtube youtube minutephysics                    
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCbphDfwSJmxk1Ny_3Oicrng !youtube youtube Storytellers                     
 # https://www.youtube.com/feeds/videos.xml?channel_id=UC7_gcs09iThXybpVgjHZ_7g !youtube youtube PBS Space Time                   
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCT3v6vL2H5HK4loLMc8pmCw !youtube youtube VisualPolitik EN                 
-# https://www.youtube.com/feeds/videos.xml?channel_id=UC4QZ_LsYcvcq7qOsOhpAX4A !youtube youtube ColdFusion                       
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCLXo7UDZvByw2ixzpQCufnA !youtube youtube Vox                              
-# https://www.youtube.com/feeds/videos.xml?channel_id=UCW39zufHfsuGgpLviKh297Q !youtube youtube DW Documentary                   
 # https://www.youtube.com/feeds/videos.xml?channel_id=UCAtjaGkz8su5cGv9WkTOjxw !youtube youtube Rabia Kapoor                     
 # "query:youtube:tags # \"youtube\""
