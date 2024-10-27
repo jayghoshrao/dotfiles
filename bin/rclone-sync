@@ -19,6 +19,15 @@ function ensure_files()
     done
 }
 
+function ensure_dirs()
+{
+    for ARG in "$@"; do
+        [[ -d "$ARG" ]] || die "Dir not found: $ARG"
+    done
+}
+
+[ "$HOST" == "IBT918" ] || die "Not running on target IBT918."
+
 ROOT=/home/jayghoshter
 
 ensure_commands rclone date
@@ -32,6 +41,7 @@ REMOTE_PATH=IBT918
 LOG_DIR=$ROOT/local/logs/rclone-sync
 LOG_FILE="${LOG_DIR}/$(date +%Y-%m-%d_%H%M%S).log"
 
+ensure_dirs "${SYNC_DIRS[@]/#/$ROOT/}"
 mkdir -p ${LOG_DIR}
 
 cd $ROOT || die "Could not cd into $ROOT"
