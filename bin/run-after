@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Check if the correct number of arguments are provided
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <process_name> <command>"
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <process_name> <command> <args>"
     exit 1
 fi
 
@@ -11,17 +10,17 @@ shift
 command_to_run=$1
 shift
 
-# Function to check if the process is running
-is_process_running() {
-    pgrep -f "$process_name" > /dev/null 2>&1
-}
+PID=$(pgrep -fa "$process_name" | fzf | awk '{print $1}')
+
+[ -n "$PID" ] || exit
 
 # Wait for the process to complete
-while is_process_running; then
-    echo "Waiting for process '$process_name' to complete..."
+while ps -p "$PID" > /dev/null 2>&1 ; do
+    printf "\r%s" "Waiting for process '$process_name' to complete..."
     sleep 1
 done
 
+printf "\n"
 echo "Process '$process_name' has completed. Executing command: $command_to_run $@"
 # Execute the command
 eval "$command_to_run" "$@"
