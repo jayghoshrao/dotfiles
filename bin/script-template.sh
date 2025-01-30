@@ -99,7 +99,7 @@ function ensure_run(){
 function ensure_commands()
 {
     for ARG in "$@"; do
-        [[ -x $(command -v "$ARG") ]] || die "no such command: $1"
+        [[ -x $(command -v "$ARG") ]] || die "no such command: ${ARG}"
     done
 }
 
@@ -133,3 +133,32 @@ function ensure_dirs()
         [[ -d "$ARG" ]] || die "Dir not found: $ARG"
     done
 }
+
+function check_commands()
+{
+    for ARG in "$@"; do
+        [[ -x $(command -v "$ARG") ]] || return -1
+    done
+    return 0
+}
+
+## Check if value exists in array, oneliner
+[[ " ${IGNORED_VOLUMES[@]} " =~ " ${PROJECT_NAME}_${vol} " ]] && continue
+
+function die() { echo -e "ERROR: $@" >&2; exit -1; }
+function ensure_command() { [[ -x $(command -v "$1") ]] || die "no such command: ${1}"; }
+function check_command() { [[ -x $(command -v "$1") ]] && return 0 || return -1; }
+function ensure_dir() { [[ -d "$1" ]] || die "Dir not found: $1"; }
+function ensure_file() { [[ -f "$1" ]] || die "File not found: $1"; }
+
+# POSITIONAL=()
+# while [[ $# -gt 0 ]]
+# do
+#     key="$1"
+#     case $key in
+#         -d|--dump) 
+#             MODE="DUMP"; shift ;;
+#         *) POSITIONAL+=("$1"); shift ;;
+#     esac
+# done
+# set -- "${POSITIONAL[@]}" # restore positional parameters
