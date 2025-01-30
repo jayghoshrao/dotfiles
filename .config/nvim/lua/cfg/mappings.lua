@@ -69,7 +69,7 @@ map('n', 'U', '<c-r>')
 
 -- typohacks
 -- TODO: Make this filetype specific to c/c++
-map('i', ';;', '<esc>A;<esc>')
+-- map('i', ';;', '<esc>A;<esc>')
 -- map('i', ':;', '::') 
 
 

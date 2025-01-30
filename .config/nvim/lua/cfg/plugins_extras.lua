@@ -223,7 +223,7 @@ return {
             local gen = require("gen")
             gen.setup({
                 model = "llama3.1:8b", -- The default model to use.
-                host = '192.168.2.33',
+                host = '192.168.2.31',
                 port = 11434,
                 display_mode = "horizontal-split", 
                 show_prompt = false, -- Shows the Prompt submitted to Ollama.
@@ -257,14 +257,18 @@ return {
                 prompt = "Write a paragraph as if for a scientific journal article. Respond with only the text requested. Do not address me in any way:\n$register",
                 replace = true
             }
+            gen.prompts['jparaphrase'] = {
+                prompt = "Completely paraphrase the the following text for a scientific journal article without changing its meaning, just output the final text without additional quotes around it:\n$text",
+            }
 
             local map = require('cfg.utils').map
-            -- map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")
+            map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")
             -- map("n", "<space>j", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jwrite', {replace=true})<CR>")
             -- map("n", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewrite', {yank=true})<CR>")
-            -- map("v", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewritevis', {visual=true})<CR>")
-            -- map("n", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
-            -- map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
+            map("v", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewritevis', {visual=true})<CR>")
+            map("v", "<space>i", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jparaphrase', {visual=true})<CR>")
+            map("n", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
+            map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
         end,
         dependencies = {
             {
