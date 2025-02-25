@@ -26,7 +26,8 @@ function ensure_dirs()
     done
 }
 
-[ "$HOST" == "IBT918" ] || die "Not running on target IBT918."
+HOSTNAME=$(hostnamectl --static)
+[[ "${HOSTNAME}" == "IBT918" ]] || die "Not running on target IBT918."
 
 ROOT=/home/jayghoshter
 
