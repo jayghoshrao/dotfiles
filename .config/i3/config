@@ -480,7 +480,7 @@ for_window [title="NoScript XSS Warning - Mozilla Firefox"] floating enable, mov
 for_window [title="Choose Files"] floating enable, resize set 80 ppt 70 ppt, move position center 
 # for_window [class="thunderbird"] floating enable, resize set 95 ppt 90 ppt, move position center 
 
-for_window [window_role="PictureInPicture"] move to output right 
+for_window [window_role="PictureInPicture"] floating disable, move to output left 
 
 # workspace  "plots"  output  HDMI2
 # for_window [class="Matplotlib"] move to workspace plots
