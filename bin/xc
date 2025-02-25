@@ -53,14 +53,14 @@ function process()
         if [[ -n "$FILENAME_PREFIX" ]]; then
             OUTFILENAME="${FILENAME_PREFIX}${OUTFILENAME}"
         fi
-        scp "${1}" "${OUTFILENAME}"
+        scp -r "${1}" "${OUTFILENAME}"
     fi
 }
 
 
 
 # HOSTS=(jureca ibt012 ibt014 ibt067 ibt068 ibt069)
-HOSTS=(bhumi everest)
+HOSTS=( bhumi everest )
 
 FILEPATHS=$(xclip -selection c -o)
 [[ -z "${FILEPATHS}" ]] && exit
@@ -73,7 +73,8 @@ for FILEPATH in "${FILEPATHS[@]}"; do
     if [[ ! -f ${FILEPATH} ]] ; then
         echo "No such file: ${FILEPATH}"
         for host in ${HOSTS[@]}; do
-            if ssh "$host" test -f "'${FILEPATH}'"; then
+            echo "Looking in ${host}..."
+            if ssh "$host" test -e "'${FILEPATH}'"; then
                echo "FOUND in $host"
                process "$host:$FILEPATH"
                break 1
