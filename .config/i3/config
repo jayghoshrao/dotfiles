@@ -319,8 +319,8 @@ workspace  "Zoom Meeting"  output  DP-1-1
 
 bindsym $mod+Tab focus output right
 bindsym $mod+Shift+Tab move workspace to output right
-bindsym $mod+period move container to output right
-bindsym $mod+comma move container to output left
+bindsym $mod+period move container to output right, focus right
+bindsym $mod+comma move container to output left, focus left
 
 # bindsym $mod+Tab focus output up
 # bindsym $mod+Shift+Tab move workspace to up
