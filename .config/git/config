@@ -1,0 +1,16 @@
+[user]
+    name = "Jayghosh Rao"
+    ; email = "jayghoshter@gmail.com"
+
+[core]
+    compression = 9
+    whitespace = error
+    preloadindex = true
+
+[url "git@github.com:jayghoshter/"]
+    insteadOf = "jay:"
+
+[url "git@github.com:"]
+    insteadOf = "gh:"
+
+; [url "ssh://git@domain.com"....]
