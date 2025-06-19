@@ -41,7 +41,7 @@ from matplotlib import ticker
 
 from scipy.interpolate import make_interp_spline, BSpline
 
-from mpl_toolkits.axes_grid1.inset_locator import InsetPosition
+# from mpl_toolkits.axes_grid1.inset_locator import InsetPosition
 
 # SMOOTH: https://stackoverflow.com/questions/5283649/plot-smooth-line-with-pyplot
 # COLORS: https://coolors.co/0c5da5-ffcf70-e08300-bc4b51-ac8cba-474747-225851
@@ -563,7 +563,7 @@ ap.add_argument("--split", action='store_true', help="Split the data into x and 
 
 ap.add_argument("--cadet", nargs=2, help="Read h5 files. --cadet <unit_num> <solution_path>")
 
-ap.add_argument("--style", nargs='*', default=['science'], help="Change the plotting style with SciencePlots")
+ap.add_argument("--style", nargs='*', default=[], help="Change the plotting style with SciencePlots")
 
 ap.add_argument("--twinx", nargs='*', default = [], help="Files to plot on an alternate y axis")
 ap.add_argument("-y2", "--y2label", help="ylabel for second axis")
