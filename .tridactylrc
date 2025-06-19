@@ -60,6 +60,7 @@ set searchurls.pd https://phabricator.cats.rwth-aachen.de/D
 set newtab about:blank
 set editorcmd termite -r _float -c ~/.config/i3/termite.sprd.cfg -e 'nvim +Goyo %f'
 set searchurl.pd https://phabricator.cats.rwth-aachen.de/D
+set scrollduration 150
 
 " Binds
 bind gnM tabopen https://faq.i3wm.org/question/5429/stay-in-mode-only-while-key-is-pressed.1.html
@@ -81,12 +82,7 @@ bind [c urlincrement -1
 bind ]c urlincrement 1
 bind <C-x> urlincrement -1
 bind <C-a> urlincrement 1
-" bind T current_url tabopen
 bind T fillcmdline tabgroupcreate
-bind gt fillcmdline tabgroupswitch
-bind gT fillcmdline tabgroupmove
-bind gR fillcmdline tabgrouprename
-" bind tx tabgroupclose
 bind yy clipboard yank
 bind ys clipboard yankshort
 bind yc clipboard yankcanon
@@ -127,10 +123,10 @@ bind x stop
 bind gi focusinput -l
 bind g? rot13
 bind g; changelistjump -1
-" bind J tabprev
-" bind K tabnext
-" bind gt tabnext_gt
-" bind gT tabprev
+bind J tabnext
+bind K tabprev
+bind gt fillcmdline tabgroupswitch
+bind gT fillcmdline tabgroupmove
 bind g^ tabfirst
 bind g0 tabfirst
 bind g$ tablast
@@ -146,7 +142,8 @@ bind B fillcmdline taball
 bind b fillcmdline tab
 bind ZZ qall
 bind f hint
-bind F hint -b
+" bind F hint -b
+bind F hint -W tabopen
 bind gF hint -qb
 bind ;i hint -i
 bind ;b hint -b
@@ -166,7 +163,6 @@ bind ;A hint -A
 bind ;; hint -; *
 bind ;# hint -#
 bind ;v hint -W mpvsafe
-bind ;d hint -W book
 bind ;w hint -w
 bind ;t hint -W tabopen
 bind ;O hint -W fillcmdline_notrail open
@@ -225,9 +221,24 @@ bind gw4 winopen about:blank
 bind gnm tabopen https://www.youtube.com/playlist?list=WL
 bind gom open https://www.youtube.com/playlist?list=WL
 bind gwm winopen https://www.youtube.com/playlist?list=WL
-bind gnY tabopen https://nextcloud.jayghoshrao.xyz/login
-bind goY open https://nextcloud.jayghoshrao.xyz/login
-bind gwY winopen https://nextcloud.jayghoshrao.xyz/login
+bind ;V hint -V
+bind m gobble 1 markadd
+bind ` gobble 1 markjump
+bind gn: tabopen moz-extension://307f028d-8ec7-438e-8c83-20e111b6ffd2/static/newtab.html
+bind go: open moz-extension://307f028d-8ec7-438e-8c83-20e111b6ffd2/static/newtab.html
+bind gw: winopen moz-extension://307f028d-8ec7-438e-8c83-20e111b6ffd2/static/newtab.html
+unbind <C-
+unbind <C-"
+bind gR fillcmdline tabgrouprename
+" bind ;d hint -W book
+bind ;c hint -F e => { const pos = tri.dom.getAbsoluteCentre(e); tri.excmds.exclaim_quiet("xdotool mousemove --sync " + window.devicePixelRatio * pos.x + " " + window.devicePixelRatio * pos.y + "; xdotool click 3")}
+bind ;: hint -F e => { const pos = tri.dom.getAbsoluteCentre(e); tri.excmds.exclaim_quiet("xdotool mousemove --sync " + window.devicePixelRatio * pos.x + " " + window.devicePixelRatio * pos.y)}
+bind yq text2qr --timeout 5
+bind ;gd hint -qW tabopen --discard
+bind ;d hint -W tabopen --discard
+bind --mode=browser <C-.> sidebartoggle
+bind --mode=browser <C-,> escapehatch
+bind --mode=browser <C-6> tab #
 
 " Aliases
 command alias command
@@ -304,7 +315,23 @@ alias tabclosealltoleft tabcloseallto left
 alias reibadailty jumble
 alias pocket js -s ~/bin/pocket-bookmarklet.js
 alias saveas! saveas --cleanup --overwrite
+alias tabgroupabort tgroupabort
+alias tabgroupclose tgroupclose
+alias tabgroupcreate tgroupcreate
+alias tabgrouplast tgrouplast
+alias tabgroupmove tgroupmove
+alias tabgrouprename tgrouprename
+alias tabgroupswitch tgroupswitch
+alias drawingstop mouse_mode
 alias book js -p tri.excmds.shellescape(JS_ARG).then(url => tri.excmds.exclaim_quiet('/home/jayghoshter/bin/bmark ' + url))
+
+" Autocmds
+autocmd DocStart undefined mode ignore
+autocmd DocStart https://notes.jayghoshrao.xyz mode ignore
+autocmd DocStart jupyter.jayghoshrao.xyz mode ignore
+autocmd DocStart https://calibre.jayghoshrao.xyz mode ignore
+autocmd DocLoad ^https://github.com/tridactyl/tridactyl/issues/new$ issue
+autocmd TriStart .* source_quiet
 
 " For syntax highlighting see https://github.com/tridactyl/vim-tridactyl
 " vim: set filetype=tridactyl
