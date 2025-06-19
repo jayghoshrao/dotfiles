@@ -7,10 +7,12 @@ function ensure_commands()
     done
 }
 
-SERVER_URL="http://192.168.2.31:11434"
-MODEL="llama3.1:8b"
+SERVER_URL="http://192.168.2.220:11434"
+# MODEL="llama3.2"
+MODEL="deepseek-r1:8b"
 STREAM=true
 ENDPOINT=generate #generate, chat
+LOOP=false
 
 SEQ_CLS=$'\33[2K'
 
@@ -31,17 +33,26 @@ do
             curl --silent --no-buffer -X DELETE ${SERVER_URL}/api/delete -d "$(jq --arg name "$2" '. + {name: $name}' <<< '{}')"; exit;;
         -l|--list) 
             curl --silent ${SERVER_URL}/api/tags | jq -r '.models[] | .name'; exit;;
+        -L|--list-all) 
+            curl --silent ${SERVER_URL}/api/tags | jq -r '.models'; exit;;
+        --loop)
+            LOOP=true; shift ;;
         *) POSITIONAL+=("$1"); shift ;;
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-read -p "prompt: " PROMPT
-BODY=$(jq --arg prompt "$PROMPT" --arg model "$MODEL" --argjson stream "$STREAM" '. + {model: $model, prompt: $prompt, stream: $stream}' <<< '{}')
+while true; do
+    read -p "prompt: " PROMPT
+    BODY=$(jq --arg prompt "$PROMPT" --arg model "$MODEL" --argjson stream "$STREAM" '. + {model: $model, prompt: $prompt, stream: $stream}' <<< '{}')
 
-if [[ "$STREAM" == "true" ]]; then
-    curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j --unbuffered '.response'
-else
-    ensure_commands glow
-    curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j '.response' | glow
-fi
+    if [[ "$STREAM" == "true" ]]; then
+        curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j --unbuffered '.response'
+    else
+        ensure_commands glow
+        curl --silent --no-buffer -X POST ${SERVER_URL}/api/${ENDPOINT} -d "$BODY" | jq -j '.response' | glow
+    fi
+
+    echo ""
+    [[ $LOOP != true ]] && break;
+done
