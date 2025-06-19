@@ -248,7 +248,7 @@ export LESS="-iR"
 export NNN_FIFO=/tmp/nnn.fifo 
 export NNN_OPTS="exaAE"
 export NNN_COLORS="2136" ## Different colors for contexts 
-export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:fuznavdir;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*;s:fuznavsubdir'
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:fuznavdir;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*;s:fuznavsubdir;y:!xclip -selection clipboard -t image/png "$nnn"*'
 export LC_COLLATE="C" ## dot files clumped together
 
 export LANG=en_US.UTF-8
@@ -717,6 +717,8 @@ alias sst="ssh -O stop"
 function ssr() { ssh -O stop "$1"; ssh "$1" }
 function rep() { repeat "$1" { echo "${@:2}" } }
 function ff() { fuzscope "$@" | peek }
+
+function goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
 
 # I've generally avoided setting PATH in this file
 # and delegated that to the zsh-local file, but it's 
