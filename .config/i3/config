@@ -393,7 +393,7 @@ bindsym $mod+Escape mode "$mode_system"
 # # }}}
 
 # MODE: System Utils: {{{
-set $mode_utils [s]creenshot | [S]nip | [o]cr | [d]oi
+set $mode_utils [s]creenshot | [S]nip | [o]cr | [d]oi | [b]mark
 mode "$mode_utils"
 {
     bindsym s exec --no-startup-id scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`', mode "default"
@@ -404,11 +404,14 @@ mode "$mode_utils"
 
     bindsym --release d exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
+    bindsym --release b exec $SCRIPTS/bmark
+
 	# back to normal: Enter or Escape
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 }
 
+bindsym $mod+shift+e mode "$mode_utils"
 bindsym $mod+shift+u mode "$mode_utils"
 #}}}
 
@@ -514,7 +517,7 @@ assign [class="Civ5XP"]                                     workspace number $ws
 
 # Keyboard helpers:{{{
 # bindsym $mod+i exec $SCRIPTS/emojimenu
-bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
+# bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
 bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
 # }}}
 
@@ -611,6 +614,7 @@ for_window [all] border pixel 1
 # for_window [class="Zathura"] move to workspace "temp"
 
 bindsym F12 exec $SCRIPTS/xc
+bindsym $mod+shift+i exec $SCRIPTS/xc
 
 bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
 # TODO: Depends on zinit. Decouple it
