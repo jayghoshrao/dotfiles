@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+PACMAN_HANDLER='paru'
+PRINT_FLAGS="-Slq"
+RUN_FLAGS="-S"
+HEADER='Install packages'
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        -i|--install|install) PRINT_FLAGS="-Slq"; RUN_FLAGS="-S"; HEADER='Install packages'; shift ;;
+        -u|--update|update) PRINT_FLAGS="-Qu"; RUN_FLAGS="-S"; HEADER='Update pacakages'; shift ;;
+        -r|--remove|remove) PRINT_FLAGS="-Qsq"; RUN_FLAGS="-Rns"; HEADER='Remove packages'; shift ;;
+        *) POSITIONAL+=("$1"); shift ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+
+SELECTED_PKGS="$($PACMAN_HANDLER $PRINT_FLAGS | column -t | fzf --header="$HEADER" -m --height 100% --preview="$PACMAN_HANDLER -Si {1}")"
+
+## Do it one by one because AUR PKGS may break and it gets annoying to rerun the command 
+if [ -n "$SELECTED_PKGS" ]; then
+    # yay -S $(echo $SELECTED_PKGS)
+    for pkg in ${SELECTED_PKGS[@]}; do
+        $PACMAN_HANDLER -S $pkg
+    done
+fi

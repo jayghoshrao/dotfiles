@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+pkg="$1"
+
+AUR_HANDLER=''
+if (( $+commands[paru] )); then
+    AUR_HANDLER='paru'
+elif (( $+commands[yay] )); then
+    AUR_HANDLER='yay'
+fi
+
+[ -z "$AUR_HANDLER" ] && exit
+
+pkg=$($AUR_HANDLER -Slq | grep -w -m 1 "$pkg")
+[ $? != 0 ] && echo "No such package: $1" && exit
+
+xdg-open "https://aur.archlinux.org/packages/$pkg" &>/dev/null
