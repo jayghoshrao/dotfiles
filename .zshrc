@@ -26,7 +26,7 @@ stty -ixon                                                       # Disables ctrl
 # Package Manager: {{{
 
 # ZINIT: {{{
-# export LOAD_ZINIT=false in docker images if necessary
+# export LOAD_ZINIT=false # in docker images if necessary
 if [[ $LOAD_ZINIT != false ]] ; then 
     if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
         print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
