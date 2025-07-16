@@ -25,6 +25,6 @@ SELECTED_PKGS="$($PACMAN_HANDLER $PRINT_FLAGS | column -t | fzf --header="$HEADE
 if [ -n "$SELECTED_PKGS" ]; then
     # yay -S $(echo $SELECTED_PKGS)
     for pkg in ${SELECTED_PKGS[@]}; do
-        $PACMAN_HANDLER -S $pkg
+        $PACMAN_HANDLER "$RUN_FLAGS" $pkg
     done
 fi
