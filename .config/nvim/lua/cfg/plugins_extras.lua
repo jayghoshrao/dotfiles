@@ -9,14 +9,7 @@
 -- https://github.com/sunaku/vim-dasht
 -- https://github.com/rhysd/devdocs.vim
 
--- -- UTILITY:
--- https://github.com/b3nj5m1n/kommentary
--- https://github.com/gelguy/wilder.nvim -- wildmenu addon. Might not need it with nvim-cmp
-
 -- -- MISC:
--- https://github.com/ibhagwan/fzf-lua -- Telescope alternative
--- https://github.com/d0c-s4vage/lookatme  -- presentation!
--- https://github.com/ngscheurich/iris.nvim -- color helper
 -- use 'LnL7/vim-nix' -- probably not required, but potentially useful
 -- https://github.com/junegunn/vim-peekaboo -- See register context
 -- https://github.com/ofirgall/open.nvim
@@ -222,8 +215,8 @@ return {
         config = function()
             local gen = require("gen")
             gen.setup({
-                model = "llama3.1:8b", -- The default model to use.
-                host = '192.168.2.31',
+                model = "deepseek-r1:8b", -- The default model to use.
+                host = '192.168.2.220',
                 port = 11434,
                 display_mode = "horizontal-split", 
                 show_prompt = false, -- Shows the Prompt submitted to Ollama.

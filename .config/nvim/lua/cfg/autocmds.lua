@@ -1,26 +1,26 @@
 local group = vim.api.nvim_create_augroup('Setup', {})
 
--- Highlight text after yanking
-vim.api.nvim_create_autocmd('TextYankPost', {
-  group = group,
-  callback = function()
-    require('vim.highlight').on_yank { higroup = 'Substitute', timeout = 200 }
-  end,
-})
+-- -- Highlight text after yanking
+-- vim.api.nvim_create_autocmd('TextYankPost', {
+--   group = group,
+--   callback = function()
+--     require('vim.highlight').on_yank { higroup = 'Substitute', timeout = 200 }
+--   end,
+-- })
 
 -- Hide cursorline in insert mode
 vim.api.nvim_create_autocmd({ 'InsertLeave', 'WinEnter' }, { command = 'set cursorline', group = group })
 vim.api.nvim_create_autocmd({ 'InsertEnter', 'WinLeave' }, { command = 'set nocursorline', group = group })
 
--- Automatically close Vim if the quickfix window is the only one open
-vim.api.nvim_create_autocmd('WinEnter', {
-  group = group,
-  callback = function()
-    if vim.fn.winnr '$' == 1 and vim.fn.win_gettype() == 'quickfix' then
-      vim.cmd.q()
-    end
-  end,
-})
+-- -- Automatically close Vim if the quickfix window is the only one open
+-- vim.api.nvim_create_autocmd('WinEnter', {
+--   group = group,
+--   callback = function()
+--     if vim.fn.winnr '$' == 1 and vim.fn.win_gettype() == 'quickfix' then
+--       vim.cmd.q()
+--     end
+--   end,
+-- })
 
 -- Automatically update changed file in Vim
 -- Triger `autoread` when files changes on disk
@@ -38,13 +38,13 @@ vim.api.nvim_create_autocmd('FileChangedShellPost', {
   command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None]],
 })
 
--- vim.api.nvim_create_autocmd(
---     'FileType', {
---         group = group,
---         pattern = "yaml",
---         command = [[ setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:> ]],
---     }
--- )
+vim.api.nvim_create_autocmd(
+    'FileType', {
+        group = group,
+        pattern = "yaml",
+        command = [[ setlocal ts=2 sts=2 sw=2 expandtab indentkeys-=0# indentkeys-=<:> ]],
+    }
+)
 
 -- vim.api.nvim_create_autocmd(
 --     'FileType', {

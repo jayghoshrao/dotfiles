@@ -66,16 +66,6 @@ return {
         },
     },
 
-    -- {
-    --     'jose-elias-alvarez/null-ls.nvim',
-    --     ft = {"python"},
-    --     config = function()
-    --         require 'cfg.plugins.lsp.null_ls'
-    --     end,
-    --     requires = { "nvim-lua/plenary.nvim" },
-    -- },
-
-    -- TODO: 'https://github.com/sustech-data/wildfire.nvim'
     -- https://github.com/echasnovski/mini.nvim
 
     {
@@ -90,7 +80,7 @@ return {
         dependencies = {
             -- 'nvim-treesitter/playground',
             'nvim-treesitter/nvim-treesitter-textobjects',
-            -- TODO: https://github.com/RRethy/nvim-treesitter-textsubjects
+            'RRethy/nvim-treesitter-textsubjects',
             {
               'numToStr/Comment.nvim',
                 opts = {
@@ -190,7 +180,6 @@ return {
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-path',
             -- 'saadparwaiz1/cmp_luasnip',
-            -- 'petertriho/cmp-git',
             {
                 'L3MON4D3/LuaSnip',
                 config = function()
@@ -278,23 +267,6 @@ return {
         end
     },
 
-    {
-        'andersevenrud/nordic.nvim',
-        config = function()
-            require('nordic').colorscheme({
-                underline_option = 'undercurl',
-                italic = true,
-                italic_comments = true,
-                minimal_mode = false
-            })
-            -- require('cfg.utils').create_augroups {
-            --   nord = {
-            --         { 'User', 'PlugLoaded', [[++nested colorscheme nordic]] },
-            --     }
-            -- }
-        end
-    },
-
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 
     { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
@@ -374,7 +346,6 @@ return {
     },
 
 
-    --" Plug 'https://github.com/mfussenegger/nvim-dap'
     {
         'szw/vim-maximizer',
         config = function()

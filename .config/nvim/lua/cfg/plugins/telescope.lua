@@ -1,5 +1,6 @@
 local finders = require('telescope.finders')
 local actions = require 'telescope.actions'
+local action_state = require 'telescope.actions.state'
 local builtin = require 'telescope.builtin'
 -- local extensions = require 'telescope.extensions'
 -- local layout_strategies = require 'telescope.pickers.layout_strategies'
@@ -54,6 +55,17 @@ require('telescope').setup {
                 ['<s-up>'] = actions.cycle_history_prev,
                 ['<s-down>'] = actions.cycle_history_next,
                 ['<c-y>'] = require("telescope.actions.layout").toggle_preview,
+                ["<C-o>"] = function(prompt_bufnr)
+                  local selection = action_state.get_selected_entry()
+                  if selection then
+                    local path = selection.path or selection.filename
+                    if path then
+                      vim.fn.jobstart({"xdg-open", path}, {detach = true})
+                    end
+                  end
+                  actions.close(prompt_bufnr)
+                end,
+
             },
         },
         preview = {

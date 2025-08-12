@@ -1,10 +1,6 @@
 local g = vim.g
 local cmd = vim.cmd
 
--- Map space to leader
--- map('n', '<space>', '<nop>')
--- map('v', '<space>', '<nop>')
-
 g.mapleader = ','
 g.maplocalleader = '\\'
 

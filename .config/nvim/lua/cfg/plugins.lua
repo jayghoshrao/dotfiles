@@ -27,6 +27,6 @@ local opts = {
 
 local core = require('cfg.plugins_core')
 local extras = require('cfg.plugins_extras')
-plugins = TableConcat(core, extras)
+local plugins = TableConcat(core, extras)
 
 return require('lazy').setup(plugins, opts)
