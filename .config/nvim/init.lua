@@ -18,11 +18,5 @@ require 'cfg.autocmds'
 require 'cfg.folding'
 require 'cfg.abbreviations'
 
--- require 'cfg.plugins.web_devicons' -- Set up icons before statusline
--- require 'cfg.statusline'
--- require 'cfg.tabline'
--- require 'cfg.file_info'
--- require 'cfg.terminal'
-
 -- -- REFERENCES:
 -- https://github.com/JoosepAlviste/dotfiles/tree/master/config/nvim
