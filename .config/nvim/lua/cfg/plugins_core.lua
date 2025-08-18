@@ -1,3 +1,5 @@
+local map = require('cfg.utils').map
+
 return {
 
     'tpope/vim-surround',
@@ -31,14 +33,11 @@ return {
     },
 
     -- NOTE: install and initialize before nvim-lspconfig
-    {
-        'williamboman/mason.nvim',
-        -- TODO: 'williamboman/mason-lspconfig.nvim',
-        -- "jayp0521/mason-nvim-dap.nvim",
-        config = function()
-            require 'cfg.plugins.mason'
-        end,
-    },
+    { 'williamboman/mason.nvim', opts = {} },
+
+    -- TODO: 'williamboman/mason-lspconfig.nvim',
+
+    { "jay-babu/mason-nvim-dap.nvim", opts = {}},
 
     {
         'neovim/nvim-lspconfig', -- Built-in LSP configurations
@@ -121,29 +120,14 @@ return {
         dependencies = {
             "mfussenegger/nvim-dap",
         },
-        config = function()
-            require('dap-python').setup()
-        end
+        enabled = function()
+            local ok, registry = pcall(require, "mason-registry")
+            return ok and registry.is_installed("debugpy")
+        end,
+        opts = {}
     },
 
-    {
-        'theHamsta/nvim-dap-virtual-text',
-        config = function()
-            require("nvim-dap-virtual-text").setup({
-                enabled = true,                     -- enable this plugin (the default)
-                enabled_commands = true,            -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
-                highlight_changed_variables = true, -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
-                highlight_new_as_changed = false,   -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
-                show_stop_reason = true,            -- show stop reason when stopped for exceptions
-                commented = false,                  -- prefix virtual text with comment string
-                -- experimental features:
-                virt_text_pos = 'eol',              -- position of virtual text, see `:h nvim_buf_set_extmark()`
-                all_frames = false,                 -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
-                virt_lines = false,                 -- show virtual lines instead of virtual text (will flicker!)
-                virt_text_win_col = nil             -- position the virtual text at a fixed window column (starting from the first text column) ,
-            })
-        end
-    },
+    { 'theHamsta/nvim-dap-virtual-text', opts = {}},
 
     {
         "rcarriga/nvim-dap-ui",
@@ -155,7 +139,6 @@ return {
             local dap = require("dap")
             local dapui = require("dapui")
             dapui.setup()
-            local map = require('cfg.utils').map
             map('n', '<space>dd', ':lua require"dapui".toggle()<CR>')
 
             dap.listeners.after.event_initialized["dapui_config"] = function()
@@ -244,13 +227,7 @@ return {
         end
     },
 
-    {
-        'lukas-reineke/indent-blankline.nvim',
-        main = "ibl",
-        config = function()
-            require("ibl").setup() 
-        end
-    },
+    { 'lukas-reineke/indent-blankline.nvim', main = "ibl", opts = {} },
 
     {
         'windwp/nvim-autopairs',
@@ -267,7 +244,12 @@ return {
         end
     },
 
-    { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+    {
+        "catppuccin/nvim", name = "catppuccin", priority = 1000,
+        config = function()
+            vim.cmd.colorscheme 'catppuccin-mocha'
+        end
+    },
 
     { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
@@ -286,7 +268,6 @@ return {
     {
         'GustavoKatel/telescope-asynctasks.nvim',
         config = function()
-            local map = require('cfg.utils').map
             map('n', '<leader>tt', [[<cmd>lua require('telescope').extensions.asynctasks.all()<cr>]])
         end
     },
@@ -294,15 +275,15 @@ return {
 
     {
         'derekwyatt/vim-fswitch',
-        config = function() 
-            require('cfg.utils').map('n', 'gh', ':FSHere<cr>')
+        ft = { "c", "cpp", "h", "hpp"},
+        config = function()
+            map('n', 'gh', ':FSHere<cr>')
         end
     },
 
     {
         'kdheepak/lazygit.nvim',
         config = function()
-            local map = require('cfg.utils').map
             map('n', '<leader>gg', [[<cmd>LazyGit<cr>]])
         end
     },
@@ -340,27 +321,21 @@ return {
 
     {
         "folke/twilight.nvim",
-        config = function()
-            require("twilight").setup {}
-        end
+        opts = {}
     },
-
 
     {
         'szw/vim-maximizer',
         config = function()
-            local map = require 'cfg.utils'.map
             map('n', '<space>m', '<cmd>MaximizerToggle<cr>')
         end
     },
 
     {
         "j-hui/fidget.nvim",
-        tag = "legacy",
+        tag = "*", -- pull from latest tag instead of main branch
         event = "LspAttach",
-        opts = {
-            -- options
-        },
+        opts = {},
     },
 
 
