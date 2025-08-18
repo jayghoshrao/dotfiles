@@ -721,6 +721,8 @@ function ff() { fuzscope "$@" | peek }
 
 function goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
 
+alias nvim-sync='nvim --headless "+Lazy! sync" +qa' 
+
 # I've generally avoided setting PATH in this file
 # and delegated that to the zsh-local file, but it's 
 # good to have this when working on multiple servers
