@@ -1,3 +1,5 @@
+-- TODO: Do all this in ftdetect or something. Local buffer for markdown files only.
+
 local create_augroups = require('cfg.utils').create_augroups
 
 local bufmap = require('cfg.utils').buf_map

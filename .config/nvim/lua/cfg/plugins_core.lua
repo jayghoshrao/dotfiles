@@ -333,7 +333,7 @@ return {
 
     {
         "j-hui/fidget.nvim",
-        tag = "*", -- pull from latest tag instead of main branch
+        -- tag = "*", -- pull from latest tag instead of main branch
         event = "LspAttach",
         opts = {},
     },

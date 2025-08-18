@@ -11,7 +11,6 @@
 
 -- -- MISC:
 -- use 'LnL7/vim-nix' -- probably not required, but potentially useful
--- https://github.com/junegunn/vim-peekaboo -- See register context
 -- https://github.com/ofirgall/open.nvim
 
 -- C++ dev
@@ -21,10 +20,15 @@
 -- Folds
 -- https://github.com/chrisgrieser/nvim-origami
 
+local map = require('cfg.utils').map
+
 return {
 
+    'mboughaba/i3config.vim',
     'ggandor/lightspeed.nvim',
     'duane9/nvim-rg',
+
+    { "m-demare/hlargs.nvim", opts=true },
 
     {
         'onsails/diaglist.nvim',
@@ -40,12 +44,7 @@ return {
         end
     },
 
-    {
-        'norcalli/nvim-colorizer.lua',
-        config = function()
-            require'colorizer'.setup()
-        end
-    },
+    { 'norcalli/nvim-colorizer.lua', config = true },
 
     -- {
     --   'editorconfig/editorconfig-vim', -- Project-specific settings
@@ -54,78 +53,25 @@ return {
     --   end,
     -- }
 
-    {
-        'vim-pandoc/vim-pandoc',
-        config = function()
-            require 'cfg.plugins.pandoc'
-        end,
-        ft = {
-            'markdown',
-            'vimwiki',
-            'tex',
-            'pandoc'
-        }
-    },
+    { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
+    { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
 
-    { 'vim-pandoc/vim-pandoc-syntax' },
+    { 'lervag/vimtex', ft = { 'markdown', 'tex' } },
 
-    {
-        'vimwiki/vimwiki',
-        config = function()
-            require 'cfg.plugins.vimwiki'
-        end,
-        ft = {'markdown', 'vimwiki', 'pandoc'}
-    },
 
-    -- -- NOTE: doesn't work everywhere since vimwiki
-    -- -- is only used for certain filetypes
-    -- {
-    --     'ElPiloto/telescope-vimwiki.nvim',
-    --     config = function()
-    --         require('telescope').load_extension('vw')
-    --         local map = require('cfg.utils').map
-    --         map('n', '<space>n', ':Telescope vw<cr>')
-    --     end
-    -- },
+    -- TODO: Switch to clangd/clangd_extensions and do some research.
+    { 'm-pilia/vim-ccls', ft = {"c", "cpp", "h", "hpp"}},
 
-    {
-        'lervag/vimtex',
-        ft = {
-            'vimwiki',
-            'markdown',
-            'tex'
-        }
-    },
-
-    'mboughaba/i3config.vim',
-
-    -- doesn't work on windows?
-    'm-pilia/vim-ccls',
-
-    -- -- Unsure if I need this
-    -- use {
-    --     "cuducos/yaml.nvim",
-    --     ft = {"yaml"}, -- optional
-    --     dependencies = {
-    --         "nvim-treesitter/nvim-treesitter",
-    --         "nvim-telescope/telescope.nvim" -- optional
-    --     },
-    --     -- config = function ()
-    --     --     require("yaml_nvim").init()
-    --     -- end,
-    -- }
-
-    { 'ray-x/lsp_signature.nvim', config=function() require'lsp_signature'.setup() end },
-    {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    { 'ray-x/lsp_signature.nvim', config = true; },
 
     {
         'Wansmer/treesj',
         dependencies = { 'nvim-treesitter/nvim-treesitter' },
         config = function()
-            require('treesj').setup({
-                use_default_keymaps = false,
-            })
-        end,
+            local treesj = require('treesj')
+            treesj.setup({ use_default_keymaps = false })
+            map('n', '<space>l', treesj.toggle)
+        end
     },
 
     {
@@ -140,12 +86,7 @@ return {
         end,
     },
 
-    {
-        "m-demare/hlargs.nvim",
-        config = function()
-            require('hlargs').setup()
-        end
-    },
+
     {
         "stevearc/aerial.nvim",
         config = function()
@@ -161,14 +102,14 @@ return {
             vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
         end
     },
-    -- { 'nvim-focus/focus.nvim', version = false , config=true},
+    -- TODO { 'nvim-focus/focus.nvim', version = false , config=true},
     {
         "nvim-zh/colorful-winsep.nvim",
         config = true,
         event = { "WinNew" },
     },
 
-    { 'LnL7/vim-nix' },
+    { 'LnL7/vim-nix', ft = 'nix' },
 
     -- {
     --   "klen/nvim-config-local",
@@ -188,8 +129,6 @@ return {
     --   end
     -- },
 
-    { "folke/neodev.nvim", opts = {}, config=true},
-
     -- "stefandtw/quickfix-reflector.vim",
 
     {
@@ -199,11 +138,9 @@ return {
             "mfussenegger/nvim-dap", "mfussenegger/nvim-dap-python", --optional
             { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
         },
-        lazy = false,
+        ft = "python",
         branch = "regexp", -- This is the regexp branch, use this for the new version
-        config = function()
-            require("venv-selector").setup()
-        end,
+        config = true,
         keys = {
             { ",v", "<cmd>VenvSelect<cr>" },
         },

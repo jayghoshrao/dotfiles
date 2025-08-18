@@ -95,7 +95,6 @@ map('n', '<Tab>', ':bnext<CR>' )
 map('n', '<S-Tab>', ':bprevious<CR>' )
 
 map('n', '<space>x', ':bdelete!<CR>' )
-map('n', '<space>l', ':Buffers<CR>' )
 
 -- New tab
 map( 'n', 'tn', ':tabnew<Space>' )
