@@ -161,3 +161,5 @@ vim.cmd [[ let fortran_fold_conditionals = 1 ]]
 vim.cmd [[ let fortran_fold_multilinecomments = 1 ]]
 -- vim.cmd [[ let fortran_have_tabs = 1]]
 -- vim.cmd [[ let fortran_dialect = 'f90']]
+
+opt.winborder = 'rounded'
