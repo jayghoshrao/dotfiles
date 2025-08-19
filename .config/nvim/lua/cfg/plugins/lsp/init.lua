@@ -3,19 +3,15 @@ local pickers = require 'telescope.pickers'
 local make_entry = require 'telescope.make_entry'
 local conf = require('telescope.config').values
 
--- Highlight line numbers for diagnostics
-vim.fn.sign_define('DiagnosticSignError', { numhl = 'LspDiagnosticsLineNrError', text = '🚩'})
--- vim.fn.sign_define('DiagnosticSignWarn', { numhl = 'LspDiagnosticsLineNrWarning', text = '⚠️'})
-vim.fn.sign_define('DiagnosticSignWarn', { numhl = 'LspDiagnosticsLineNrWarning', text = '❗'})
-vim.fn.sign_define('DiagnosticSignInfo', { text = '❕' })
-vim.fn.sign_define('DiagnosticSignHint', { text = '🪧' })
-
--- Configure diagnostics displaying
-vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-  virtual_text = false,
-  signs = true,
-  update_in_insert = false,
-  -- underline = false,
+vim.diagnostic.config({
+    signs = {
+        text = {
+            [ vim.diagnostic.severity.ERROR ] = '🚩',
+            [ vim.diagnostic.severity.WARN ] = '❗',
+            [ vim.diagnostic.severity.HINT ] = '🪧',
+            [ vim.diagnostic.severity.INFO ] = '❕',
+        },
+    }
 })
 
 -- Use FZF to find references
@@ -40,10 +36,6 @@ vim.lsp.handlers['textDocument/formatting'] = function(err, result, ctx, _)
     end
   end
 end
-
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = 'single',
-})
 
 local icons = {
   Text = '',
@@ -131,32 +123,6 @@ M.capabilities.textDocument.completion.completionItem.deprecatedSupport = true
 M.capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
 M.capabilities.textDocument.completion.completionItem.tagSupport = { valueSet = { 1 } }
 
--- If the LSP response includes any `node_modules`, then try to remove them and
--- see if there are any options left. We probably want to navigate to the code
--- in OUR codebase, not inside `node_modules`.
---
--- This can happen if a type is used to explicitly type a variable:
--- ```ts
--- const MyComponent: React.FC<Props> = () => <div />
--- ````
---
--- Running "Go to definition" on `MyComponent` would give the `React.FC`
--- definition in `node_modules/react` as the first result, but we don't want
--- that.
-local function filter_out_libraries_from_lsp_items(results)
-  local without_node_modules = vim.tbl_filter(function(item)
-    return item.uri and not string.match(item.uri, 'node_modules')
-  end, results)
-
-  if #without_node_modules > 0 then
-    return without_node_modules
-  end
-
-  return results
-end
-
--- This function is mostly copied from Telescope, I only added the
--- `node_modules` filtering.
 local function list_or_jump(action, title, opts)
   opts = opts or {}
 
@@ -173,8 +139,6 @@ local function list_or_jump(action, title, opts)
     end
   end
 
-  -- This is the only added step to the Telescope function
-  flattened_results = filter_out_libraries_from_lsp_items(flattened_results)
 
   if #flattened_results == 0 then
     -- return
