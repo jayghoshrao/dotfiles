@@ -11,7 +11,8 @@ vim.diagnostic.config({
             [ vim.diagnostic.severity.HINT ] = '🪧',
             [ vim.diagnostic.severity.INFO ] = '❕',
         },
-    }
+    },
+    virtual_text = {current_line = true},
 })
 
 -- Use FZF to find references
@@ -96,9 +97,6 @@ function M.on_attach(client, bufnr)
   buf_map('n', 'gk', [[<cmd>lua vim.lsp.buf.hover()<cr>]], opts)
   buf_map('n', 'gs', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
   -- buf_map('n', '<space>y', [[<cmd>lua vim.lsp.buf.signature_help()<cr>]], opts)
-
-  buf_map('n', '[d', [[<cmd>lua vim.diagnostic.goto_prev()<cr>]], opts)
-  buf_map('n', ']d', [[<cmd>lua vim.diagnostic.goto_next()<cr>]], opts)
 
   -- buf_map('n', '<leader>ff', [[<cmd>lua vim.lsp.buf.format()<cr>]], opts)
 
