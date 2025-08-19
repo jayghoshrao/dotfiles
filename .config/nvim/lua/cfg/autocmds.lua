@@ -1,12 +1,13 @@
 local group = vim.api.nvim_create_augroup('Setup', {})
 
--- -- Highlight text after yanking
--- vim.api.nvim_create_autocmd('TextYankPost', {
---   group = group,
---   callback = function()
---     require('vim.highlight').on_yank { higroup = 'Substitute', timeout = 200 }
---   end,
--- })
+-- Highlight when yanking
+vim.api.nvim_create_autocmd('TextYankPost', {
+    desc = 'Highlight when yanking (copying) text',
+    group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+    callback = function()
+        vim.highlight.on_yank()
+    end,
+})
 
 -- Hide cursorline in insert mode
 vim.api.nvim_create_autocmd({ 'InsertLeave', 'WinEnter' }, { command = 'set cursorline', group = group })
