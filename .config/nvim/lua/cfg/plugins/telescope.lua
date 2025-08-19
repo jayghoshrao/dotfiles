@@ -8,12 +8,12 @@ local builtin = require 'telescope.builtin'
 
 local map = require('cfg.utils').map
 
-map('n', '<space>o', builtin.find_files)
-map('n', '<space>p', builtin.git_files)
+-- map('n', '<space>o', builtin.find_files)
+-- map('n', '<space>p', builtin.git_files)
 map('n', '<space>g', builtin.live_grep)
 
 map('n', '<space>b', builtin.buffers)
--- map('n', '<space>h', builtin.help_tags) --TODO: use for harpoon and git worktree
+map('n', '<space>h', builtin.help_tags) --TODO: use for harpoon and git worktree
 -- map('n', '<space>e', builtin.current_buffer_fuzzy_find)
 map('n', '<space>;', builtin.command_history)
 map('n', '<space>/', builtin.search_history)
@@ -130,6 +130,7 @@ M.project_files = function()
     local ok = pcall(require'telescope.builtin'.git_files, opts)
     if not ok then require'telescope.builtin'.find_files(opts) end
 end
+map('n', '<space>o', M.project_files)
 
 function M.find_in_root(opts)
     opts = opts or {}
