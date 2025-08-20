@@ -133,33 +133,48 @@ function M.LlamaRun(prompt_tag, opts)
 end
 
 -- Downloads config files into $CONFIG_DIR/lua/ from the official neovim/nvim-lspconfig repo
-function M.FetchLspConfig(lsp_names)
+function M.FetchLspConfigs(lsp_names)
     local config_dir = vim.fn.stdpath("config") .. "/lsp"
     if vim.fn.isdirectory(config_dir) == 0 then
         vim.fn.mkdir(config_dir, "p")
     end
 
-    for lsp_name in string.gmatch(lsp_names, "%S+") do
-        local url = string.format(
-            "https://raw.githubusercontent.com/neovim/nvim-lspconfig/refs/heads/master/lsp/%s.lua",
-            lsp_name
-        )
+    -- for lsp_name in string.gmatch(lsp_names, "%S+") do
+    for _,lsp_name in ipairs(lsp_names) do
         local output_file = config_dir .. "/" .. lsp_name .. ".lua"
 
-        local cmd = { "curl", "-fLo", output_file, "--create-dirs", url }
-        local result = vim.fn.system(cmd)
+        if vim.fn.filereadable(output_file) == 0 then
+            local url = string.format(
+                "https://raw.githubusercontent.com/neovim/nvim-lspconfig/refs/heads/master/lsp/%s.lua",
+                lsp_name
+            )
 
-        if vim.v.shell_error ~= 0 then
-            vim.notify("Download failed for " .. lsp_name .. ": " .. result, vim.log.levels.ERROR)
-        else
-            vim.notify("Downloaded LSP config for " .. lsp_name .. " → " .. output_file)
+            local cmd = { "curl", "-fsSLo", output_file, "--create-dirs", url }
+            local result = vim.fn.system(cmd)
+
+            if vim.v.shell_error ~= 0 then
+                vim.notify("Download failed for " .. lsp_name .. ": " .. result, vim.log.levels.ERROR)
+            else
+                vim.notify("Downloaded LSP config for " .. lsp_name .. " → " .. output_file)
+            end
         end
     end
 end
 
--- Create command :DownloadLspConfig <lsp-name>
-vim.api.nvim_create_user_command("FetchLspConfig", function(opts)
-    M.download_lsp_config(opts.args)
-end, { nargs = '+' })
+-- -- Create command :DownloadLspConfig <lsp-name>
+-- vim.api.nvim_create_user_command("FetchLspConfigs", function(opts)
+--     M.FetchLspConfigs(opts.args)
+-- end, { nargs = '+' })
+
+vim.api.nvim_create_user_command("FetchLspConfigs", function(opts)
+    -- Split the input string into a table of LSP names
+    local lsp_names = {}
+    for lsp_name in string.gmatch(opts.args, "%S+") do
+        table.insert(lsp_names, lsp_name)
+    end
+    
+    -- Call the function with the table of LSP names
+    M.FetchLspConfigs(lsp_names)
+end, { nargs = 1 })  -- Allow one argument 
 
 return M

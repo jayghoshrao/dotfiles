@@ -35,7 +35,7 @@ return {
     { 'williamboman/mason.nvim', opts = {} },
 
     { 'williamboman/mason-lspconfig.nvim', opts={
-        ensure_installed = { "lua_ls", "clangd", "pyright" },
+        ensure_installed = require('cfg.lsp').ensure_installed,
     }},
 
     { "jay-babu/mason-nvim-dap.nvim", opts = {}},
