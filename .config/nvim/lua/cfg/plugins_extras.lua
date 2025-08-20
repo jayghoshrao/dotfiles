@@ -38,8 +38,13 @@ return {
                 debounce_ms = 150,
             })
 
-            vim.cmd [[ command! DiagBuf lua require('diaglist').open_all_diagnostics() ]]
-            vim.cmd [[ command! DiagAll lua require('diaglist').open_buffer_diagnostics() ]]
+            vim.api.nvim_create_user_command('DiagBuf', function()
+                require('diaglist').open_buffer_diagnostics()
+            end, {})
+
+            vim.api.nvim_create_user_command('DiagAll', function()
+                require('diaglist').open_all_diagnostics()
+            end, {})
 
         end
     },

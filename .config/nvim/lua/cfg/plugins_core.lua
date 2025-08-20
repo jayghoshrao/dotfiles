@@ -1,9 +1,8 @@
 local map = require('cfg.utils').map
 
 return {
-
     'tpope/vim-surround',
-    'tpope/vim-unimpaired',
+    -- 'tpope/vim-unimpaired',
     'tpope/vim-repeat',
     'tpope/vim-obsession',
     'tpope/vim-fugitive',
@@ -35,37 +34,23 @@ return {
     -- NOTE: install and initialize before nvim-lspconfig
     { 'williamboman/mason.nvim', opts = {} },
 
-    -- TODO: 'williamboman/mason-lspconfig.nvim',
+    { 'williamboman/mason-lspconfig.nvim', opts={
+        ensure_installed = { "lua_ls", "clangd", "pyright" },
+    }},
 
     { "jay-babu/mason-nvim-dap.nvim", opts = {}},
 
-    {
-        'neovim/nvim-lspconfig', -- Built-in LSP configurations
-        config = function()
-            require 'cfg.plugins.lsp'
-            require 'cfg.plugins.lsp.cc_ls'
-            -- require 'cfg.plugins.lsp.clangd'
-            require 'cfg.plugins.lsp.docker_ls'
-            require 'cfg.plugins.lsp.fortls'
-            require 'cfg.plugins.lsp.rust_analyzer'
-            require 'cfg.plugins.lsp.json_ls'
-            -- require 'cfg.plugins.lsp.sumneko_lua'
-            require 'cfg.plugins.lsp.lua_ls'
-            require 'cfg.plugins.lsp.rnix'
-            require 'cfg.plugins.lsp.pyright'
-            -- require 'cfg.plugins.lsp.pylsp'
-            -- require 'cfg.plugins.lsp.ruff_lsp'
-            require 'cfg.plugins.lsp.texlab'
-            require 'cfg.plugins.lsp.yaml_ls'
-        end,
-        dependencies = {
-            {
-                'onsails/lspkind-nvim'
-            }
-        },
-    },
+    'neovim/nvim-lspconfig', -- Built-in LSP configurations
+    'onsails/lspkind-nvim',
 
-    -- https://github.com/echasnovski/mini.nvim
+    -- { 
+    --     'https://github.com/echasnovski/mini.pick',
+    --     config = function()
+    --         map('n', '<space>o', ':Pick files<CR>')
+    --         map('n', '<space>p', ':Pick git_files<CR>')
+    --         map('n', '<space>f', ':Pick live_grep<CR>')
+    --     end
+    -- },
 
     {
         'nvim-treesitter/nvim-treesitter',
@@ -96,11 +81,11 @@ return {
                     },
                 },
 
-              -- config = function()
-              --   require('Comment').setup({
-              --     pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-              --   })
-              -- end,
+              config = function()
+                require('Comment').setup({
+                  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+                })
+              end,
             },
         },
     },
@@ -288,12 +273,7 @@ return {
         end
     },
 
-    {
-        "folke/which-key.nvim",
-        config = function()
-            require("which-key").setup()
-        end
-    },
+    { "folke/which-key.nvim", config = true },
 
     {
         "akinsho/toggleterm.nvim", version = '*', 

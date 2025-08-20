@@ -49,44 +49,6 @@ function M.termcode(str)
     return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
--- Bust the cache of all required Lua files.
--- After running this, each require() would re-run the file.
-local function unload_all_modules()
-    -- Lua patterns for the modules to unload
-    local unload_modules = {
-        '^cfg.',
-    }
-
-    for k, _ in pairs(package.loaded) do
-        for _, v in ipairs(unload_modules) do
-            if k:match(v) then
-                package.loaded[k] = nil
-                break
-            end
-        end
-    end
-end
-
-function M.reload()
-    -- Stop LSP
-    vim.cmd.LspStop()
-
-    -- Unload all already loaded modules
-    unload_all_modules()
-
-    -- Source init.lua
-    vim.cmd.luafile '$MYVIMRC'
-end
-
--- Restart Vim without having to close and run again
-function M.restart()
-    -- Reload config
-    M.reload()
-
-    -- Manually run VimEnter autocmd to emulate a new run of Vim
-    vim.cmd.doautocmd 'VimEnter'
-end
-
 function M.toggle_quickfix()
     for _, win in pairs(vim.fn.getwininfo()) do
         if win.quickfix == 1 then
@@ -169,5 +131,35 @@ function M.LlamaRun(prompt_tag, opts)
         require('gen').exec(vim.tbl_deep_extend("force", { mode = 'v' }, prompts[prompt_tag]))
     end
 end
+
+-- Downloads config files into $CONFIG_DIR/lua/ from the official neovim/nvim-lspconfig repo
+function M.FetchLspConfig(lsp_names)
+    local config_dir = vim.fn.stdpath("config") .. "/lsp"
+    if vim.fn.isdirectory(config_dir) == 0 then
+        vim.fn.mkdir(config_dir, "p")
+    end
+
+    for lsp_name in string.gmatch(lsp_names, "%S+") do
+        local url = string.format(
+            "https://raw.githubusercontent.com/neovim/nvim-lspconfig/refs/heads/master/lsp/%s.lua",
+            lsp_name
+        )
+        local output_file = config_dir .. "/" .. lsp_name .. ".lua"
+
+        local cmd = { "curl", "-fLo", output_file, "--create-dirs", url }
+        local result = vim.fn.system(cmd)
+
+        if vim.v.shell_error ~= 0 then
+            vim.notify("Download failed for " .. lsp_name .. ": " .. result, vim.log.levels.ERROR)
+        else
+            vim.notify("Downloaded LSP config for " .. lsp_name .. " → " .. output_file)
+        end
+    end
+end
+
+-- Create command :DownloadLspConfig <lsp-name>
+vim.api.nvim_create_user_command("FetchLspConfig", function(opts)
+    M.download_lsp_config(opts.args)
+end, { nargs = '+' })
 
 return M
