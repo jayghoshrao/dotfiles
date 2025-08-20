@@ -236,7 +236,7 @@ return {
         end
     },
 
-    { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
+    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
     {
         'skywind3000/asynctasks.vim',
@@ -282,13 +282,6 @@ return {
                 open_mapping=[[<C-q>]],
                 direction = 'float',
             })
-        end
-    },
-
-    {
-        'ThePrimeagen/harpoon',
-        config = function()
-            require'cfg.plugins.harpoon'
         end
     },
 
