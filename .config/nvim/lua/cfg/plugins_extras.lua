@@ -166,14 +166,14 @@ return {
                 prompt = "Completely paraphrase the the following text for a scientific journal article without changing its meaning, just output the final text without additional quotes around it:\n$text",
             }
 
-            local map = require('cfg.utils').map
-            map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")
+            -- local map = require('cfg.utils').map
+            -- map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")
             -- map("n", "<space>j", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jwrite', {replace=true})<CR>")
             -- map("n", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewrite', {yank=true})<CR>")
-            map("v", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewritevis', {visual=true})<CR>")
-            map("v", "<space>i", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jparaphrase', {visual=true})<CR>")
-            map("n", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
-            map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
+            -- map("v", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewritevis', {visual=true})<CR>")
+            -- map("v", "<space>i", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jparaphrase', {visual=true})<CR>")
+            -- map("n", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
+            -- map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
         end,
         dependencies = {
             {

@@ -13,9 +13,10 @@ map('n', '<space>o', builtin.find_files)
 map('n', '<space>g', builtin.live_grep)
 
 map('n', '<space>b', builtin.buffers)
+map('n', '<space>;', builtin.buffers)
 map('n', '<space>h', builtin.help_tags) --TODO: use for harpoon and git worktree
 -- map('n', '<space>e', builtin.current_buffer_fuzzy_find)
-map('n', '<space>;', builtin.command_history)
+map('n', '<space>k', builtin.command_history)
 map('n', '<space>/', builtin.search_history)
 map('n', '<space>t', builtin.builtin)
 map('n', '<space>d', function() builtin.lsp_dynamic_workspace_symbols({fname_width=60,}) end)
