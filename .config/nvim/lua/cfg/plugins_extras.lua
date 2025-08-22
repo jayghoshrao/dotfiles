@@ -24,24 +24,10 @@ local map = require('cfg.utils').map
 
 return {
 
-    'mboughaba/i3config.vim',
+    { 'LnL7/vim-nix', ft = 'nix' },
+    { 'mboughaba/i3config.vim', ft = 'i3config'},
     'ggandor/lightspeed.nvim',
     'duane9/nvim-rg',
-
-    {
-        'iofq/dart.nvim', 
-        opts = {
-            mappings = {
-                mark = ';;', -- Mark current buffer
-                jump = ';', -- Jump to buffer marked by next character i.e `;a`
-                pick = ';p', -- Open Dart.pick
-                next = '', -- Cycle right through the tabline
-                prev = '', -- Cycle left through the tabline
-            }
-        }
-    },
-
-    { "m-demare/hlargs.nvim", opts=true },
 
     {
         'onsails/diaglist.nvim',
@@ -62,7 +48,7 @@ return {
         end
     },
 
-    { 'norcalli/nvim-colorizer.lua', config = true },
+    { 'norcalli/nvim-colorizer.lua', config = true, cmd={'ColorizerToggle'} },
 
     -- {
     --   'editorconfig/editorconfig-vim', -- Project-specific settings
@@ -73,36 +59,7 @@ return {
 
     { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
     { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
-
     { 'lervag/vimtex', ft = { 'markdown', 'tex' } },
-
-
-    -- TODO: Switch to clangd/clangd_extensions and do some research.
-    { 'm-pilia/vim-ccls', ft = {"c", "cpp", "h", "hpp"}},
-
-    { 'ray-x/lsp_signature.nvim', config = true; },
-
-    {
-        'Wansmer/treesj',
-        dependencies = { 'nvim-treesitter/nvim-treesitter' },
-        config = function()
-            local treesj = require('treesj')
-            treesj.setup({ use_default_keymaps = false })
-            map('n', '<space>l', treesj.toggle)
-        end
-    },
-
-    {
-        "nvim-tree/nvim-tree.lua",
-        version = "*",
-        lazy = false,
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-        },
-        config = function()
-            require('cfg.plugins.tree')
-        end,
-    },
 
 
     {
@@ -117,17 +74,17 @@ return {
                 end
             })
             -- You probably also want to set a keymap to toggle aerial
-            vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
+            vim.keymap.set('n', '<space>a', '<cmd>AerialNavToggle<CR>')
         end
     },
     -- TODO { 'nvim-focus/focus.nvim', version = false , config=true},
+
     {
         "nvim-zh/colorful-winsep.nvim",
         config = true,
         event = { "WinNew" },
     },
 
-    { 'LnL7/vim-nix', ft = 'nix' },
 
     -- {
     --   "klen/nvim-config-local",
@@ -226,6 +183,75 @@ return {
                 end
             }
         }
+    },
+
+    {
+        "francescarpi/buffon.nvim",
+        enabled = true,
+        branch = "main",
+        opts = {
+            cyclic_navigation = true,
+            --- possible values:
+            ---   "start": buffers are added at the begginning of the buffers list
+            ---   "end": buffers are added at the end of the list
+            ---   "after": are added after the active buffer
+            new_buffer_position = "end",
+            num_pages = 1,
+            open = {
+                by_default = true,
+                offset = {
+                    x = 0,
+                    y = 0,
+                },
+                ignore_ft = {
+                    "gitcommit",
+                    "gitrebase",
+                },
+                default_position = "top_right"
+            },
+            --- Buffers that should be ignored by buffon
+            --- It accepts a list of regex patterns
+            ignore_buff_names = {
+                "diffpanel_",
+            },
+            sort_buffers_by_loaded_status = false,
+            theme = {
+                unloaded_buffer = "#404040",
+                shortcut = "#CC7832",
+                active = "#51afef",
+                unsaved_indicator = "#f70067",
+            },
+            leader_key = ";",
+            mapping_chars = "qweryuiop",
+            keybindings = {
+                goto_next_buffer = "<a-j>",
+                goto_previous_buffer = "<a-k>",
+                move_buffer_up = "<a-h>",
+                move_buffer_down = "<a-l>",
+                move_buffer_top = "<s-t>",
+                move_buffer_bottom = "<s-b>",
+                toggle_buffon_window = "<buffonleader>n",
+                --- Toggle window position allows moving the main window position
+                --- between top-right and bottom-right positions
+                toggle_buffon_window_position = "<buffonleader>nn",
+                switch_previous_used_buffer = "<buffonleader><buffonleader>",
+                close_buffer = "<buffonleader>d",
+                close_buffers_above = "<buffonleader>v",
+                close_buffers_below = "<buffonleader>b",
+                close_all_buffers = "<buffonleader>cc",
+                close_others = "<buffonleader>cd",
+                reopen_recent_closed_buffer = "<buffonleader>t",
+                show_help = "<buffonleader>h",
+                previous_page = "<buffonleader>z",
+                next_page = "<buffonleader>x",
+                move_to_previous_page = "<buffonleader>a",
+                move_to_next_page = "<buffonleader>s",
+            },
+        },
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+            "nvim-lua/plenary.nvim",
+        },
     },
 }
 

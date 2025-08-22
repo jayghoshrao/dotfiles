@@ -1,20 +1,23 @@
 local map = require('cfg.utils').map
 
 return {
-    'tpope/vim-surround',
-    -- 'tpope/vim-unimpaired',
-    'tpope/vim-repeat',
-    'tpope/vim-obsession',
-    'tpope/vim-fugitive',
-    'lambdalisue/suda.vim',
-    'tommcdo/vim-lion',
 
-    -- Vim object extensions
-    -- 1. Indent object
-    'michaeljsmith/vim-indent-object',
-    --  2. [n]ext, [,], and user dI' to delete inner without space
-    'wellle/targets.vim',
-    -- use 'vim-scripts/argtextobj.vim'
+    -- 'tpope/vim-unimpaired',
+    -- 'tpope/vim-obsession',
+
+    -- Terminal -------------------------------------------------------------------- 
+
+    {
+        "akinsho/toggleterm.nvim", version = '*', 
+        config = function()
+            require("toggleterm").setup({
+                open_mapping=[[<C-q>]],
+                direction = 'float',
+            })
+        end
+    },
+
+    -- Navigation ------------------------------------------------------------------
 
     { 'alexghergh/nvim-tmux-navigation', config = function()
         require('nvim-tmux-navigation').setup {
@@ -31,6 +34,52 @@ return {
     end
     },
 
+
+
+    -- Git -------------------------------------------------------------------------
+
+    'tpope/vim-fugitive',
+    {
+        'kdheepak/lazygit.nvim',
+        config = function()
+            map('n', '<leader>gg', [[<cmd>LazyGit<cr>]])
+        end
+    },
+    {
+        'lewis6991/gitsigns.nvim', -- Git status signs in the gutter
+        config = function()
+            require 'cfg.plugins.gitsigns'
+        end,
+    },
+
+
+    -- Text layout and alignment --------------------------------------------------- 
+
+    'michaeljsmith/vim-indent-object',
+    'wellle/targets.vim', --  [n]ext, [,], and user dI' to delete inner without space
+    'tpope/vim-surround',
+    'tpope/vim-repeat',
+    'tommcdo/vim-lion',
+    { 'lukas-reineke/indent-blankline.nvim', main = "ibl", opts = {} },
+    {
+        'Wansmer/treesj',
+        dependencies = { 'nvim-treesitter/nvim-treesitter' },
+        config = function()
+            local treesj = require('treesj')
+            treesj.setup({ use_default_keymaps = false })
+            map('n', '<space>l', treesj.toggle)
+        end
+    },
+    {
+        'windwp/nvim-autopairs',
+        config = function()
+            require 'cfg.plugins.autopairs'
+        end,
+    },
+
+
+    -- Mason, LSP, DAP ------------------------------------------------------------- 
+
     -- NOTE: install and initialize before nvim-lspconfig
     { 'williamboman/mason.nvim', opts = {} },
 
@@ -42,53 +91,8 @@ return {
 
     'neovim/nvim-lspconfig', -- Built-in LSP configurations
     'onsails/lspkind-nvim',
+    { 'ray-x/lsp_signature.nvim', config = true },
 
-    -- { 
-    --     'https://github.com/echasnovski/mini.pick',
-    --     config = function()
-    --         map('n', '<space>o', ':Pick files<CR>')
-    --         map('n', '<space>p', ':Pick git_files<CR>')
-    --         map('n', '<space>f', ':Pick live_grep<CR>')
-    --     end
-    -- },
-
-    {
-        'nvim-treesitter/nvim-treesitter',
-        -- build = ':TSUpdate',
-        enabled = function()
-            return vim.fn.executable('gcc')==1 or vim.fn.executable('clang')==1
-        end,
-        config = function()
-            require 'cfg.plugins.treesitter'
-        end,
-        dependencies = {
-            -- 'nvim-treesitter/playground',
-            'nvim-treesitter/nvim-treesitter-textobjects',
-            'RRethy/nvim-treesitter-textsubjects',
-            {
-              'numToStr/Comment.nvim',
-                opts = {
-
-                },
-              dependencies = {
-                    -- Dynamically set commentstring based on cursor location in file
-                    { 
-                        'JoosepAlviste/nvim-ts-context-commentstring',
-                        config = function()
-                            require('ts_context_commentstring').setup({})
-                            vim.g.skip_ts_context_commentstring_module = true
-                        end
-                    },
-                },
-
-              config = function()
-                require('Comment').setup({
-                  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-                })
-              end,
-            },
-        },
-    },
 
     {
         'mfussenegger/nvim-dap',
@@ -138,6 +142,47 @@ return {
         end
     },
 
+    -- Treesitter ------------------------------------------------------------------ 
+    {
+        'nvim-treesitter/nvim-treesitter',
+        -- build = ':TSUpdate',
+        enabled = function()
+            return vim.fn.executable('gcc')==1 or vim.fn.executable('clang')==1
+        end,
+        config = function()
+            require 'cfg.plugins.treesitter'
+        end,
+        dependencies = {
+            -- 'nvim-treesitter/playground',
+            'nvim-treesitter/nvim-treesitter-textobjects',
+            'RRethy/nvim-treesitter-textsubjects',
+            {
+              'numToStr/Comment.nvim',
+                opts = {
+
+                },
+              dependencies = {
+                    -- Dynamically set commentstring based on cursor location in file
+                    { 
+                        'JoosepAlviste/nvim-ts-context-commentstring',
+                        config = function()
+                            require('ts_context_commentstring').setup({})
+                            vim.g.skip_ts_context_commentstring_module = true
+                        end
+                    },
+                },
+
+              config = function()
+                require('Comment').setup({
+                  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+                })
+              end,
+            },
+        },
+    },
+
+    -- Completion ------------------------------------------------------------------ 
+
     {
         'hrsh7th/nvim-cmp',
         config = function()
@@ -158,10 +203,21 @@ return {
                 dependencies = 'https://github.com/rafamadriz/friendly-snippets',
             },
             {
-                "lukas-reineke/cmp-under-comparator"
+                "lukas-reineke/cmp-under-comparator" -- improved sorting in cmp for methods starting with '_'
             }
         },
     },
+
+    -- Picker ---------------------------------------------------------------------- 
+
+    -- { 
+    --     'https://github.com/echasnovski/mini.pick',
+    --     config = function()
+    --         map('n', '<space>o', ':Pick files<CR>')
+    --         map('n', '<space>p', ':Pick git_files<CR>')
+    --         map('n', '<space>f', ':Pick live_grep<CR>')
+    --     end
+    -- },
 
     {
         'nvim-telescope/telescope.nvim',
@@ -198,12 +254,7 @@ return {
         end
     },
 
-    {
-        'lewis6991/gitsigns.nvim', -- Git status signs in the gutter
-        config = function()
-            require 'cfg.plugins.gitsigns'
-        end,
-    },
+    -- File browsing and navigation ------------------------------------------------
 
     {
         'mcchrish/nnn.vim',
@@ -212,13 +263,49 @@ return {
         end
     },
 
-    { 'lukas-reineke/indent-blankline.nvim', main = "ibl", opts = {} },
+    { 'stevearc/oil.nvim', opts={}},
 
     {
-        'windwp/nvim-autopairs',
+        "nvim-tree/nvim-tree.lua",
+        version = "*",
+        lazy = false,
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
         config = function()
-            require 'cfg.plugins.autopairs'
+            require('cfg.plugins.tree')
         end,
+    },
+
+    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
+
+
+    -- Task execution -------------------------------------------------------------- 
+
+    {
+        'skywind3000/asynctasks.vim',
+        dependencies = {
+            {
+                'skywind3000/asyncrun.vim',
+                config = function()
+                    require 'cfg.plugins.async'
+                end
+            },
+            {
+                'GustavoKatel/telescope-asynctasks.nvim',
+                config = function()
+                    map('n', '<leader>tt', [[<cmd>lua require('telescope').extensions.asynctasks.all()<cr>]])
+                end
+            },
+        },
+    },
+
+
+    {
+        "catppuccin/nvim", name = "catppuccin", priority = 1000,
+        config = function()
+            vim.cmd.colorscheme 'catppuccin-mocha'
+        end
     },
 
     {
@@ -229,74 +316,8 @@ return {
         end
     },
 
-    {
-        "catppuccin/nvim", name = "catppuccin", priority = 1000,
-        config = function()
-            vim.cmd.colorscheme 'catppuccin-mocha'
-        end
-    },
-
-    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
-
-    {
-        'skywind3000/asynctasks.vim',
-        dependencies = {
-            {
-                'skywind3000/asyncrun.vim',
-                config = function()
-                    require 'cfg.plugins.async'
-                end
-            }
-        },
-    },
-
-    {
-        'GustavoKatel/telescope-asynctasks.nvim',
-        config = function()
-            map('n', '<leader>tt', [[<cmd>lua require('telescope').extensions.asynctasks.all()<cr>]])
-        end
-    },
-
-
-    {
-        'derekwyatt/vim-fswitch',
-        ft = { "c", "cpp", "h", "hpp"},
-        config = function()
-            map('n', 'gh', ':FSHere<cr>')
-        end
-    },
-
-    {
-        'kdheepak/lazygit.nvim',
-        config = function()
-            map('n', '<leader>gg', [[<cmd>LazyGit<cr>]])
-        end
-    },
-
-    { "folke/which-key.nvim", config = true },
-
-    {
-        "akinsho/toggleterm.nvim", version = '*', 
-        config = function()
-            require("toggleterm").setup({
-                open_mapping=[[<C-q>]],
-                direction = 'float',
-            })
-        end
-    },
-
-    {
-        "folke/zen-mode.nvim",
-        config = function()
-            require 'cfg.plugins.zen-mode'
-        end
-    },
-
-    {
-        "folke/twilight.nvim",
-        opts = {}
-    },
-
+    { "folke/zen-mode.nvim", config = function() require 'cfg.plugins.zen-mode' end },
+    { "folke/twilight.nvim", opts = {} },
     {
         'szw/vim-maximizer',
         config = function()
@@ -304,12 +325,18 @@ return {
         end
     },
 
-    {
-        "j-hui/fidget.nvim",
-        -- tag = "*", -- pull from latest tag instead of main branch
-        event = "LspAttach",
-        opts = {},
-    },
 
+    -- Eye candy / utility
+    { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+    { "folke/which-key.nvim", config = true },
+    { "m-demare/hlargs.nvim", opts=true },
+    { 'lambdalisue/suda.vim' },
+    {
+        'derekwyatt/vim-fswitch',
+        ft = { "c", "cpp", "h", "hpp"},
+        config = function()
+            map('n', 'gh', ':FSHere<cr>')
+        end
+    },
 
 }
