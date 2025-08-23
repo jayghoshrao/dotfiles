@@ -263,7 +263,9 @@ return {
         end
     },
 
-    { 'stevearc/oil.nvim', opts={}},
+    { 'stevearc/oil.nvim', opts={
+        default_file_explorer = false
+    }},
 
     {
         "nvim-tree/nvim-tree.lua",
