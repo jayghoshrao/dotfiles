@@ -2,7 +2,7 @@ local map = require('cfg.utils').map
 
 return {
 
-    -- 'tpope/vim-unimpaired',
+    'tpope/vim-unimpaired',
     -- 'tpope/vim-obsession',
 
     -- Terminal -------------------------------------------------------------------- 
@@ -228,6 +228,14 @@ return {
             'nvim-lua/plenary.nvim', -- Useful Lua utilities
             'nvim-lua/popup.nvim',
             'nvim-telescope/telescope-github.nvim',
+            {
+                "nvim-telescope/telescope-frecency.nvim",
+                -- install the latest stable version
+                version = "*",
+                config = function()
+                    require("telescope").load_extension "frecency"
+                end,
+            },
         },
     },
 
@@ -279,7 +287,6 @@ return {
         end,
     },
 
-    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
 
     -- Task execution -------------------------------------------------------------- 
@@ -303,6 +310,7 @@ return {
     },
 
 
+    -- Eye candy ------------------------------------------------------------------- 
     {
         "catppuccin/nvim", name = "catppuccin", priority = 1000,
         config = function()
@@ -310,6 +318,7 @@ return {
         end
     },
 
+    -- Utility --------------------------------------------------------------------- 
     {
         'nvim-lualine/lualine.nvim',
         dependencies = {'nvim-tree/nvim-web-devicons', opt = true},
@@ -326,12 +335,11 @@ return {
             map('n', '<space>m', '<cmd>MaximizerToggle<cr>')
         end
     },
+    { "m-demare/hlargs.nvim", opts=true },
 
 
-    -- Eye candy / utility
     { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
     { "folke/which-key.nvim", config = true },
-    { "m-demare/hlargs.nvim", opts=true },
     { 'lambdalisue/suda.vim' },
     {
         'derekwyatt/vim-fswitch',
@@ -340,5 +348,23 @@ return {
             map('n', 'gh', ':FSHere<cr>')
         end
     },
+
+    -- Future ---------------------------------------------------------------------- 
+    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
+
+    -- https://github.com/stevearc/quicker.nvim
+    -- https://github.com/danielfalk/smart-open.nvim
+    -- https://github.com/dmtrKovalenko/fff.nvim
+
+    -- snacks.scroll / neoscroll / mini.animate / smear-cursor.nvim
+    -- https://github.com/meznaric/key-analyzer.nvim
+    --
+    -- https://github.com/hat0uma/csvview.nvim
+    -- https://github.com/MeanderingProgrammer/render-markdown.nvim
+    -- https://github.com/cenk1cenk2/jq.nvim
+    -- https://github.com/neolooong/whichpy.nvim -- py bin selector? and exec?
+    -- https://github.com/aliqyan-21/runTA.nvim -- code exec
+    -- https://github.com/mawkler/refjump.nvim
+    -- https://github.com/debugloop/layers.nvim -- keymapping layers, potentially good for debugging?
 
 }
