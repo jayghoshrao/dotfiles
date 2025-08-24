@@ -2,7 +2,7 @@ local map = require('cfg.utils').map
 
 return {
 
-    'tpope/vim-unimpaired',
+    'tpope/vim-unimpaired', -- mainly for ]f, [f
     -- 'tpope/vim-obsession',
 
     -- Terminal -------------------------------------------------------------------- 
@@ -37,6 +37,15 @@ return {
 
 
     -- Git -------------------------------------------------------------------------
+    {
+        "NeogitOrg/neogit",
+        dependencies = {
+            "nvim-lua/plenary.nvim",         -- required
+            "sindrets/diffview.nvim",        -- optional - Diff integration
+            "nvim-telescope/telescope.nvim", -- optional
+        },
+        opts = {}
+    },
 
     'tpope/vim-fugitive',
     {
