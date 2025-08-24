@@ -109,8 +109,9 @@ map( 'n', 'tj', ':tabprev<CR>' )
 map( 'n', 'th', ':tabfirst<CR>' )
 map( 'n', 'tl', ':tablast<CR>' )
 
-map('n', '<space>q', [[<cmd>lua require('cfg.utils').toggle_quickfix()<cr>]])
-map('n', '<space>w', [[<cmd>lua require('cfg.utils').toggle_loclist()<cr>]])
+-- Handled by quicker.nvim
+-- map('n', '<space>q', [[<cmd>lua require('cfg.utils').toggle_quickfix()<cr>]])
+-- map('n', '<space>w', [[<cmd>lua require('cfg.utils').toggle_loclist()<cr>]])
 
 map('n', '<leader>,', ':MaximizerToggle<cr>', {silent = true})
 

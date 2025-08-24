@@ -48,7 +48,7 @@ local function my_on_attach(bufnr)
     vim.keymap.set('n', 'J',     api.node.navigate.sibling.last,        opts('Last Sibling'))
     vim.keymap.set('n', 'K',     api.node.navigate.sibling.first,       opts('First Sibling'))
     vim.keymap.set('n', 'm',     api.marks.toggle,                      opts('Toggle Bookmark'))
-    vim.keymap.set('n', 'o',     api.node.open.edit,                    opts('Open'))
+    -- vim.keymap.set('n', 'o',     api.node.open.edit,                    opts('Open'))
     vim.keymap.set('n', 'O',     api.node.open.no_window_picker,        opts('Open: No Window Picker'))
     vim.keymap.set('n', 'p',     api.fs.paste,                          opts('Paste'))
     vim.keymap.set('n', 'P',     api.node.navigate.parent,              opts('Parent Directory'))
@@ -65,6 +65,14 @@ local function my_on_attach(bufnr)
     vim.keymap.set('n', '<2-LeftMouse>',  api.node.open.edit,           opts('Open'))
     vim.keymap.set('n', '<2-RightMouse>', api.tree.change_root_to_node, opts('CD'))
     -- END_DEFAULT_ON_ATTACH
+
+    -- Custom: open file with system default app (xdg-open)
+    vim.keymap.set("n", "o", function()
+      local node = api.tree.get_node_under_cursor()
+      if node and node.type == "file" then
+        vim.fn.jobstart({ "xdg-open", node.absolute_path }, { detach = true })
+      end
+    end, opts("Open with xdg-open"))
 
     -- -- custom mappings
     -- vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent,        opts('Up'))

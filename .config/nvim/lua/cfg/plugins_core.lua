@@ -349,6 +349,54 @@ return {
         end
     },
 
+    {
+        'stevearc/quicker.nvim',
+        config = function()
+            vim.keymap.set("n", "<space>q", function() require("quicker").toggle() end, { desc = "Toggle quickfix" })
+            vim.keymap.set("n", "<space>w", function() require("quicker").toggle({ loclist = true }) end, { desc = "Toggle loclist" })
+            require("quicker").setup({
+                keys = {
+                    {
+                        ">",
+                        function()
+                            require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
+                        end,
+                        desc = "Expand quickfix context",
+                    },
+                    {
+                        "<",
+                        function()
+                            require("quicker").collapse()
+                        end,
+                        desc = "Collapse quickfix context",
+                    },
+                },
+            })
+        end
+    },
+
+    -- Obsidian 
+    {
+        "epwalsh/obsidian.nvim",
+        version = "*",  -- recommended, use latest release instead of latest commit
+        lazy = true,
+        -- ft = "markdown",
+        -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+        event = {
+            "BufReadPre " .. vim.fn.expand("$NOTES_DIR") .. "/*.md",
+            "BufNewFile " .. vim.fn.expand("$NOTES_DIR") .. "/*.md",
+        },
+        dependencies = { "nvim-lua/plenary.nvim", },
+        opts = {
+            workspaces = {
+                {
+                    name = "Notes",
+                    path = "~/Documents/Notes",
+                },
+            },
+        },
+    }
+
     -- Future ---------------------------------------------------------------------- 
     -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
@@ -361,6 +409,7 @@ return {
     --
     -- https://github.com/hat0uma/csvview.nvim
     -- https://github.com/MeanderingProgrammer/render-markdown.nvim
+    -- iamcco/markdown-preview?
     -- https://github.com/cenk1cenk2/jq.nvim
     -- https://github.com/neolooong/whichpy.nvim -- py bin selector? and exec?
     -- https://github.com/aliqyan-21/runTA.nvim -- code exec
