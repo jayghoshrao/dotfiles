@@ -1,14 +1,10 @@
 local map = require('cfg.utils').map
 
 return {
-
-    'tpope/vim-unimpaired', -- mainly for ]f, [f
-    -- 'tpope/vim-obsession',
-
     -- Terminal -------------------------------------------------------------------- 
 
     {
-        "akinsho/toggleterm.nvim", version = '*', 
+        "akinsho/toggleterm.nvim", version = '*',
         config = function()
             require("toggleterm").setup({
                 open_mapping=[[<C-q>]],
@@ -19,24 +15,25 @@ return {
 
     -- Navigation ------------------------------------------------------------------
 
-    { 'alexghergh/nvim-tmux-navigation', config = function()
-        require('nvim-tmux-navigation').setup {
-            disable_when_zoomed = true, -- defaults to false
-            keybindings = {
-                left = "<C-h>",
-                down = "<C-j>",
-                up = "<C-k>",
-                right = "<C-l>",
-                last_active = "<C-\\>",
-                -- next = "<C-Space>",
+    'tpope/vim-unimpaired', -- mainly for ]f, [f
+    {
+        'alexghergh/nvim-tmux-navigation',
+        config = function()
+            require('nvim-tmux-navigation').setup {
+                disable_when_zoomed = true,
+                keybindings = {
+                    left = "<C-h>",
+                    down = "<C-j>",
+                    up = "<C-k>",
+                    right = "<C-l>",
+                    last_active = "<C-\\>",
+                }
             }
-        }
-    end
+        end
     },
 
-
-
     -- Git -------------------------------------------------------------------------
+    'tpope/vim-fugitive',
     {
         "NeogitOrg/neogit",
         dependencies = {
@@ -46,8 +43,6 @@ return {
         },
         opts = {}
     },
-
-    'tpope/vim-fugitive',
     {
         'kdheepak/lazygit.nvim',
         config = function()
@@ -60,7 +55,6 @@ return {
             require 'cfg.plugins.gitsigns'
         end,
     },
-
 
     -- Text layout and alignment --------------------------------------------------- 
 
@@ -81,11 +75,8 @@ return {
     },
     {
         'windwp/nvim-autopairs',
-        config = function()
-            require 'cfg.plugins.autopairs'
-        end,
+        config = function() require 'cfg.plugins.autopairs' end,
     },
-
 
     -- Mason, LSP, DAP ------------------------------------------------------------- 
 
@@ -101,7 +92,6 @@ return {
     'neovim/nvim-lspconfig', -- Built-in LSP configurations
     'onsails/lspkind-nvim',
     { 'ray-x/lsp_signature.nvim', config = true },
-
 
     {
         'mfussenegger/nvim-dap',
@@ -220,7 +210,7 @@ return {
     -- Picker ---------------------------------------------------------------------- 
 
     -- { 
-    --     'https://github.com/echasnovski/mini.pick',
+    --     'https://github.com/nvim-mini/mini.pick',
     --     config = function()
     --         map('n', '<space>o', ':Pick files<CR>')
     --         map('n', '<space>p', ':Pick git_files<CR>')
@@ -280,9 +270,34 @@ return {
         end
     },
 
-    { 'stevearc/oil.nvim', opts={
-        default_file_explorer = false
-    }},
+    {
+        'stevearc/oil.nvim', 
+        config = function()
+            require'oil'.setup {
+                default_file_explorer = false,
+                skip_confirm_for_simple_edits = false,
+                keymaps = {
+                    ['<C-h>'] = false,
+                    ['<C-l>'] = false,
+                    ['<C-p>'] = false,
+                    ['<C-q>'] = 'actions.add_to_qflist',
+                },
+                win_options = {
+                    -- Use the default status column with spacing after the line number
+                    statuscolumn = '',
+                },
+                view_options = {
+                    show_hidden = true,
+                    is_always_hidden = function(name)
+                        return (name == '..')
+                    end,
+                },
+        }
+
+        vim.keymap.set('n', '-', '<cmd>Oil<cr>')
+        end
+    },
+
 
     {
         "nvim-tree/nvim-tree.lua",
@@ -404,18 +419,28 @@ return {
                 },
             },
         },
-    }
+    },
 
     -- Future ---------------------------------------------------------------------- 
-    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
+    { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
-    -- https://github.com/stevearc/quicker.nvim
+    {
+        'MeanderingProgrammer/render-markdown.nvim',
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+        ---@module 'render-markdown'
+        ---@type render.md.UserConfig
+        opts = {},
+    },
+
     -- https://github.com/danielfalk/smart-open.nvim
     -- https://github.com/dmtrKovalenko/fff.nvim
 
     -- snacks.scroll / neoscroll / mini.animate / smear-cursor.nvim
     -- https://github.com/meznaric/key-analyzer.nvim
-    --
+
+    -- 'tpope/vim-obsession',
+    -- https://github.com/rmagatti/auto-session -- interesting, but based on cwd and not git/smart root?
+
     -- https://github.com/hat0uma/csvview.nvim
     -- https://github.com/MeanderingProgrammer/render-markdown.nvim
     -- iamcco/markdown-preview?
@@ -424,5 +449,6 @@ return {
     -- https://github.com/aliqyan-21/runTA.nvim -- code exec
     -- https://github.com/mawkler/refjump.nvim
     -- https://github.com/debugloop/layers.nvim -- keymapping layers, potentially good for debugging?
-
+    -- https://github.com/joshzcold/python.nvim
+    -- https://github.com/mrjones2014/smart-splits.nvim
 }

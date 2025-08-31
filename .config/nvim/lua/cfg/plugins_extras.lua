@@ -57,8 +57,9 @@ return {
     --   end,
     -- }
 
-    { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
-    { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
+    -- { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
+    -- { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
+
     { 'lervag/vimtex', ft = { 'markdown', 'tex' } },
 
 
@@ -194,6 +195,7 @@ return {
     {
         "francescarpi/buffon.nvim",
         enabled = true,
+        keys = '<leader>;',
         branch = "main",
         opts = {
             cyclic_navigation = true,
