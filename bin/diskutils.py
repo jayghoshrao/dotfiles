@@ -12,6 +12,13 @@ from iterfzf import iterfzf
 
 ## TODO: Properly manage blkid cache. Get and put, use single (global?) cache.
 ## TODO: Reconsider design: Pure python-c binding library? Or utilities? No official bindings exist.
+## SETUID etc: https://engineering.purdue.edu/ECN/Support/KB/Docs/HowToSUIDSGIDscripts
+## - Might as well rewrite in C/C++ to avoid wrapping script and run the C/C++ binary automatically.
+## - essentially create a modern pmount. Maybe even consider using rust (with skim)?
+## https://blog.lxsang.me/post/id/28.0
+# The reason for keeping it in python is for import in mirror.
+# and easy access to fzf modules
+# https://www.gnu.org/software/libc/manual/html_node/Setuid-Program-Example.html
 
 DEFAULT_MOUNT_ROOT = Path('/media')
 
@@ -176,7 +183,9 @@ def get_mountpoint(disk):
     return ''
 
 def get_fstype(disk):
-    fstype = blkid_get_tag_value(0, b'TYPE', disk.encode())
+    cache = get_blkid_cache()
+    blkid_probe_all(cache)
+    fstype = blkid_get_tag_value(cache._fields_['_unused'], b'TYPE', disk.encode())
     if fstype is not None:
         return fstype.decode()
     raise ValueError(f"Could not determine filesystem type for {disk}")
@@ -246,6 +255,8 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    print(args)
 
     if args.mode == 'mount':
         mount(args.device, args.target, 0, args.options)
