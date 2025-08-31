@@ -2,13 +2,20 @@
 
 ## Simple script to look at current code in a repo
 
+CACHE_FILE=/tmp/git-peek-cache
 REPO="$1"
 [ -z "$REPO" ] && exit 1
 
-DIR=$(mktemp -d)
-git clone --depth 1 "$REPO" "$DIR"
+DIR=$(grep "$REPO" "$CACHE_FILE"  -m 1 | awk '{print $2}')
+
+if [[ -z "$DIR" ]]; then
+    DIR=$(mktemp -d)
+    git clone --depth 1 "$REPO" "$DIR"
+    echo "$REPO $DIR" >> "$CACHE_FILE"
+fi
+
 "$EDITOR" "$DIR"
-rm -rf "$DIR"
+# rm -rf "$DIR"
 
 # Should ideally also be able to see git log (is there a simple script to grab this from github?)
 # Should be able to store dir to temp and remember this when run again in a few minutes
