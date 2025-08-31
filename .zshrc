@@ -266,7 +266,7 @@ alias i3c="dotf $HOME/.config/i3/config"
 alias zc="dotf $HOME/.zshrc"
 alias zcf="dotf $HOME/.zsh-fzf"
 alias zcl="$EDITOR ~/.zsh-local"
-alias nrc="dotf $HOME/.config/nvim/init.lua"
+alias nrc="GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME $EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
 # alias nrc="$EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
 alias zz="source $HOME/.zshrc"
 
