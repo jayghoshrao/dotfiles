@@ -198,7 +198,7 @@ bindsym $alt+space sticky toggle
 
 # bindsym $mod+Shift+minus move scratchpad
 # bindsym $mod+$alt+minus scratchpad show;
-bindsym $mod+Shift+z move scratchpad
+bindsym $mod+Shift+z floating enable, resize set 80ppt 80ppt, move position center, move scratchpad
 bindsym $mod+z scratchpad show;
 # bindsym $mod+v scratchpad show;
 
@@ -429,6 +429,8 @@ mode "resize"
 	bindsym k resize shrink height 10 px or 10 ppt
 	bindsym l resize grow width 10 px or 10 ppt
 
+    bindsym f resize set 80ppt 80ppt, move position center
+
 	# same bindings, but for the arrow keys
 	bindsym Left resize shrink width 10 px or 10 ppt
 	bindsym Down resize grow height 10 px or 10 ppt
@@ -460,6 +462,7 @@ for_window [class="Tasque"] floating enable
 # for_window [class="Tk"] floating enable
 for_window [class="Wunderlistux"] focus
 for_window [class="feh"] floating enable
+for_window [title="Quick Format Citation"] floating enable
 # for_window [class="google-keep-nativefier-23ad36"] floating enable, resize set 1566 831, move to scratchpad
 # for_window [class="Chromium" instance="crx_hnpfjngllnobngcgfapefoaidbinmjnm"] floating enable, resize set 90ppt 80ppt, move position center, move to scratchpad
 # for_window [class="mpv"] floating enable
@@ -516,7 +519,7 @@ assign [class="Civ5XP"]                                     workspace number $ws
 # Keybinds: {{{
 
 # Keyboard helpers:{{{
-# bindsym $mod+i exec $SCRIPTS/emojimenu
+bindsym $mod+shift+i exec $SCRIPTS/emojimenu
 # bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
 bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
 # }}}
@@ -613,8 +616,8 @@ bindsym Control+period exec --no-startup-id dunstctl close &
 for_window [all] border pixel 1
 # for_window [class="Zathura"] move to workspace "temp"
 
-bindsym F12 exec $SCRIPTS/xc
-bindsym $mod+shift+i exec $SCRIPTS/xc
+bindsym F4 exec $SCRIPTS/xc
+# bindsym $mod+shift+i exec $SCRIPTS/xc
 
 bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
 # TODO: Depends on zinit. Decouple it
