@@ -1,4 +1,10 @@
 local opt = vim.opt
+local utils = require('cfg.utils')
+
+-- Globals
+vim.g.is_win = (utils.has("win32") or utils.has("win64")) and true or false
+vim.g.is_linux = (utils.has("unix") and (not utils.has("macunix"))) and true or false
+vim.g.is_mac = utils.has("macunix") and true or false
 
 -- Indentation
 opt.exrc = true
@@ -163,3 +169,18 @@ vim.cmd [[ let fortran_fold_multilinecomments = 1 ]]
 -- vim.cmd [[ let fortran_dialect = 'f90']]
 
 opt.winborder = 'rounded'
+
+-- Go to the beginning and end of current line in insert mode quickly
+vim.keymap.set("i", "<C-A>", "<HOME>")
+vim.keymap.set("i", "<C-E>", "<END>")
+
+-- insert semicolon in the end
+vim.keymap.set("i", "<A-;>", "<Esc>miA;<Esc>`ii")
+
+-- Delete the character to the right of the cursor
+vim.keymap.set("i", "<C-D>", "<DEL>")
+
+-- yank/paste register overwrites
+-- Replace visual selection with text in register, but not contaminate the register,
+-- see also https://stackoverflow.com/q/10723700/6064933.
+vim.keymap.set("x", "p", '"_c<Esc>p')

@@ -1,6 +1,16 @@
 -- local Path = require 'plenary.path'
 local M = {}
 
+--- check whether a feature exists in Nvim
+--- @param feat string the feature name, like `nvim-0.7` or `unix`.
+--- @return boolean
+function M.has(feat)
+  if vim.fn.has(feat) == 1 then
+    return true
+  end
+  return false
+end
+
 function M.map(modes, lhs, rhs, opts)
     opts = opts or {}
     opts.noremap = opts.noremap == nil and true or opts.noremap
@@ -167,6 +177,7 @@ end
 -- end, { nargs = '+' })
 
 vim.api.nvim_create_user_command("FetchLspConfigs", function(opts)
+
     -- Split the input string into a table of LSP names
     local lsp_names = {}
     for lsp_name in string.gmatch(opts.args, "%S+") do

@@ -1,7 +1,7 @@
 local map = require('cfg.utils').map
 
 return {
-    -- Terminal -------------------------------------------------------------------- 
+    -- Terminal --------------------------------------------------------------------
 
     {
         "akinsho/toggleterm.nvim", version = '*',
@@ -56,7 +56,7 @@ return {
         end,
     },
 
-    -- Text layout and alignment --------------------------------------------------- 
+    -- Text layout and alignment ---------------------------------------------------
 
     'michaeljsmith/vim-indent-object',
     'wellle/targets.vim', --  [n]ext, [,], and user dI' to delete inner without space
@@ -78,7 +78,7 @@ return {
         config = function() require 'cfg.plugins.autopairs' end,
     },
 
-    -- Mason, LSP, DAP ------------------------------------------------------------- 
+    -- Mason, LSP, DAP -------------------------------------------------------------
 
     -- NOTE: install and initialize before nvim-lspconfig
     { 'williamboman/mason.nvim', opts = {} },
@@ -141,7 +141,7 @@ return {
         end
     },
 
-    -- Treesitter ------------------------------------------------------------------ 
+    -- Treesitter ------------------------------------------------------------------
     {
         'nvim-treesitter/nvim-treesitter',
         -- build = ':TSUpdate',
@@ -162,7 +162,7 @@ return {
                 },
               dependencies = {
                     -- Dynamically set commentstring based on cursor location in file
-                    { 
+                    {
                         'JoosepAlviste/nvim-ts-context-commentstring',
                         config = function()
                             require('ts_context_commentstring').setup({})
@@ -180,10 +180,11 @@ return {
         },
     },
 
-    -- Completion ------------------------------------------------------------------ 
+    -- Completion ------------------------------------------------------------------
 
     {
         'hrsh7th/nvim-cmp',
+        event="VeryLazy",
         config = function()
             require 'cfg.plugins.cmp'
         end,
@@ -191,6 +192,7 @@ return {
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-buffer',
             'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
             -- 'saadparwaiz1/cmp_luasnip',
             {
                 'L3MON4D3/LuaSnip',
@@ -207,9 +209,9 @@ return {
         },
     },
 
-    -- Picker ---------------------------------------------------------------------- 
+    -- Picker ----------------------------------------------------------------------
 
-    -- { 
+    -- {
     --     'https://github.com/nvim-mini/mini.pick',
     --     config = function()
     --         map('n', '<space>o', ':Pick files<CR>')
@@ -239,7 +241,7 @@ return {
     },
 
     {
-        'nvim-telescope/telescope-fzf-native.nvim', 
+        'nvim-telescope/telescope-fzf-native.nvim',
         enabled = function()
             return vim.fn.executable('make') == 1
         end,
@@ -271,7 +273,7 @@ return {
     },
 
     {
-        'stevearc/oil.nvim', 
+        'stevearc/oil.nvim',
         config = function()
             require'oil'.setup {
                 default_file_explorer = false,
@@ -313,7 +315,7 @@ return {
 
 
 
-    -- Task execution -------------------------------------------------------------- 
+    -- Task execution --------------------------------------------------------------
 
     {
         'skywind3000/asynctasks.vim',
@@ -334,7 +336,7 @@ return {
     },
 
 
-    -- Eye candy ------------------------------------------------------------------- 
+    -- Eye candy -------------------------------------------------------------------
     {
         "catppuccin/nvim", name = "catppuccin", priority = 1000,
         config = function()
@@ -342,7 +344,7 @@ return {
         end
     },
 
-    -- Utility --------------------------------------------------------------------- 
+    -- Utility ---------------------------------------------------------------------
     {
         'nvim-lualine/lualine.nvim',
         dependencies = {'nvim-tree/nvim-web-devicons', opt = true},
@@ -399,7 +401,7 @@ return {
         end
     },
 
-    -- Obsidian 
+    -- Obsidian
     {
         "epwalsh/obsidian.nvim",
         version = "*",  -- recommended, use latest release instead of latest commit
@@ -421,7 +423,7 @@ return {
         },
     },
 
-    -- Future ---------------------------------------------------------------------- 
+    -- Future ----------------------------------------------------------------------
     { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
     {
@@ -432,11 +434,240 @@ return {
         opts = {},
     },
 
+    -- {
+    --     "karb94/neoscroll.nvim",
+    --     opts = {
+    --         duration_multiplier=1,
+    --         easing = 'quadratic'
+    --     },
+    -- }
+
+    {
+        "y3owk1n/undo-glow.nvim",
+        event = { "VeryLazy" },
+        ---@type UndoGlow.Config
+        opts = {
+            animation = {
+                enabled = true,
+                duration = 300,
+                animtion_type = "zoom",
+                window_scoped = true,
+            },
+            highlights = {
+                undo = {
+                    hl_color = { bg = "#693232" }, -- Dark muted red
+                },
+                redo = {
+                    hl_color = { bg = "#2F4640" }, -- Dark muted green
+                },
+                yank = {
+                    hl_color = { bg = "#7A683A" }, -- Dark muted yellow
+                },
+                paste = {
+                    hl_color = { bg = "#325B5B" }, -- Dark muted cyan
+                },
+                search = {
+                    hl_color = { bg = "#5C475C" }, -- Dark muted purple
+                },
+                comment = {
+                    hl_color = { bg = "#7A5A3D" }, -- Dark muted orange
+                },
+                cursor = {
+                    hl_color = { bg = "#793D54" }, -- Dark muted pink
+                },
+            },
+            priority = 2048 * 3,
+        },
+        keys = {
+            {
+                "u",
+                function()
+                    require("undo-glow").undo()
+                end,
+                mode = "n",
+                desc = "Undo with highlight",
+                noremap = true,
+            },
+            {
+                "U",
+                function()
+                    require("undo-glow").redo()
+                end,
+                mode = "n",
+                desc = "Redo with highlight",
+                noremap = true,
+            },
+            {
+                "p",
+                function()
+                    require("undo-glow").paste_below()
+                end,
+                mode = "n",
+                desc = "Paste below with highlight",
+                noremap = true,
+            },
+            {
+                "P",
+                function()
+                    require("undo-glow").paste_above()
+                end,
+                mode = "n",
+                desc = "Paste above with highlight",
+                noremap = true,
+            },
+            {
+                "n",
+                function()
+                    require("undo-glow").search_next({
+                        animation = {
+                            animation_type = "strobe",
+                        },
+                    })
+                end,
+                mode = "n",
+                desc = "Search next with highlight",
+                noremap = true,
+            },
+            {
+                "N",
+                function()
+                    require("undo-glow").search_prev({
+                        animation = {
+                            animation_type = "strobe",
+                        },
+                    })
+                end,
+                mode = "n",
+                desc = "Search prev with highlight",
+                noremap = true,
+            },
+            {
+                "*",
+                function()
+                    require("undo-glow").search_star({
+                        animation = {
+                            animation_type = "strobe",
+                        },
+                    })
+                end,
+                mode = "n",
+                desc = "Search star with highlight",
+                noremap = true,
+            },
+            {
+                "#",
+                function()
+                    require("undo-glow").search_hash({
+                        animation = {
+                            animation_type = "strobe",
+                        },
+                    })
+                end,
+                mode = "n",
+                desc = "Search hash with highlight",
+                noremap = true,
+            },
+            {
+                "gc",
+                function()
+                    -- This is an implementation to preserve the cursor position
+                    local pos = vim.fn.getpos(".")
+                    vim.schedule(function()
+                        vim.fn.setpos(".", pos)
+                    end)
+                    return require("undo-glow").comment()
+                end,
+                mode = { "n", "x" },
+                desc = "Toggle comment with highlight",
+                expr = true,
+                noremap = true,
+            },
+            {
+                "gc",
+                function()
+                    require("undo-glow").comment_textobject()
+                end,
+                mode = "o",
+                desc = "Comment textobject with highlight",
+                noremap = true,
+            },
+            {
+                "gcc",
+                function()
+                    return require("undo-glow").comment_line()
+                end,
+                mode = "n",
+                desc = "Toggle comment line with highlight",
+                expr = true,
+                noremap = true,
+            },
+        },
+        init = function()
+            vim.api.nvim_create_autocmd("TextYankPost", {
+                desc = "Highlight when yanking (copying) text",
+                callback = function()
+                    require("undo-glow").yank()
+                end,
+            })
+
+  -- -- This only handles neovim instance and do not highlight when switching panes in tmux
+  -- vim.api.nvim_create_autocmd("CursorMoved", {
+  --  desc = "Highlight when cursor moved significantly",
+  --  callback = function()
+  --   require("undo-glow").cursor_moved({
+  --    animation = {
+  --     animation_type = "slide",
+  --    },
+  --   })
+  --  end,
+  -- })
+
+  -- This will handle highlights when focus gained, including switching panes in tmux
+  vim.api.nvim_create_autocmd("FocusGained", {
+   desc = "Highlight when focus gained",
+   callback = function()
+    ---@type UndoGlow.CommandOpts
+    local opts = {
+     animation = {
+      animation_type = "slide",
+     },
+    }
+
+    opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
+    local pos = require("undo-glow.utils").get_current_cursor_row()
+
+    require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
+     s_row = pos.s_row,
+     s_col = pos.s_col,
+     e_row = pos.e_row,
+     e_col = pos.e_col,
+     force_edge = opts.force_edge == nil and true or opts.force_edge,
+    }))
+   end,
+  })
+
+  vim.api.nvim_create_autocmd("CmdLineLeave", {
+   pattern = { "/", "?" },
+   desc = "Highlight when search cmdline leave",
+   callback = function()
+    require("undo-glow").search_cmd({
+     animation = {
+      animation_type = "fade",
+     },
+    })
+   end,
+  })
+ end,
+},
+
     -- https://github.com/danielfalk/smart-open.nvim
     -- https://github.com/dmtrKovalenko/fff.nvim
 
     -- snacks.scroll / neoscroll / mini.animate / smear-cursor.nvim
     -- https://github.com/meznaric/key-analyzer.nvim
+
+    -- "stevearc/conform.nvim",
+    -- "mfussenegger/nvim-lint",
 
     -- 'tpope/vim-obsession',
     -- https://github.com/rmagatti/auto-session -- interesting, but based on cwd and not git/smart root?
@@ -451,4 +682,6 @@ return {
     -- https://github.com/debugloop/layers.nvim -- keymapping layers, potentially good for debugging?
     -- https://github.com/joshzcold/python.nvim
     -- https://github.com/mrjones2014/smart-splits.nvim
+    -- https://github.com/kevinhwang91/nvim-hlslens
+
 }

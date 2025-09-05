@@ -1,13 +1,13 @@
 local group = vim.api.nvim_create_augroup('Setup', {})
 
--- Highlight when yanking
-vim.api.nvim_create_autocmd('TextYankPost', {
-    desc = 'Highlight when yanking (copying) text',
-    group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-    callback = function()
-        vim.highlight.on_yank()
-    end,
-})
+-- -- Highlight when yanking
+-- vim.api.nvim_create_autocmd('TextYankPost', {
+--     desc = 'Highlight when yanking (copying) text',
+--     group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
+--     callback = function()
+--         vim.highlight.on_yank()
+--     end,
+-- })
 
 -- Hide cursorline in insert mode
 vim.api.nvim_create_autocmd({ 'InsertLeave', 'WinEnter' }, { command = 'set cursorline', group = group })
@@ -66,10 +66,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "lua",
-  callback = function()
-    vim.opt_local.foldlevel = 1
-  end,
+-- remove trailing whitespaces and ^M chars
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+	pattern = { "*" },
+	callback = function(_)
+		local save_cursor = vim.fn.getpos(".")
+		vim.cmd([[%s/\s\+$//e]])
+		vim.fn.setpos(".", save_cursor)
+	end,
 })

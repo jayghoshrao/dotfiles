@@ -55,7 +55,7 @@ map('o', 'il', ':normal vil<cr>', { noremap = false, silent = true })
 map('v', 'ae', [[:<c-u>silent! normal! m'gg0VG$<cr>]], { silent = true })
 map('o', 'ae', ':normal Vae<cr>', { noremap = false, silent = true })
 
--- Personal 
+-- Personal
 map({'n', 'v'},'j', 'gj')
 map({'n', 'v'},'k', 'gk')
 
@@ -70,7 +70,7 @@ map('n', 'U', '<c-r>')
 -- typohacks
 -- TODO: Make this filetype specific to c/c++
 -- map('i', ';;', '<esc>A;<esc>')
--- map('i', ':;', '::') 
+-- map('i', ':;', '::')
 
 
 map('n', '<Left>', ':vertical resize +5<CR>')
@@ -125,6 +125,11 @@ map('n', 'N', 'Nzzzv')
 
 map('n', '<leader>jl', '<s-j>') -- standard
 -- map('n', '<leader>jl', 'mz<s-j>`z') -- not repeatable
+
+-- -- focus scrolling
+-- Disabled since neoscroll seems to override it anyway
+-- map("n", "<C-d>", "<C-d>zz")
+-- map("n", "<C-u>", "<C-u>zz")
 
 -- Undo break points: punctuation breaks undo into fragments
 map('i', ',', ',<c-g>u')

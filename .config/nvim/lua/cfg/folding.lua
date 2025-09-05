@@ -2,6 +2,14 @@ local fn = vim.fn
 local opt = vim.opt
 local cmd = vim.cmd
 
+vim.api.nvim_create_autocmd({"FileType"}, {
+  pattern = "lua",
+  callback = function()
+    vim.opt_local.foldlevel = 0
+    -- vim.opt_local.foldlevelstart = 0
+  end,
+})
+
 -- Custom foldexpr that folds with both treesitter and {{{ markers
 function _G.custom_foldexpr(lnum)
   local line = vim.fn.getline(lnum)
@@ -38,7 +46,7 @@ opt.foldmethod = 'expr'
 -- opt.foldexpr = 'nvim_treesitter#foldexpr()'
 opt.foldexpr = 'v:lua.custom_foldexpr(v:lnum)'
 opt.foldtext = 'v:lua.foldtext()'
-opt.foldlevelstart = 99
+-- opt.foldlevelstart = 99
 -- opt.foldlevelstart = 2
 
 
