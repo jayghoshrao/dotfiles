@@ -1,12 +1,12 @@
 # vim: fdm=marker
-#                  ██     
-#                 ░██     
-#   ██████  ██████░██     
-#  ░░░░██  ██░░░░ ░██████ 
+#                  ██
+#                 ░██
+#   ██████  ██████░██
+#  ░░░░██  ██░░░░ ░██████
 #     ██  ░░█████ ░██░░░██
 #    ██    ░░░░░██░██  ░██
 #   ██████ ██████ ░██  ░██
-#  ░░░░░░ ░░░░░░  ░░   ░░ 
+#  ░░░░░░ ░░░░░░  ░░   ░░
 #
 #  ~/.zsh-fzf
 #  ~/.zsh-local
@@ -27,7 +27,7 @@ stty -ixon                                                       # Disables ctrl
 
 # ZINIT: {{{
 # export LOAD_ZINIT=false # in docker images if necessary
-if [[ $LOAD_ZINIT != false ]] ; then 
+if [[ $LOAD_ZINIT != false ]] ; then
     if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
         print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
         command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
@@ -55,7 +55,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
         OMZP::git \
         OMZP::systemd
 
-    # TODO: 
+    # TODO:
     # OMZP::git-extras
 
     # Theme and Colors {{{
@@ -91,7 +91,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
         if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
         if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit \
         if'[[ -z "$commands[jq]" ]]' mv"jq*->jq" @jqlang/jq \
-        if'[[ -z "$commands[zenta]" ]]' mv"zenta*->zenta" @e6a5/zenta 
+        if'[[ -z "$commands[zenta]" ]]' mv"zenta*->zenta" @e6a5/zenta
 
     # Load scripts directly from repo
     zinit from"gh" as"command" light-mode for \
@@ -113,7 +113,7 @@ fi
 
 # Bindkeys: {{{
 # Allow v to edit the command line
-bindkey -v                                                       # vim mode in shell 
+bindkey -v                                                       # vim mode in shell
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'v' edit-command-line
@@ -190,7 +190,7 @@ function! appendToEnv()
 {
     case ":$(printenv $1):" in
         *":$2:"*) :;; # already there
-        *) export $1="$(printenv $1):$2";; 
+        *) export $1="$(printenv $1):$2";;
     esac
 }
 
@@ -203,7 +203,7 @@ function! appendToEnv()
 # zstyle completions: {{{
 
 zstyle ':completion:*' menu no ## Disables menu since we use fzf
-zstyle ':completion:*:(vim|nvim):*:*' ignored-patterns '*.aux' '*.toc' '*.bbl' '*.dvi' '*.blg' '*.spl' '*.o' 
+zstyle ':completion:*:(vim|nvim):*:*' ignored-patterns '*.aux' '*.toc' '*.bbl' '*.dvi' '*.blg' '*.spl' '*.o'
 
 
 # zstyle '*' single-ignored complete
@@ -246,9 +246,9 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 [[ -n $(infocmp xterm-256color-italic 2>/dev/null) ]] && export TERM="xterm-256color-italic"
 export LESS="-iR"
 
-export NNN_FIFO=/tmp/nnn.fifo 
+export NNN_FIFO=/tmp/nnn.fifo
 export NNN_OPTS="exaAE"
-export NNN_COLORS="2136" ## Different colors for contexts 
+export NNN_COLORS="2136" ## Different colors for contexts
 export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:fuznavdir;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*;s:fuznavsubdir;y:!xclip -selection clipboard -t image/png "$nnn"*'
 export LC_COLLATE="C" ## dot files clumped together
 
@@ -320,12 +320,12 @@ alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=y
 # xdg-open:{{{
 xo()
 {
-    for ARG in "$@"; do 
+    for ARG in "$@"; do
         if [[ "$ARG" =~ ":" ]];
         then
             EXT=${ARG##*.}
             scp -rC "$ARG" "/tmp/remotefile.$EXT"
-            if [[ $? -eq 0 ]] ; then 
+            if [[ $? -eq 0 ]] ; then
                 nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
             else
                 >&2 echo "file not found!"
@@ -349,14 +349,14 @@ x()
 
     local OPENER
     OPENER=$1
-    shift 
+    shift
 
-    for ARG in "$@"; do 
+    for ARG in "$@"; do
         if [[ "$ARG" =~ ":" ]];
         then
             EXT=${ARG##*.}
             scp -rC "$ARG" "/tmp/remotefile.$EXT"
-            if [[ $? -eq 0 ]] ; then 
+            if [[ $? -eq 0 ]] ; then
                 nohup $OPENER "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
             else
                 >&2 echo "file not found!"
@@ -443,7 +443,7 @@ ring() {
         time=$(pdd --add $(toseconds $dtime) | head -n 1)
     fi
     # echo $time
-    time=$(echo $time | tr -d ':') 
+    time=$(echo $time | tr -d ':')
     time=$time[1,4] ## Move to 'at' format
     # echo $time
     echo "notify-send --urgency=critical 'Reminder' $@" | at $time
@@ -459,7 +459,7 @@ function dota() {command git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
 function dotu() {command git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
 function dotd() {command git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
 function dotr() {command git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
-function dotlg() {lazygit --git-dir=$DOTDIR --work-tree=$HOME} 
+function dotlg() {lazygit --git-dir=$DOTDIR --work-tree=$HOME}
 
 function dotf(){
     ## setting the env vars helps vim-fugitive know what's going on
@@ -469,12 +469,12 @@ function dotf(){
 
 function dotaf(){
     files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
-    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add 
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add
 }
 
 function dotcf(){
     files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
-    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add 
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add
     command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"
 }
 
@@ -497,7 +497,7 @@ function dotlog(){
                 --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard"
 }
 
-## To use local dotfile directories, 
+## To use local dotfile directories,
 ## DOTDIR=$HOME/.localdots dot
 ## An alias to make even that easy:
 alias LD="DOTDIR=$HOME/.localdots"
@@ -589,7 +589,7 @@ peek()
             driver "$(readlink -f "$FILE")"
         fi
 
-        if [[ "$DEBUG" == "ON" ]]; then 
+        if [[ "$DEBUG" == "ON" ]]; then
             echo "file=$FILE"
             echo "filebasename=$FILEBASENAME"
             echo "ext=$EXT"
@@ -599,7 +599,7 @@ peek()
         fi
 
         if [[ "$MODE" == "EDIT" ]]; then
-            case "$FILETYPE" in 
+            case "$FILETYPE" in
                 "inode/directory"         ) builtin cd "$FILE"            ; return ;;
                 "inode/x-empty"           ) $EDITOR "$FILE"               ; return ;;
                 "application/octet-stream") dex -e "$FILE"                ; return ;;
@@ -610,7 +610,7 @@ peek()
                 *                         ) special "$FILE"               ; return ;;
             esac
         elif [[ "$MODE" == "PRINT" ]]; then
-            case "$FILETYPE" in 
+            case "$FILETYPE" in
                 "inode/directory"         ) ls "$FILE"                    ; return ;;
                 "inode/x-empty"           ) cat "$FILE"                   ; return ;;
                 "application/octet-stream") dex -p "$FILE"                ; return ;;
@@ -721,10 +721,10 @@ function ff() { fuzscope "$@" | peek }
 
 function goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
 
-alias nvim-sync='nvim --headless "+Lazy! sync" +qa' 
+alias nvim-sync='nvim --headless "+Lazy! sync" +qa'
 
 # I've generally avoided setting PATH in this file
-# and delegated that to the zsh-local file, but it's 
+# and delegated that to the zsh-local file, but it's
 # good to have this when working on multiple servers
 # for a quick and easy setup.
 [[ -d "$HOME/bin" ]] && appendToEnv PATH "$HOME/bin"
