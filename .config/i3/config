@@ -1,5 +1,4 @@
-# vim: fdm=marker
-# vim: ft=i3config
+# vim: fdm=marker ft=i3config
 
 #  ██  ████                                    ████ ██
 # ░░  █░░░ █                                  ░██░ ░░   █████
@@ -550,12 +549,9 @@ bindsym $mod+shift+o exec $term -e htop
 bindsym $mod+shift+a exec $term --class _float --title taskell-board -e taskell
 bindsym $mod+a exec $term --class _float --title taskell-board -e taskell Dropbox/taskview.md
 
-bindsym $mod+y exec mpv --save-position-on-quit $(xclip -selection "clipboard" -o) &
-bindsym $mod+shift+y exec export MPV="mpv --save-position-on-quit" && umpv $(xclip -selection "clipboard" -o)
+# bindsym $mod+y exec mpv --save-position-on-quit $(xclip -selection "clipboard" -o) &
+# bindsym $mod+shift+y exec export MPV="mpv --save-position-on-quit" && umpv $(xclip -selection "clipboard" -o)
 bindsym shift+$alt+space fullscreen disable; floating enable; resize set 25ppt 20ppt; sticky enable; move position 75 ppt 75 ppt
-
-# bindsym $mod+v exec whatsapp-nativefier
-# bindsym $mod+v exec telegram-desktop
 
 bindsym F9 exec --no-startup-id $SCRIPTS/bmark
 
@@ -577,7 +573,7 @@ bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -mat
 
 # END:{{{
 
-exec $SCRIPTS/run --delay 3 --display --notification --wallpaper --pulseaudio --delay 1 --polybar
+exec $SCRIPTS/run --delay 3 --display --notification --wallpaper --pulseaudio --delay 1 --polybar --conky
 
 # }}}
 
@@ -619,7 +615,8 @@ for_window [all] border pixel 1
 bindsym F4 exec $SCRIPTS/xc
 # bindsym $mod+shift+i exec $SCRIPTS/xc
 
-bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
+bindsym $mod+n exec --no-startup-id i3-input -F 'rename workspace to %s' -P 'New name: '
+
 # TODO: Depends on zinit. Decouple it
 # bindsym $mod+n exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh
 bindsym $mod+shift+bracketright exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh -m
