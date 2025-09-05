@@ -53,7 +53,7 @@ else
     ALLCMDS_RAW="$2"
 fi
 
-echo "$ALLCMDS_RAW"
+# echo "$ALLCMDS_RAW"
 
 DIRS=($(fd "${EXPR}" --type d $MAXDEPTH_FLAG $FDFIND_ARGS))
 
@@ -64,7 +64,7 @@ for DIR in "${DIRS[@]}"; do
     for cmd in "${cmdarray[@]}"; do
         # echo $cmd
         if [[ $PARALLEL == 0 ]]; then
-            echo "$cmd"
+            # echo "$cmd"
             eval "$cmd"
         else
             if [[ $(echo "$cmd" | awk '{print $1}') == 'cd' ]]; then

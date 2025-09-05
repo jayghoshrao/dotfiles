@@ -3,7 +3,7 @@
 # TODO: Encryption
 # TODO: Pandoc integration: html and pdf output
 # TODO: Image integration: n --store-image file_or_url dumped to $NOTES_DIR/.assets
-# TODO: Browse randomized 
+# TODO: Browse randomized
 
 # fuz	"$@"
 # rg --files | makecache | fuzscope | filer
@@ -11,18 +11,18 @@
 
 function find_files()
 {
-    # find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}' 
-    rg --files --sortr modified 
+    # find . -type f -printf "%T+\t%P\n" | sort -r | awk -F $'\t' '{print $2}'
+    rg --files --sortr modified
 }
 
 OPEN_COMMAND="peek"
 
-function browse() 
+function browse()
 {
     FUZSCOPE_COMMAND="fuzscope"
-    
+
     OUT=$(find_files | $FUZSCOPE_COMMAND $@)
-    while [ -n "$OUT" ]; do 
+    while [ -n "$OUT" ]; do
         # echo -e "$OUT" | filer
         # echo -e "$OUT" | $OPEN_COMMAND
         $OPEN_COMMAND "$OUT"
@@ -70,7 +70,7 @@ do
             create "$2"
             shift; shift ;;
         -h|--help)
-            echo "notes: a bash script to manage my plaintext notes" 
+            echo "notes: a bash script to manage my plaintext notes"
             SCRIPT_PATH=$(readlink -f -- "$BASH_SOURCE")
             grep -Po '\s*--?\w+\|[^)]*' "$SCRIPT_PATH"
             exit ;;
@@ -80,5 +80,6 @@ do
     esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
+
 
 browse $@

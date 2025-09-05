@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+#### Accepts time in seconds, outputs in human time
+
 set -eu
 
 t=$1
