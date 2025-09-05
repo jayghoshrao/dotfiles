@@ -116,12 +116,11 @@ return {
     {
         "linux-cultist/venv-selector.nvim",
         dependencies = {
-            "neovim/nvim-lspconfig", 
+            "neovim/nvim-lspconfig",
             "mfussenegger/nvim-dap", "mfussenegger/nvim-dap-python", --optional
             { "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } },
         },
         ft = "python",
-        branch = "regexp", -- This is the regexp branch, use this for the new version
         config = true,
         keys = {
             { ",v", "<cmd>VenvSelect<cr>" },
@@ -137,7 +136,7 @@ return {
                 model = "deepseek-r1:8b", -- The default model to use.
                 host = '192.168.2.220',
                 port = 11434,
-                display_mode = "horizontal-split", 
+                display_mode = "horizontal-split",
                 show_prompt = false, -- Shows the Prompt submitted to Ollama.
                 show_model = true, -- Displays which model you are using at the beginning of your chat session.
                 no_auto_close = false, -- Never closes the window automatically.
