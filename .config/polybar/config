@@ -191,10 +191,10 @@ format-discharging-padding = 1
 format-charging-padding = 1
 format-full-padding = 1
 
-format-charging = <animation-charging> <label-charging> 
-format-discharging = <ramp-capacity> <label-discharging> 
-; format-full = <ramp-capacity> <label-full> 
-format-full = 
+format-charging = <animation-charging> <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+; format-full = <ramp-capacity> <label-full>
+format-full =
 
 ramp-capacity-0 = 
 ramp-capacity-1 = 
@@ -373,8 +373,8 @@ ramp-foreground = ${colors.black}
 monitor = ${env:DISPLAY0}
 height = 40
 
-modules-left = i3 pomodoro 
-modules-center = 
+modules-left = i3 pomodoro
+modules-center =
 modules-right = ghnotify right6 updates right5 pulseaudio-control right4 battery right3 vpnstatus right2 date right1
 
 background = ${colors.background}
@@ -408,27 +408,40 @@ dpi=-1
 ; monitor = ${env:DISPLAY0}
 height = 40
 
-modules-left = date left1 pomodoro left2 ghnotify 
-modules-center = i3 
-modules-right = right6 updates right5 pulseaudio-control audiowhat right4 battery right3 vpnstatus right2 microphone 
+modules-left = date left1 pomodoro left2 ghnotify
+modules-center = i3
+modules-right = right6 updates right5 pulseaudio-control audiowhat right4 battery right3 vpnstatus right2 microphone
 
 background = ${colors.black}
 foreground = ${colors.lightgrey}
 
-; font-0 = Cascadia Code:fontformat=truetype:size=14;1
-; font-5 = Cascadia Code:fontformat=truetype:size=14:weight=bold;1
-; font-6 = Cascadia Code:weight=bold:size=24;5
+; Install fontawesome package.
+; pacman -S otf-font-awesome
+; fc-list | grep -i 'awesome' # to see exact font name
 
-font-0 = Iosevka SS07:fontformat=truetype:size=14;1
-font-5 = Iosevka SS07:fontformat=truetype:size=14:weight=bold;1
-font-6 = Iosevka SS07:style=Medium:size=24;5
+;font-0 = Cascadia Code:fontformat=truetype:size=14;1
+;font-5 = Cascadia Code:fontformat=truetype:size=14:weight=bold;1
+;font-6 = Cascadia Code:weight=bold:size=24;5
 
+;font-0 = Iosevka SS07:fontformat=truetype:size=14;1
+;font-5 = Iosevka SS07:fontformat=truetype:size=14:weight=bold;1
+;font-6 = Iosevka SS07:style=Medium:size=24;5
+
+; Unused directly, but somehow necessary for powerline > glyphs
+font-0 = Fira Code Retina:fontformat=truetype:size=14;1
 font-1 = FontAwesome:fontformat=truetype:size=10;1
-font-2 = Font Awesome 6 Free:pixelsize=10;3
-font-3 = Font Awesome 6 Free Solid:pixelsize=10;3
-font-4 = Font Awesome 6 Brands:pixelsize=10;3
+font-2 = Font Awesome 7 Free:pixelsize=10;3
+font-3 = Font Awesome 7 Free Solid:pixelsize=10;3
+font-4 = Font Awesome 7 Brands:pixelsize=10;3
 
-font-7 = Font Awesome 6 Free Solid:pixelsize=18;3
+; General font
+font-5 = Fira Code Retina:fontformat=truetype:size=14:weight=bold;1
+
+; Glyph font
+font-6 = Iosevka SS07:style=Medium:size=24;5
+;font-6 = Fira Code Retina:style=Medium:size=24;5
+
+font-7 = Font Awesome 7 Free Solid:pixelsize=18;3
 font-8 = FontAwesome:fontformat=truetype:size=18;3
 
 tray-position = right
