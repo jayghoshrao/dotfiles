@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Depends on: https://github.com/coderobe/hq
+
+BASE_URL="https://www.koeln.de"
+URL="https://www.koeln.de/kino/ov-filme"
+RAW_LIST_H2=$(curl -fsSL "$URL" | hq h2 data)
+
+IFS=$'\n' read -r -d '' -a TITLES <<< $(echo -e "$RAW_LIST_H2" | hq a text)
+IFS=$'\n' read -r -d '' -a LINKS <<< $(echo -e "$RAW_LIST_H2" | hq a attr href)
+
+length=${#TITLES[@]}
+
+for ((i=0; i<length; i++)); do
+    printf "%-40s ${BASE_URL}%s\n" "${TITLES[i]}" "${LINKS[i]}"
+done

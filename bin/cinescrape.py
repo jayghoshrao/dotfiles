@@ -6,7 +6,8 @@ import sys
 import os
 import re
 
-URL = "https://www.cineplex.de/filmreihe/internationale-filme-in-ov/869/aachen/"
+# URL = "https://www.cineplex.de/filmreihe/internationale-filme-in-ov/869/aachen/"
+URL = "https://www.cineplex.de/filmreihe/englische-ov/1999/koeln/"
 BASE_URL = "https://www.cineplex.de"
 
 req = requests.get(URL)
