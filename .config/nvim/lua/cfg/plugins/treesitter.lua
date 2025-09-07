@@ -7,7 +7,7 @@ require('nvim-treesitter.configs').setup {
         disable = {'pandoc', 'vimwiki', 'markdown', 'tex', 'latex'},
     },
     indent = {
-        -- enable = true,
+        enable = true,
     },
     textobjects = {
         select = {

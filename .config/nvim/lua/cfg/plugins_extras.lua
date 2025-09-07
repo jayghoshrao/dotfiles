@@ -194,7 +194,7 @@ return {
     {
         "francescarpi/buffon.nvim",
         enabled = true,
-        keys = '<leader>;',
+        keys = ';n',
         branch = "main",
         opts = {
             cyclic_navigation = true,

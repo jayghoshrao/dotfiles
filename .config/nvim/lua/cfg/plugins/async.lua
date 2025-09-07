@@ -15,6 +15,8 @@ function M.AsyncRunQuickFixToggle()
     end
 end
 
+vim.api.nvim_create_user_command("Make", "AsyncRun make", { desc = "AsyncRun make" })
+
 create_augroups {
     AsyncStopToggle = {
         { 'User', 'AsyncRunStop', [[:lua require'cfg.plugins.async'.AsyncRunQuickFixToggle()]]}

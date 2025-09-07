@@ -649,6 +649,9 @@ return {
         end,
     },
 
+    -- { 'code-biscuits/nvim-biscuits' , opts={}},
+    -- Blink.cmp reference: https://github.com/WizardStark/dotfiles/blob/main/home/.config/nvim/lua/config/editor/blink_cmp.lua
+
     -- https://github.com/danielfalk/smart-open.nvim
     -- https://github.com/dmtrKovalenko/fff.nvim
 
