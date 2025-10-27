@@ -7,8 +7,8 @@
     whitespace = error
     preloadindex = true
 
-[url "git@github.com:jayghoshter/"]
-    insteadOf = "jay:"
+[url "git@github.com:jayghoshrao/"]
+    insteadOf = "jrao:"
 
 [url "git@github.com:"]
     insteadOf = "gh:"
