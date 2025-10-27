@@ -447,37 +447,28 @@ bindsym $mod+r mode "resize"
 # Floats: {{{
 
 # for_window [title="taskell-board"] floating enable, resize set 2300 1200, move position center
-for_window [title="taskell-board"] floating enable, resize set 90 ppt 80 ppt, move position center
+# for_window [title="taskell-board"] floating enable, resize set 90 ppt 80 ppt, move position center
 for_window [class="kitty-float"] floating enable, resize set 90 ppt 80 ppt, move position center
 for_window [class="firefox"] floating enable
 for_window [class="Gcr-prompter"] floating_enabled focus
 for_window [class="Gsimplecal"] floating enable
 for_window [class="Kodi"] fullscreen, focus
 for_window [class="Nemo"] floating enable
-# for_window [class="Spotify"] move to workspace number $ws5
 for_window [class="Spotify"] move to workspace "spotify"
 for_window [class="Steam"] floating disable
-for_window [class="Tasque"] floating enable
-# for_window [class="Tk"] floating enable
-for_window [class="Wunderlistux"] focus
 for_window [class="feh"] floating enable
 for_window [title="Quick Format Citation"] floating enable
 # for_window [class="google-keep-nativefier-23ad36"] floating enable, resize set 1566 831, move to scratchpad
-# for_window [class="Chromium" instance="crx_hnpfjngllnobngcgfapefoaidbinmjnm"] floating enable, resize set 90ppt 80ppt, move position center, move to scratchpad
 # for_window [class="mpv"] floating enable
 # for_window [class="mpv"] focus
 # for_window [class="mpv"] floating enable, move to output right, fullscreen
 for_window [instance="Navigator"] floating disable
 for_window [window_role="_float"] floating enable
-for_window [class="gnuplot_qt"] floating enable  
 for_window [class="whatsapp-nativefier*"] floating enable, resize set 70 ppt 80 ppt, move position center  
-for_window [class="Franz"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="TelegramDesktop"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="Rocket.Chat"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="matplotlib"]  floating enable, resize set 80 ppt 90 ppt, move position center  
 # for_window [title="ncspot"] floating enable, resize set 90 ppt 80 ppt, move position center, move to scratchpad
-for_window [class="Skype"] floating enable, resize set 70 ppt 80 ppt, move position center  
-for_window [class="skypeforlinux"] floating enable, resize set 70 ppt 80 ppt, move position center  
 # for_window [title="zoom"] floating enable, resize set 80 ppt 70 ppt, move position center 
 for_window [title="Zoom Meeting"] move to workspace  "Zoom Meeting"
 for_window [title="VNC authentication"] floating enable, move position center
@@ -493,66 +484,29 @@ for_window [window_role="PictureInPicture"] floating disable, move to output lef
 
 #}}}
 
-# Assigns: {{{
-
-assign [class="Go-for-it"]                                  workspace number $ws1
-assign [class="Wunderlistux"]                               workspace number $ws1
-assign [class="TrelloDesktop"]                              workspace number $ws1
-assign [class="firefox"]                                    workspace number $ws1
-assign [class="Kodi"]                                       workspace number $ws7
-assign [class="NetFlix"]                                    workspace number $ws7
-assign [class="Mendeleydesktop"]                            workspace number $ws9
-assign [class="com-turbovnc-vncviewer-VncViewer"]           workspace number $ws2
-assign [class="dota2"]                                      workspace "dota2"
-assign [class="Steam"]                                      workspace "steam"
-assign [class="polar-bookshelf"]                            workspace "polar"
-assign [title="logws"]                                      workspace "log"
-
-assign [class="Civ5XP"]                                     workspace number $ws10
-# assign [class="matplotlib"]       workspace number $ws4
-# assign [class="mpv"]           workspace "4"
-# assign [class="Rocket.Chat"]      workspace "rchat"
-
-#}}}
-
 # Keybinds: {{{
 
 # Keyboard helpers:{{{
 bindsym $mod+shift+i exec $SCRIPTS/emojimenu
-# bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
-bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
+
+
 # }}}
 
 # Switches: {{{
 bindsym $mod+c exec "DEV=$(bluetoothctl devices | rofi -theme-str 'window {width: 60ch;}' -matching normal -dmenu -i -p connect | awk '{print $2}') && bluetoothctl connect $DEV"
 bindsym $mod+shift+c exec "DEV=$(bluetoothctl devices | rofi -width 25 -dmenu -i -p disconnect | awk '{print $2}') && bluetoothctl disconnect $DEV"
-bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
-# bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
 bindsym $mod+shift+d exec --no-startup-id $SCRIPTS/rofi-autorandr
-bindsym $mod+grave exec $SCRIPTS/rofi-pomodoro.sh
-# bindsym F4 exec $SCRIPTS/transparency.sh
-# bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
-bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
+bindsym $mod+a exec $SCRIPTS/rofi-pomodoro.sh
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i zathura {}
-# bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
 bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.sh
 
-bindsym $mod+shift+g exec echo -e 'on\noff' | dmenu -i | xargs $SCRIPTS/game
 # }}}
 
 # Utilities: {{{
-# bindsym $mod+g exec $term -r _float -c $CONFIG/termite.sprd.cfg -e $SCRIPTS/sprd 
-# bindsym $mod+g exec $term --class _float -o "font.size=40" -e $SCRIPTS/sprd 
-bindsym $mod+shift+o exec $term -e htop
-bindsym $mod+shift+a exec $term --class _float --title taskell-board -e taskell
-bindsym $mod+a exec $term --class _float --title taskell-board -e taskell Dropbox/taskview.md
 
-# bindsym $mod+y exec mpv --save-position-on-quit $(xclip -selection "clipboard" -o) &
-# bindsym $mod+shift+y exec export MPV="mpv --save-position-on-quit" && umpv $(xclip -selection "clipboard" -o)
 bindsym shift+$alt+space fullscreen disable; floating enable; resize set 25ppt 20ppt; sticky enable; move position 75 ppt 75 ppt
-
 bindsym F9 exec --no-startup-id $SCRIPTS/bmark
 
 # }}}
@@ -565,9 +519,8 @@ bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~
 bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # Area selection
 # }}}
 
-
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -matching fuzzy -dmenu -p 'Workspace')"
-
+bindsym $mod+shift+semicolon exec $SCRIPTS/lsws | rofi -dmenu -p "move to WS" -i -l 5| xargs i3-msg move container to workspace 
 
 # }}}
 
@@ -630,13 +583,9 @@ exec --no-startup-id i3-autolayout autolayout &
 ## TODO: Look into this https://github.com/eliep/i3-layouts
 exec --no-startup-id syncthing serve --no-browser &
 
-# bindsym $mod+v exec kdocker -f
 bindsym $mod+v exec $SCRIPTS/sp-rofi
-# exec_always --no-startup-id kdocker -x $(pgrep -u $(whoami) thunderbird) -loq
-
 bindsym $mod+i focus mode_toggle
 
-bindsym $mod+shift+semicolon exec $SCRIPTS/lsws | rofi -dmenu -p "move to WS" -i -l 5| xargs i3-msg move container to workspace 
 # bindsym $mod+grave [urgent=latest] focus
 
 # Locking under GDM
@@ -644,3 +593,21 @@ exec --no-startup-id gnome-screensaver &
 # dbus-send --type=method_call --dest=org.gnome.ScreenSaver /org/gnome/ScreenSaver org.gnome.ScreenSaver.Lock
 # OR
 # xdg-screensaver lock
+
+## Removed
+# bindsym $mod+shift+i exec cat ~/.fonts/german | rofi -width 25 -l 7 -dmenu -p 'German' | cut -d ' ' -f 1 | tr -d '\n' | xargs xdotool type 
+# bindsym $mod+b exec "echo -e 'us\nde' | dmenu | xargs -i setxkbmap {} -option altwin:swap_lalt_lwin,caps:ctrl_modifier"
+# bindsym $mod+shift+v exec $SCRIPTS/rwthvpntoggle.sh
+# bindsym $mod+shift+d exec --no-startup-id "SCRIPT=$(ls ~/.screenlayout/ | rofi -width 25 -dmenu -p Display) && eval ~/.screenlayout/$SCRIPT"
+# bindsym F4 exec $SCRIPTS/transparency.sh
+# bindsym --release F4 exec --no-startup-id $SCRIPTS/pref
+# bindsym --release F6 exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
+# bindsym $mod+shift+m exec rofi -width 25 -dmenu -l 0 -p 'Spotify' | xargs $SCRIPTS/sp > /dev/null 2>&1
+# bindsym $mod+shift+g exec echo -e 'on\noff' | dmenu -i | xargs $SCRIPTS/game
+# bindsym $mod+g exec $term -r _float -c $CONFIG/termite.sprd.cfg -e $SCRIPTS/sprd 
+# bindsym $mod+g exec $term --class _float -o "font.size=40" -e $SCRIPTS/sprd 
+# bindsym $mod+shift+o exec $term -e htop
+# bindsym $mod+shift+a exec $term --class _float --title taskell-board -e taskell
+# bindsym $mod+a exec $term --class _float --title taskell-board -e taskell Dropbox/taskview.md
+# bindsym $mod+y exec mpv --save-position-on-quit $(xclip -selection "clipboard" -o) &
+# bindsym $mod+shift+y exec export MPV="mpv --save-position-on-quit" && umpv $(xclip -selection "clipboard" -o)
