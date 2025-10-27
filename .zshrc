@@ -433,6 +433,7 @@ f()
 }
 # nnn: cd on quit: }}}
 # ring: {{{
+
 ring() {
     ## Works even if terminal is closed, unlike the other two
     local dtime=$1; shift
@@ -449,6 +450,18 @@ ring() {
     echo "notify-send --urgency=critical 'Reminder' $@" | at $time
 }
 # }}}
+
+# yazi: cd on quit: {{{
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+# }}}
+
 # Dotfile management: {{{
 ## Functions are better for pipes
 export DOTDIR=$HOME/.dots
