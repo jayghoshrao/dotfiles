@@ -144,7 +144,7 @@ end
 
 -- Downloads config files into $CONFIG_DIR/lua/ from the official neovim/nvim-lspconfig repo
 function M.FetchLspConfigs(lsp_names)
-    local config_dir = vim.fn.stdpath("config") .. "/lsp"
+    local config_dir = vim.fn.stdpath("config") .. "/lua/lsp"
     if vim.fn.isdirectory(config_dir) == 0 then
         vim.fn.mkdir(config_dir, "p")
     end
@@ -187,5 +187,30 @@ vim.api.nvim_create_user_command("FetchLspConfigs", function(opts)
     -- Call the function with the table of LSP names
     M.FetchLspConfigs(lsp_names)
 end, { nargs = 1 })  -- Allow one argument 
+
+function M.grep_word()
+    local word = vim.fn.expand('<cword>')
+    if word == '' then
+        print('No word under cursor')
+        return
+    end
+    vim.cmd('silent! grep! ' .. vim.fn.shellescape(word))
+    vim.cmd('copen')
+end
+
+function M.GetConfiguredLSPs()
+    local lsp_dir = vim.fn.stdpath("config") .. "/lua/lsp"
+    local files = vim.fn.readdir(lsp_dir, function(name)
+        return name:match("%.lua$")
+    end)
+
+    local config_list = {}
+    for _, file in ipairs(files) do
+        local name = file:gsub("%.lua$", "")
+        table.insert(config_list, name)
+    end
+
+    return config_list
+end
 
 return M

@@ -33,7 +33,7 @@ opt.hidden = true -- Buffer switching without saving
 -- Search
 opt.ignorecase = true -- Case insensitive search
 opt.smartcase = true -- But sensitive if includes capital letter
-opt.grepprg = 'rg --ignore-case --vimgrep'
+opt.grepprg = 'rg --smart-case --vimgrep --no-heading'
 opt.grepformat = '%f:%l:%c:%m,%f:%l:%m'
 
 opt.path = '**'
