@@ -46,7 +46,7 @@ opt.foldmethod = 'expr'
 -- opt.foldexpr = 'nvim_treesitter#foldexpr()'
 opt.foldexpr = 'v:lua.custom_foldexpr(v:lnum)'
 opt.foldtext = 'v:lua.foldtext()'
--- opt.foldlevelstart = 99
+opt.foldlevelstart = 99
 -- opt.foldlevelstart = 2
 
 
