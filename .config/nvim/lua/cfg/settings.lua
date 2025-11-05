@@ -25,6 +25,19 @@ if vim.fn.has('win32') == 1 then
     vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode' -- Redirect output
     vim.opt.shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode' -- Redirect stderr to stdout
     vim.opt.shellslash = false                       -- Use backslashes for paths
+
+
+	-- msbuild errorformat
+	vim.o.errorformat = table.concat({
+		"%f(%l\\,%c):\\ %t%[A-z]%#\\ %m",
+		"%f(%l):\\ %t%[A-z]%#\\ %m",
+		"%f\\ :\\ %t%[A-z]%#\\ %m",
+		"%t%[A-z]%#\\ %m",
+		"%f(%l\\,%c):\\ %m",
+		"%f(%l):\\ %m",
+		"%-G%.%#",
+	}, ",")
+
 end
 
 -- Buffers
