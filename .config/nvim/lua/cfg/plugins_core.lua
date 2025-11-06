@@ -3,14 +3,46 @@ local map = require('cfg.utils').map
 return {
     -- Terminal --------------------------------------------------------------------
 
+    -- {
+    --     "akinsho/toggleterm.nvim", version = '*',
+    --     config = function()
+    --         require("toggleterm").setup({
+    --             open_mapping=[[<C-q>]],
+    --             direction = 'float',
+    --         })
+    --     end
+    -- },
+
     {
-        "akinsho/toggleterm.nvim", version = '*',
+        "akinsho/toggleterm.nvim",
+        version = "*",
         config = function()
-            require("toggleterm").setup({
-                open_mapping=[[<C-q>]],
-                direction = 'float',
+            local toggleterm = require("toggleterm")
+
+            toggleterm.setup({
+                direction = "float",
+                -- Don’t set open_mapping here; we’ll handle custom keymaps below
             })
-        end
+
+            -- Helper function to toggle terminal N
+            local Terminal = require("toggleterm.terminal").Terminal
+            local terms = {}
+
+            -- Create a terminal and toggle it
+            local function toggle_term(n)
+                if not terms[n] then
+                    terms[n] = Terminal:new({ count = n, direction = "float" })
+                end
+                terms[n]:toggle()
+            end
+
+            -- Map <C-1> ... <C-9> to toggle terminals 1–9
+            for i = 1, 9 do
+                vim.keymap.set({ "n", "t" }, "<leader>" .. i , function()
+                    toggle_term(i)
+                end, { noremap = true, silent = true, desc = "ToggleTerm " .. i })
+            end
+        end,
     },
 
     -- Navigation ------------------------------------------------------------------
