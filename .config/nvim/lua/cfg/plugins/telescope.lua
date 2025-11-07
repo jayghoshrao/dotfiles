@@ -47,6 +47,16 @@ require('telescope').setup {
     defaults = {
         prompt_prefix = ' ❯ ',
         selection_caret = '❯ ',
+        vimgrep_arguments = {
+            'rg',
+            '--color=never',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+            '--hidden',
+        },
         mappings = {
             i = {
                 ['<esc>'] = actions.close,
@@ -61,7 +71,8 @@ require('telescope').setup {
                   if selection then
                     local path = selection.path or selection.filename
                     if path then
-                      vim.fn.jobstart({"xdg-open", path}, {detach = true})
+                      local open_cmd = vim.fn.has('win32') == 1 and 'explorer' or 'xdg-open'
+                      vim.fn.jobstart({open_cmd, path}, {detach = true})
                     end
                   end
                   actions.close(prompt_bufnr)
