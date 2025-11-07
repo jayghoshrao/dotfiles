@@ -61,10 +61,10 @@ return {
     -- { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
 
     {
-		'lervag/vimtex',
-		enabled = vim.g.is_linux,
-		ft = { 'markdown', 'tex' },
-	},
+        'lervag/vimtex',
+        enabled = vim.g.is_linux,
+        ft = { 'markdown', 'tex' },
+    },
 
 
     {
@@ -92,7 +92,7 @@ return {
 
     {
         "nvim-zh/colorful-winsep.nvim",
-		enabled = vim.g.is_linux,
+        enabled = vim.g.is_linux,
         config = true,
         event = { "WinNew" },
     },
