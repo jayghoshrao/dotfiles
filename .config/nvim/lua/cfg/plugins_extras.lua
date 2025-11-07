@@ -60,7 +60,11 @@ return {
     -- { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
     -- { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
 
-    { 'lervag/vimtex', ft = { 'markdown', 'tex' } },
+    {
+		'lervag/vimtex',
+		enabled = vim.g.is_linux,
+		ft = { 'markdown', 'tex' },
+	},
 
 
     {
@@ -88,6 +92,7 @@ return {
 
     {
         "nvim-zh/colorful-winsep.nvim",
+		enabled = vim.g.is_linux,
         config = true,
         event = { "WinNew" },
     },
@@ -125,70 +130,6 @@ return {
         keys = {
             { ",v", "<cmd>VenvSelect<cr>" },
         },
-    },
-
-    {
-        "David-Kunz/gen.nvim",
-        cmd = { "Gen" },
-        config = function()
-            local gen = require("gen")
-            gen.setup({
-                model = "deepseek-r1:8b", -- The default model to use.
-                host = '192.168.2.220',
-                port = 11434,
-                display_mode = "horizontal-split",
-                show_prompt = false, -- Shows the Prompt submitted to Ollama.
-                show_model = true, -- Displays which model you are using at the beginning of your chat session.
-                no_auto_close = false, -- Never closes the window automatically.
-                -- init = function(options)
-                --     pcall(io.popen, "ollama serve > /dev/null 2>&1 &")
-                -- end,
-                -- Function to initialize Ollama
-                command = function(options)
-                    return "curl --silent --no-buffer -X POST http://"
-                        .. options.host
-                        .. ":"
-                        .. options.port
-                        .. "/api/chat -d $body"
-                end,
-                -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
-                -- This can also be a lua function returning a command string, with options as the input parameter.
-                -- The executed command must return a JSON object with { response, context }
-                -- (context property is optional).
-                debug = false,
-            })
-            gen.prompts['jrewrite'] = {
-                prompt = "Modify the following text for a scientific journal article, just output the final text without additional quotes around it:\n$register",
-                replace = true
-            }
-            gen.prompts['jrewritevis'] = {
-                prompt = "Modify the following text for a scientific journal article, just output the final text without additional quotes around it:\n$text",
-            }
-            gen.prompts['jwrite'] = {
-                prompt = "Write a paragraph as if for a scientific journal article. Respond with only the text requested. Do not address me in any way:\n$register",
-                replace = true
-            }
-            gen.prompts['jparaphrase'] = {
-                prompt = "Completely paraphrase the the following text for a scientific journal article without changing its meaning, just output the final text without additional quotes around it:\n$text",
-            }
-
-            -- local map = require('cfg.utils').map
-            -- map({'n', 'v'}, "<space>s", "<Esc><cmd>lua require('gen').select_model()<CR>")
-            -- map("n", "<space>j", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jwrite', {replace=true})<CR>")
-            -- map("n", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewrite', {yank=true})<CR>")
-            -- map("v", "<space>k", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jrewritevis', {visual=true})<CR>")
-            -- map("v", "<space>i", "<Esc><cmd>lua require('cfg.utils').LlamaRun('jparaphrase', {visual=true})<CR>")
-            -- map("n", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'n'})<CR>")
-            -- map("v", "<space>v", "<Esc><cmd>lua require('telescope').extensions.gen.prompts({ mode = 'v'})<CR>")
-        end,
-        dependencies = {
-            {
-                'dj95/telescope-gen.nvim',
-                config=function()
-                    require('telescope').load_extension('gen')
-                end
-            }
-        }
     },
 
     {
