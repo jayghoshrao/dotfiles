@@ -139,12 +139,22 @@ local function list_or_jump(action, title, opts)
 
 
   if #flattened_results == 0 then
-    -- return
-    -- If no LSP results, look for the current word in tags
-    -- This is required for FORTRAN
-    -- TODO: Make it possible to list tags with telescope
+    -- If no LSP results, try ctags as fallback
     local current_word = vim.fn.expand("<cword>")
-    vim.cmd ('tag ' .. current_word)
+    local tags = vim.fn.taglist('^' .. current_word .. '$')
+    
+    if #tags == 0 then
+        print("No LSP results or tags found for: " .. current_word)
+        return
+    elseif #tags == 1 then
+        -- Jump to single tag
+        vim.cmd('tag ' .. current_word)
+    else
+        -- Multiple tags found, show in telescope
+        require('telescope.builtin').tags({
+            default_text = current_word,
+        })
+    end
   elseif #flattened_results == 1 then
     vim.lsp.util.jump_to_location(flattened_results[1], 'utf-8')
   else

@@ -200,12 +200,13 @@ end
 
 function M.GetConfiguredLSPs()
     local lsp_dir = vim.fn.stdpath("config") .. "/lua/lsp"
-    local files = vim.fn.readdir(lsp_dir, function(name)
-        return name:match("%.lua$")
-    end)
+	local all_files = vim.fn.readdir(lsp_dir)
+	local lua_files = vim.tbl_filter(function(name)
+		return name:match("%.lua$")
+	end, all_files)
 
     local config_list = {}
-    for _, file in ipairs(files) do
+    for _, file in ipairs(lua_files) do
         local name = file:gsub("%.lua$", "")
         table.insert(config_list, name)
     end

@@ -15,12 +15,13 @@ vim.diagnostic.config({
 })
 
 --  TODO: List files in lua/lsp/ and populate this
--- M.ensure_installed = {'lua_ls', 'clangd'} -- can be used to ensure_installed in mason-lspconfig
 M.ensure_installed = GetConfiguredLSPs();
 
-FetchLspConfigs(M.ensure_installed)
+-- FetchLspConfigs(M.ensure_installed)
 
-vim.lsp.config('clangd', require('lsp.clangd'))
-vim.lsp.enable(M.ensure_installed)
+for index, lsp_name in ipairs(M.ensure_installed) do
+    vim.lsp.config(lsp_name, require('lsp.' .. lsp_name))
+    vim.lsp.enable(lsp_name)
+end
 
 return M
