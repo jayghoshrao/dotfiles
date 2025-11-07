@@ -188,11 +188,11 @@ return {
             'nvim-treesitter/nvim-treesitter-textobjects',
             'RRethy/nvim-treesitter-textsubjects',
             {
-              'numToStr/Comment.nvim',
+                'numToStr/Comment.nvim',
                 opts = {
 
                 },
-              dependencies = {
+                dependencies = {
                     -- Dynamically set commentstring based on cursor location in file
                     {
                         'JoosepAlviste/nvim-ts-context-commentstring',
@@ -203,14 +203,16 @@ return {
                     },
                 },
 
-              config = function()
-                require('Comment').setup({
-                  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-                })
-              end,
+                config = function()
+                    require('Comment').setup({
+                        pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+                    })
+                end,
             },
         },
     },
+
+    'nvim-treesitter/nvim-treesitter-context',
 
     -- Completion ------------------------------------------------------------------
 
@@ -243,14 +245,15 @@ return {
 
     -- Picker ----------------------------------------------------------------------
 
-    -- {
-    --     'https://github.com/nvim-mini/mini.pick',
-    --     config = function()
-    --         map('n', '<space>o', ':Pick files<CR>')
-    --         map('n', '<space>p', ':Pick git_files<CR>')
-    --         map('n', '<space>f', ':Pick live_grep<CR>')
-    --     end
-    -- },
+    {
+        'nvim-mini/mini.pick',
+        config = function()
+            -- map('n', '<space>o', ':Pick files<CR>')
+            -- map('n', '<space>p', ':Pick git_files<CR>')
+            require('mini.pick').setup()
+            -- map('n', '<space>f', ':Pick live_grep<CR>')
+        end
+    },
 
     {
         'nvim-telescope/telescope.nvim',
@@ -326,9 +329,9 @@ return {
                         return (name == '..')
                     end,
                 },
-        }
+            }
 
-        vim.keymap.set('n', '-', '<cmd>Oil<cr>')
+            vim.keymap.set('n', '-', '<cmd>Oil<cr>')
         end
     },
 
