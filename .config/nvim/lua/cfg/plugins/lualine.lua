@@ -25,29 +25,29 @@ require'lualine'.setup {
         lualine_y = {},
         lualine_z = {}
     },
-    tabline = {
-        lualine_a = {
-            {
-                'buffers',
-                buffers_color = {
-                    -- active = 'StatusLine',
-                    inactive = 'StatusLineNC',
-                },
-            }
-        },
-        lualine_b = {},
-        lualine_c = {},
-        lualine_x = {},
-        lualine_y = {},
-        lualine_z = {
-            {
-                'tabs',
-                tabs_color = {
-                    -- active = 'StatusLine',
-                    inactive = 'StatusLineNC',
-                }
-            }
-        }
-    },
+    -- tabline = {
+    --     lualine_a = {
+    --         {
+    --             'buffers',
+    --             buffers_color = {
+    --                 -- active = 'StatusLine',
+    --                 inactive = 'StatusLineNC',
+    --             },
+    --         }
+    --     },
+    --     lualine_b = {},
+    --     lualine_c = {},
+    --     lualine_x = {},
+    --     lualine_y = {},
+    --     lualine_z = {
+    --         {
+    --             'tabs',
+    --             tabs_color = {
+    --                 -- active = 'StatusLine',
+    --                 inactive = 'StatusLineNC',
+    --             }
+    --         }
+    --     }
+    -- },
     extensions = {}
 }
