@@ -395,13 +395,13 @@ bindsym $mod+Escape mode "$mode_system"
 set $mode_utils [s]creenshot | [S]nip | [o]cr | [d]oi | [b]mark
 mode "$mode_utils"
 {
-    bindsym s exec --no-startup-id scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`', mode "default"
+    bindsym s exec --no-startup-id scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Media/screenshots && mv $f ~/Media/screenshots && xclip -selection clipboard -t image/png -i ~/Media/screenshots/`ls -1 -t ~/Media/screenshots | head -1`', mode "default"
 
-    bindsym --release shift+S exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`', mode "default"
+    bindsym --release shift+S exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Media/screenshots && mv $f ~/Media/screenshots && xclip -selection clipboard -t image/png -i ~/Media/screenshots/`ls -1 -t ~/Media/screenshots | head -1`', mode "default"
 
-    bindsym --release o exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | xclip -selection clipboard -i', mode "default"
+    bindsym --release o exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Media/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | xclip -selection clipboard -i', mode "default"
 
-    bindsym --release d exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
+    bindsym --release d exec scrot -s 'to_ocr.png' -e 'mkdir -p ~/Media/screenshots && mv $f /tmp && xclip -selection clipboard -t image/png -i /tmp/to_ocr.png && xclip -selection clipboard -o | tesseract - - | tr "\n" " " | getdoi -o ', mode "default"
 
     bindsym --release b exec $SCRIPTS/bmark
 
@@ -513,10 +513,10 @@ bindsym F9 exec --no-startup-id $SCRIPTS/bmark
 
 # Screenshots: {{{
 # Multi-screen screenshots with scrot 
-bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # All screens
+bindsym --release Print exec scrot 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Media/screenshots && mv $f ~/Media/screenshots && xclip -selection clipboard -t image/png -i ~/Media/screenshots/`ls -1 -t ~/Media/screenshots | head -1`' # All screens
 
 # OSX-like area selection screenshots
-bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Pictures/screenshots && mv $f ~/Pictures/screenshots && xclip -selection clipboard -t image/png -i ~/Pictures/screenshots/`ls -1 -t ~/Pictures/screenshots | head -1`' # Area selection
+bindsym --release Shift+Print exec scrot -s 'screenshot_%Y%m%d_%H%M%S.png' -e 'mkdir -p ~/Media/screenshots && mv $f ~/Media/screenshots && xclip -selection clipboard -t image/png -i ~/Media/screenshots/`ls -1 -t ~/Media/screenshots | head -1`' # Area selection
 # }}}
 
 bindsym $mod+semicolon        exec "i3-msg workspace $(~/bin/lsws | rofi -i -matching fuzzy -dmenu -p 'Workspace')"
@@ -563,7 +563,6 @@ bindsym Control+period exec --no-startup-id dunstctl close &
 
 # Workaround for a recent-ish bug/update
 for_window [all] border pixel 1
-# for_window [class="Zathura"] move to workspace "temp"
 
 bindsym F4 exec $SCRIPTS/xc
 # bindsym $mod+shift+i exec $SCRIPTS/xc
@@ -575,7 +574,7 @@ bindsym $mod+n exec --no-startup-id i3-input -F 'rename workspace to %s' -P 'New
 bindsym $mod+shift+bracketright exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh -m
 
 # bindsym $mod+shift+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
-bindsym $mod+shift+w exec --no-startup-id feh --randomize --bg-fill $HOME/Pictures/wallpapers/*
+bindsym $mod+shift+w exec --no-startup-id feh --randomize --bg-fill $HOME/Media/wallpapers/*
 bindsym $mod+$alt+w exec --no-startup-id feh --bg-fill $HOME/.cache/wallpaper.png $HOME/.cache/wallpaper.png
 # bindsym $mod+shift+w exec --no-startup-id i3-autolayout tabmode
 
