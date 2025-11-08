@@ -1,4 +1,3 @@
-local FetchLspConfigs = require('cfg.utils').FetchLspConfigs
 local GetConfiguredLSPs = require('cfg.utils').GetConfiguredLSPs
 local M = {}
 
@@ -14,10 +13,10 @@ vim.diagnostic.config({
   virtual_text = {current_line = true},
 })
 
---  TODO: List files in lua/lsp/ and populate this
-M.ensure_installed = GetConfiguredLSPs();
+-- NOTE: Use FetchLspConfigs() to install lsp configs to lua/lsp
 
--- FetchLspConfigs(M.ensure_installed)
+-- List files in lua/lsp/ and populate ensure_installed 
+M.ensure_installed = GetConfiguredLSPs();
 
 for index, lsp_name in ipairs(M.ensure_installed) do
     vim.lsp.config(lsp_name, require('lsp.' .. lsp_name))

@@ -12,11 +12,17 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-function TableConcat(t1,t2)
-   for i=1,#t2 do
-      t1[#t1+1] = t2[i]
-   end
-   return t1
+
+function TableConcat(...)
+  local result = {}
+  for _, t in ipairs({...}) do
+    if type(t) == "table" then
+      for i = 1, #t do
+        result[#result + 1] = t[i]
+      end
+    end
+  end
+  return result
 end
 
 local opts = {
@@ -27,6 +33,12 @@ local opts = {
 
 local core = require('cfg.plugins_core')
 local extras = require('cfg.plugins_extras')
-local plugins = TableConcat(core, extras)
+
+local ok, locals = pcall(require, 'cfg.plugins_local')
+if not ok then
+    locals = {}
+end
+
+local plugins = TableConcat(core, extras, locals)
 
 return require('lazy').setup(plugins, opts)
