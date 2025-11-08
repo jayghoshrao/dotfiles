@@ -206,10 +206,12 @@ return {
         "zbirenbaum/copilot.lua",
         dependencies = { "copilotlsp-nvim/copilot-lsp" },
         config = true,
+        enabled = vim.g.is_win,
     },
 
     {
         "yetone/avante.nvim",
+        enabled = vim.g.is_win,
         -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
         -- ⚠️ must add this setting! ! !
         build = vim.fn.has("win32") ~= 0

@@ -6,7 +6,8 @@ vim.g['nnn#replace_netrw'] = 1
 
 vim.g['nnn#command'] = 'nnn -eo'
 vim.g['nnn#set_default_mappings'] = 1
-map('n', '<leader>f', ':NnnPicker %:p:h<CR>')
+
+-- map('n', '<leader>f', ':NnnPicker %:p:h<CR>')
 -- map('n', '<leader>e', ':NnnExplorer %:p:h<CR>')
 
 -- Or pass a dictionary with window size
