@@ -309,8 +309,6 @@ alias vdd="$EDITOR \$(git diff develop --name-only --diff-filter=ACMR)"
 
 alias stj="ssh -qTfnN2 -D 8086 ibt014"
 
-# alias f=". nnnwrap"
-
 alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes'
 
 #}}}
@@ -403,35 +401,35 @@ function man() {
 }
 # MAN: }}}
 
-# nnn: cd on quit: {{{
-f()
-{
-    # Block nesting of nnn in subshells
-    if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
-        echo "nnn is already running"
-        return
-    fi
-
-    # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
-    # To cd on quit only on ^G, remove the "export" as in:
-    #     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-    # NOTE: NNN_TMPFILE is fixed, should not be modified
-    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
-
-    # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
-    # stty start undef
-    # stty stop undef
-    # stty lwrap undef
-    # stty lnext undef
-
-    nnn "$@"
-
-    if [ -f "$NNN_TMPFILE" ]; then
-            . "$NNN_TMPFILE"
-            rm -f "$NNN_TMPFILE" > /dev/null
-    fi
-}
-# nnn: cd on quit: }}}
+# # nnn: cd on quit: {{{
+# f()
+# {
+#     # Block nesting of nnn in subshells
+#     if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+#         echo "nnn is already running"
+#         return
+#     fi
+#
+#     # The default behaviour is to cd on quit (nnn checks if NNN_TMPFILE is set)
+#     # To cd on quit only on ^G, remove the "export" as in:
+#     #     NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+#     # NOTE: NNN_TMPFILE is fixed, should not be modified
+#     export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+#
+#     # Unmask ^Q (, ^V etc.) (if required, see `stty -a`) to Quit nnn
+#     # stty start undef
+#     # stty stop undef
+#     # stty lwrap undef
+#     # stty lnext undef
+#
+#     nnn "$@"
+#
+#     if [ -f "$NNN_TMPFILE" ]; then
+#             . "$NNN_TMPFILE"
+#             rm -f "$NNN_TMPFILE" > /dev/null
+#     fi
+# }
+# # nnn: cd on quit: }}}
 # ring: {{{
 
 ring() {
@@ -460,6 +458,7 @@ function y() {
   fi
   rm -f -- "$tmp"
 }
+alias f='y'
 # }}}
 
 # Dotfile management: {{{
