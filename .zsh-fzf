@@ -236,7 +236,7 @@ j() {
         cd $(autojump $@)
         return
     fi
-    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --tac --no-sort)" 
+    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --tac)" 
 }
 
 k() {
@@ -249,7 +249,7 @@ k() {
         cd $(__zoxide_z $@)
         return
     fi
-    cd "$(zoxide query --list --score | sed 's/^\s*[0-9,.:]*\s*//' |  fzf --height 40% --tac --no-sort)" 
+    cd "$(zoxide query --list --score | sed 's/^\s*[0-9,.:]*\s*//' |  fzf --height 40% --tac)" 
 }
 #}}}
 
