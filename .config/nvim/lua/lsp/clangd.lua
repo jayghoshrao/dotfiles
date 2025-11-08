@@ -69,7 +69,7 @@ return {
 	'--pch-storage=memory',
 	'--log=error',
 	'--clang-tidy=false',
-    '--query-driver="C:/Users/JayghoshRao/scoop/apps/llvm/current/bin/clang-cl.exe"',
+    -- '--query-driver="C:/Users/JayghoshRao/scoop/apps/llvm/current/bin/clang-cl.exe"',
 	'-j=8',
 },
   filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
