@@ -43,8 +43,7 @@ map('n', '<space>gp', [[<cmd>lua require'telescope'.extensions.gh.pull_request()
 map('n', '<space>gg', [[<cmd>lua require'telescope'.extensions.gh.gist()<cr>]])
 map('n', '<space>gr', [[<cmd>lua require'telescope'.extensions.gh.run()<cr>]])
 
-require('telescope').setup {
-    defaults = {
+local default_opts = require('telescope.themes').get_ivy {
         prompt_prefix = ' ❯ ',
         selection_caret = '❯ ',
         vimgrep_arguments = {
@@ -84,7 +83,18 @@ require('telescope').setup {
             hide_on_startup=true,
         },
         path_display = {'shorten'},
-    },
+}
+
+default_opts.layout_strategy = "horizontal"
+default_opts.layout_config = { width = {padding=0}, height = {padding=0} }
+default_opts.borderchars = {
+      prompt = { "─", " ", " ", " ", "─", "─", " ", " " },
+      results = { " " },
+      preview = { "─", "", "", "", "", "", "", "" },
+    }
+
+require('telescope').setup {
+    defaults = default_opts,
     extensions = {
         fzf = {
             fuzzy = true,
