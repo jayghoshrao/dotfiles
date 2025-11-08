@@ -2,6 +2,8 @@
 
 ## Run a command within each subdirectory
 ## Usage: fordir pwd
+## Usage: fordir . pwd
+## Usage: fordir <dirnamefilter> pwd
 
 ROOT=$PWD
 PARALLEL=0
