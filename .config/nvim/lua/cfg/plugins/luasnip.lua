@@ -24,29 +24,29 @@ ls.config.set_config {
 
 -- Mappings
 
--- _G.tab_complete = function()
---   if ls and ls.expand_or_jumpable() then
---     return '<Plug>luasnip-expand-or-jump'
---   else
---     return '<tab>'
---   end
--- end
--- vim.keymap.set({ 'i', 's' }, '<tab>', 'v:lua.tab_complete()', { expr = true })
+_G.tab_complete = function()
+  if ls and ls.expand_or_jumpable() then
+    return '<Plug>luasnip-expand-or-jump'
+  else
+    return '<tab>'
+  end
+end
+vim.keymap.set({ 'i', 's' }, '<tab>', 'v:lua.tab_complete()', { expr = true })
 
--- _G.shift_tab_jump = function()
---   if ls.jumpable(-1) then
---     return '<Plug>luasnip-jump-prev'
---   else
---     return '<s-tab>'
---   end
--- end
--- vim.keymap.set({ 'i', 's' }, '<s-tab>', 'v:lua.shift_tab_jump()', { expr = true })
+_G.shift_tab_jump = function()
+  if ls.jumpable(-1) then
+    return '<Plug>luasnip-jump-prev'
+  else
+    return '<s-tab>'
+  end
+end
+vim.keymap.set({ 'i', 's' }, '<s-tab>', 'v:lua.shift_tab_jump()', { expr = true })
 
--- vim.keymap.set({ 'i', 's' }, '<c-k>', function()
---   if ls.choice_active() then
---     ls.change_choice(1)
---   end
--- end, { silent = true })
+vim.keymap.set({ 'i', 's' }, '<c-k>', function()
+  if ls.choice_active() then
+    ls.change_choice(1)
+  end
+end, { silent = true })
 
 -- Reload snippets config
 vim.keymap.set('n', '<leader>sl', '<cmd>source ~/.config/nvim/lua/cfg/plugins/luasnip.lua<cr>')
@@ -59,6 +59,7 @@ require("luasnip.loaders.from_vscode").lazy_load()
 -- Snippets
 
 require 'cfg.plugins.snippets.lua'
+require 'cfg.plugins.snippets.pandoc'
 -- require 'cfg.plugins.snippets.javascript'
 -- require 'cfg.plugins.snippets.typescript'
 -- require 'cfg.plugins.snippets.typescriptreact'
