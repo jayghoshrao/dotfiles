@@ -500,7 +500,7 @@ bindsym $mod+a exec $SCRIPTS/rofi-pomodoro.sh
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i zathura {}
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
-bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.sh
+bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
 
 # }}}
 
