@@ -488,6 +488,12 @@ return {
                     path = "~/Documents/Notes",
                 },
             },
+            ui = {
+                -- use markdown.nvim instead for these
+                checkboxes = {},
+                bullets = {},
+                external_link_icon = {},
+            },
         },
     },
 
@@ -496,11 +502,10 @@ return {
 
     {
         'MeanderingProgrammer/render-markdown.nvim',
-        ft = "markdown",
-        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-        ---@module 'render-markdown'
-        ---@type render.md.UserConfig
-        opts = {},
+        ft = {"markdown", "Avante"},
+        opts = {
+            file_types = { "markdown", "Avante" },
+        },
     },
 
     -- {

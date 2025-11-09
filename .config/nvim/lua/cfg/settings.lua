@@ -197,3 +197,5 @@ vim.keymap.set("i", "<C-D>", "<DEL>")
 -- Replace visual selection with text in register, but not contaminate the register,
 -- see also https://stackoverflow.com/q/10723700/6064933.
 vim.keymap.set("x", "p", '"_c<Esc>p')
+
+opt.conceallevel = 1
