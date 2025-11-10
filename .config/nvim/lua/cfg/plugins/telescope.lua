@@ -85,12 +85,16 @@ local default_opts = require('telescope.themes').get_ivy {
         path_display = {'shorten'},
 }
 
-default_opts.layout_strategy = "horizontal"
-default_opts.layout_config = { width = {padding=0}, height = {padding=0} }
+default_opts.layout_strategy = "bottom_pane"
+default_opts.layout_config = {
+	-- prompt_position = 'top',
+	width = {padding=0},
+	height = {padding=0},
+}
 default_opts.borderchars = {
       prompt = { "─", " ", " ", " ", "─", "─", " ", " " },
       results = { " " },
-      preview = { "─", "", "", "", "", "", "", "" },
+      preview = { "", "", "", "", "", "", "", "" },
     }
 
 require('telescope').setup {
