@@ -1,0 +1,8 @@
+[opener]
+pdfedit = [ { run = 'masterpdfeditor4 "$@"', desc = "masterpdfeditor4", for = "linux"}]
+
+[open]
+rules = [
+    # PDF
+	{ mime = "application/pdf", use = [ "open", "pdfedit", "reveal" ] },
+]
