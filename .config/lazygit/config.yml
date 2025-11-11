@@ -36,9 +36,9 @@ gui:
   authorColors: # in case you're not happy with the randomly assigned colour
     'John Smith': '#ff0000'
 git:
-  paging:
-    colorArg: always
-    useConfig: false
+  pagers:
+    - colorArg: always
+      useConfig: false
   merging:
     # only applicable to unix users
     manualCommit: false
