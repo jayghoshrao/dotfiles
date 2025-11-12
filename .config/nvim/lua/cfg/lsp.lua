@@ -13,6 +13,8 @@ vim.diagnostic.config({
   virtual_text = {current_line = true},
 })
 
+vim.keymap.set("n", "gk", vim.diagnostic.open_float);
+
 -- NOTE: Use FetchLspConfigs() to install lsp configs to lua/lsp
 
 -- List files in lua/lsp/ and populate ensure_installed 
