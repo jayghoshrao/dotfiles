@@ -18,8 +18,8 @@ opt.title = true
 
 -- Set the shell to pwsh on Windows
 if vim.fn.has('win32') == 1 then
-    vim.opt.shell = vim.fn.expand('~/scoop/apps/pwsh/current/pwsh.exe')
-    vim.opt.shellcmdflag = '-NoLogo -NoProfile -Command'  -- Command to pass when executing shell commands
+    vim.opt.shell = vim.fn.expand('pwsh')
+    vim.opt.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command'  -- Command to pass when executing shell commands
     vim.opt.shellquote = ''                          -- No need to quote the arguments
     vim.opt.shellxquote = ''                         -- No need to quote the shell itself
     vim.opt.shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode' -- Redirect output
