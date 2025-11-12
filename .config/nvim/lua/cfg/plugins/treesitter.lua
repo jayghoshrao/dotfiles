@@ -1,5 +1,9 @@
 -- require('nvim-treesitter.install').compilers = { 'gcc' }
 require('nvim-treesitter.configs').setup {
+    refactor = {
+        highlight_definitions = {enable = true},
+        highlight_current_scope = {enable = false},
+    },
     highlight = {
         enable = true,
         use_languagetree = true,
