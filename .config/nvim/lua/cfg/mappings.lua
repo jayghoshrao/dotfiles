@@ -91,11 +91,6 @@ map('n', '<leader>r', ":lua require('cfg.utils').cd_root()<CR>")
 map('n', '<space><space>', '<c-^>')
 map('n', '<BS><BS>', '<c-^>')
 
-map('n', '<space>1', ':bfirst<CR>')
-map('n', '<Tab>', ':bnext<CR>' )
-map('n', '<S-Tab>', ':bprevious<CR>' )
-map('n', '<space>0', ':blast<CR>')
-
 map('n', '<space>x', ':bdelete!<CR>' )
 
 -- New tab

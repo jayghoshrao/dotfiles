@@ -64,6 +64,30 @@ return {
         end
     },
 
+    -- Buffer navigation
+    {
+        "cbochs/grapple.nvim",
+        dependencies = { { "nvim-tree/nvim-web-devicons", lazy = true } },
+        opts = {
+            scope = "git", -- also try out "git_branch"
+        },
+        event = { "BufReadPost", "BufNewFile" },
+        cmd = "Grapple",
+        keys = {
+            { ";m", "<cmd>Grapple toggle<cr>", desc = "Grapple toggle tag" },
+            { ";;", "<cmd>Grapple toggle_tags<cr>", desc = "Grapple open tags window" },
+
+            { ";1", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
+            { ";2", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
+            { ";3", "<cmd>Grapple select index=3<cr>", desc = "Select third tag" },
+            { ";4", "<cmd>Grapple select index=4<cr>", desc = "Select fourth tag" },
+
+            { "<Tab>", "<cmd>Grapple cycle_tags next<cr>", desc = "Go to next tag" },
+            { "<S-Tab>", "<cmd>Grapple cycle_tags prev<cr>", desc = "Go to previous tag" },
+
+        },
+    },
+
     -- Git -------------------------------------------------------------------------
     'tpope/vim-fugitive',
     {
