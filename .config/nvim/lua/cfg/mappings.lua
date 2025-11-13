@@ -93,14 +93,11 @@ map('n', '<BS><BS>', '<c-^>')
 
 map('n', '<space>x', ':bdelete!<CR>' )
 
--- New tab
+-- tabs
 map( 'n', 'tn', ':tabnew<Space>' )
-
--- Next/prev tab
+map( 'n', 'td', ':tabclose<Space>' )
 map( 'n', 'tk', ':tabnext<CR>' )
 map( 'n', 'tj', ':tabprev<CR>' )
-
--- First/last tab
 map( 'n', 'th', ':tabfirst<CR>' )
 map( 'n', 'tl', ':tablast<CR>' )
 
