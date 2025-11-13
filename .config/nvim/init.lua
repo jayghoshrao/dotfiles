@@ -19,3 +19,11 @@ require 'cfg.folding'
 require 'cfg.abbreviations'
 require 'cfg.lsp'
 require 'cfg.lazy' -- Loads cfg.plugins_core cfg.plugins_extras
+
+local ok, locals = pcall(require, 'cfg.locals')
+if ok then
+    require 'cfg.locals'
+end
+
+
+
