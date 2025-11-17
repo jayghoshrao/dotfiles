@@ -96,10 +96,12 @@ map('n', '<space>x', ':bdelete!<CR>' )
 -- tabs
 map( 'n', 'tn', ':tabnew<Space>' )
 map( 'n', 'td', ':tabclose<Space>' )
-map( 'n', 'tk', ':tabnext<CR>' )
-map( 'n', 'tj', ':tabprev<CR>' )
+map( 'n', 'tk', ':tabprev<CR>' )
+map( 'n', 'tj', ':tabnext<CR>' )
 map( 'n', 'th', ':tabfirst<CR>' )
 map( 'n', 'tl', ':tablast<CR>' )
+map( 'n', 't1', ':tabfirst<CR>' )
+map( 'n', 't0', ':tablast<CR>' )
 
 -- Handled by quicker.nvim
 -- map('n', '<space>q', [[<cmd>lua require('cfg.utils').toggle_quickfix()<cr>]])
@@ -145,3 +147,20 @@ map('v', '<a-k>', ":m '<-2<CR>gv=gv" )
 -- map('i', '<a-s-a>', 'Ä')
 -- map('i', '<a-s-o>', 'Ö')
 -- map('i', '<a-s-u>', 'Ü')
+
+-- Go to the beginning and end of current line in insert mode quickly
+vim.keymap.set("i", "<C-A>", "<HOME>")
+vim.keymap.set("i", "<C-E>", "<END>")
+
+-- insert semicolon in the end
+vim.keymap.set("i", "<A-;>", "<Esc>miA;<Esc>`ii")
+
+-- Delete the character to the right of the cursor
+vim.keymap.set("i", "<C-D>", "<DEL>")
+
+-- yank/paste register overwrites
+-- Replace visual selection with text in register, but not contaminate the register,
+-- see also https://stackoverflow.com/q/10723700/6064933.
+vim.keymap.set("x", "p", '"_c<Esc>p')
+
+vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>")

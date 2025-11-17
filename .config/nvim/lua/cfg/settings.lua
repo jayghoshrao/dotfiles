@@ -183,19 +183,4 @@ vim.cmd [[ let fortran_fold_multilinecomments = 1 ]]
 
 opt.winborder = 'rounded'
 
--- Go to the beginning and end of current line in insert mode quickly
-vim.keymap.set("i", "<C-A>", "<HOME>")
-vim.keymap.set("i", "<C-E>", "<END>")
-
--- insert semicolon in the end
-vim.keymap.set("i", "<A-;>", "<Esc>miA;<Esc>`ii")
-
--- Delete the character to the right of the cursor
-vim.keymap.set("i", "<C-D>", "<DEL>")
-
--- yank/paste register overwrites
--- Replace visual selection with text in register, but not contaminate the register,
--- see also https://stackoverflow.com/q/10723700/6064933.
-vim.keymap.set("x", "p", '"_c<Esc>p')
-
 opt.conceallevel = 1
