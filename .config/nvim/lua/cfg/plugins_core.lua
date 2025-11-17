@@ -523,7 +523,7 @@ return {
     },
 
     -- Future ----------------------------------------------------------------------
-    { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
+    -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
     {
         'MeanderingProgrammer/render-markdown.nvim',
