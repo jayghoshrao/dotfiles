@@ -179,5 +179,78 @@ map('n', '<space>f', M.find_in_root)
 --     })
 -- end
 
+-- ctags -R --c++-kinds=+p --fields=+iaSnl --extras=+q --language-force=C++ --exclude=.vscode --exclude=.git --exclude=*.json .
+M.tag_references = function()
+    local symbol = vim.fn.expand("<cword>")
+    local tagfile = vim.fn.findfile("tags")
+    if tagfile == "" then
+        print("No tags file found")
+        return
+    end
+
+    local grepcmd = "grep -w '" .. symbol .. "' " .. tagfile
+    if vim.g.is_win then
+        local escaped_tagfile = tagfile:gsub("\\", "/")
+        grepcmd = "Select-String -Pattern '\\b" .. symbol .. "\\b' -Path '" .. escaped_tagfile .. "' | ForEach-Object { $_.Line }"
+    end
+
+    local tag_lines = vim.fn.systemlist(grepcmd)
+    local entries = {}
+
+    for _, line in ipairs(tag_lines) do
+        local parts = vim.split(line, "\t")
+        if #parts >= 3 then
+            local file = parts[2]
+            local lnum = nil
+
+            for i = 3, #parts do
+                local line_match = parts[i]:match("line:(%d+)")
+                if line_match then
+                    lnum = tonumber(line_match)
+                    break
+                end
+            end
+
+            if lnum then
+                local ok, file_lines = pcall(vim.fn.readfile, file)
+                if ok and file_lines[lnum] then
+                    local line_text = file_lines[lnum]
+                    local col = line_text:find(symbol, 1, true)
+                    if not col then
+                        col = 1
+                    end
+
+                    table.insert(entries, {
+                        filename = file,
+                        lnum = lnum,
+                        col = col,
+                        text = line_text:gsub("^%s+", ""),
+                    })
+                end
+            end
+        end
+    end
+
+    require("telescope.pickers").new({}, {
+        prompt_title = "Tag References: " .. symbol,
+        finder = require("telescope.finders").new_table {
+            results = entries,
+            entry_maker = function(entry)
+                return {
+                    value = entry,
+                    display = string.format("%s:%d:%d", entry.filename, entry.lnum, entry.col),
+                    ordinal = entry.filename .. ":" .. entry.lnum,
+                    filename = entry.filename,
+                    lnum = entry.lnum,
+                    col = entry.col,
+                }
+            end,
+        },
+        previewer = require("telescope.config").values.grep_previewer({}),
+        sorter = require("telescope.config").values.generic_sorter({}),
+    }):find()
+end
+
+map('n', 'grt', M.tag_references)
 
 return M
