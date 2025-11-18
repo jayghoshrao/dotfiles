@@ -64,14 +64,21 @@ end
 ---@type vim.lsp.Config
 return {
   cmd = {
-	'clangd',
-	'--background-index',
-	'--pch-storage=memory',
-	'--log=error',
-	'--clang-tidy=false',
+    'clangd',
+    '--background-index',
+    '--pch-storage=memory',
+    '--log=error',
+    '--clang-tidy=false',
+    '--header-insertion=iwyu',
+    '--completion-style=detailed',
+    '--function-arg-placeholders',
+    '--fallback-style=none',
+    '--all-scopes-completion=false',
+    '--pretty',
     -- '--query-driver="C:/Users/JayghoshRao/scoop/apps/llvm/current/bin/clang-cl.exe"',
-	'-j=8',
-},
+    '-j=8',
+    '--enable-config',
+  },
   filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
   root_markers = {
     '.clangd',
