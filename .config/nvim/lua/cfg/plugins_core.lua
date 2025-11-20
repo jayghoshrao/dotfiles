@@ -94,7 +94,25 @@ return {
         "NeogitOrg/neogit",
         dependencies = {
             "nvim-lua/plenary.nvim",         -- required
-            "sindrets/diffview.nvim",        -- optional - Diff integration
+            {
+                "sindrets/diffview.nvim",        -- optional - Diff integration
+                config = function()
+                    vim.api.nvim_create_user_command("DiffviewMergeBase", function(opts)
+                        local base_branch = opts.args ~= "" and opts.args or "origin/develop"
+                        local merge_base = vim.fn.systemlist("git merge-base HEAD " .. base_branch)[1]
+                        if not merge_base or merge_base == "" then
+                            print("Could not determine merge-base with " .. base_branch)
+                            return
+                        end
+                        vim.cmd("DiffviewOpen " .. merge_base .. "..HEAD")
+                    end, {
+                            nargs = "?",
+                            -- complete = function(ArgLead, CmdLine, CursorPos) -- List all local + remote branches for completion
+                            --     return branch_completion(ArgLead)
+                            -- end,
+                        })
+                end
+            },
             "nvim-telescope/telescope.nvim", -- optional
         },
         opts = {}
