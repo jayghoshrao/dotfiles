@@ -207,6 +207,11 @@ return {
             'CodeCompanionActions',
         },
         opts = {
+            strategies = {
+                chat = { adapter = "copilot"},
+                -- inline = {adapter = "copilot"},
+                agent = {adapter = "copilot"},
+            },
             -- NOTE: The log_level is in `opts.opts`
             opts = {
                 log_level = "DEBUG", -- or "TRACE"
