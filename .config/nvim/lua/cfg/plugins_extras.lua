@@ -200,6 +200,12 @@ return {
             "nvim-lua/plenary.nvim",
             "nvim-treesitter/nvim-treesitter",
         },
+        cmd = {
+            'CodeCompanion',
+            'CodeCompanionCmd',
+            'CodeCompanionChat',
+            'CodeCompanionActions',
+        },
         opts = {
             -- NOTE: The log_level is in `opts.opts`
             opts = {
