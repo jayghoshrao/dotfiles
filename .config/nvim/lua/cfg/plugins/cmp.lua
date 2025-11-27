@@ -1,6 +1,7 @@
 local cmp = require'cmp'
 local lspkind = require('lspkind')
 local luasnip = require("luasnip")
+local sidekick = require("sidekick") 
 
 local has_words_before = function()
   unpack = unpack or table.unpack
@@ -29,14 +30,16 @@ cmp.setup {
         -- ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'}),
         ['<CR>'] = cmp.mapping.confirm({ select = true }),
         ["<Tab>"] = cmp.mapping(function(fallback)
-            if luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
-            elseif cmp.visible() then
-                cmp.select_next_item()
-            elseif has_words_before() then
-                cmp.complete()
-            else
-                fallback()
+            if not sidekick.nes_jump_or_apply() then
+                if luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
+                elseif cmp.visible() then
+                    cmp.select_next_item()
+                elseif has_words_before() then
+                    cmp.complete()
+                else
+                    fallback()
+                end
             end
         end, { "i", "s" }),
 

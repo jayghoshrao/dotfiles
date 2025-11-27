@@ -163,4 +163,4 @@ vim.keymap.set("i", "<C-D>", "<DEL>")
 -- see also https://stackoverflow.com/q/10723700/6064933.
 vim.keymap.set("x", "p", '"_c<Esc>p')
 
-vim.keymap.set("t", "<esc><esc>", "<C-\\><C-n>")
+vim.keymap.set("t", "<leader><esc>", "<C-\\><C-n>")
