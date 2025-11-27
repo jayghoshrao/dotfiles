@@ -11,7 +11,7 @@ config.window_decorations = "RESIZE" -- Removes title bar but keeps resize borde
 
 -- Use a nice font (Hack Nerd Font suggested since user installed nerdfont)
 config.font = wezterm.font_with_fallback({
-  "Hack Nerd Font",
+  "FiraCode Nerd Font",
   "JetBrainsMono Nerd Font",
 })
 config.font_size = 12.5
