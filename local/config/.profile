@@ -4,3 +4,4 @@ export XDG_SESSION_TYPE=x11
 export DESKTOP_SESSION=gnome
 export GNOME_DESKTOP_SESSION_ID=1
 export GTK_THEME=Qogir-Dark
+. "$HOME/.cargo/env"
