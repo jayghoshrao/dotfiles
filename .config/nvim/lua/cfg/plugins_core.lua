@@ -135,6 +135,7 @@ return {
     {
         'Wansmer/treesj',
         dependencies = { 'nvim-treesitter/nvim-treesitter' },
+        keys ={'<space>l'},
         config = function()
             local treesj = require('treesj')
             treesj.setup({ use_default_keymaps = false })
