@@ -92,31 +92,23 @@ return {
     -- Git -------------------------------------------------------------------------
     'tpope/vim-fugitive',
     {
-        "NeogitOrg/neogit",
-        dependencies = {
-            "nvim-lua/plenary.nvim",         -- required
-            {
-                "sindrets/diffview.nvim",        -- optional - Diff integration
-                config = function()
-                    vim.api.nvim_create_user_command("DiffviewMergeBase", function(opts)
-                        local base_branch = opts.args ~= "" and opts.args or "origin/develop"
-                        local merge_base = vim.fn.systemlist("git merge-base HEAD " .. base_branch)[1]
-                        if not merge_base or merge_base == "" then
-                            print("Could not determine merge-base with " .. base_branch)
-                            return
-                        end
-                        vim.cmd("DiffviewOpen " .. merge_base .. "..HEAD")
-                    end, {
-                            nargs = "?",
-                            -- complete = function(ArgLead, CmdLine, CursorPos) -- List all local + remote branches for completion
-                            --     return branch_completion(ArgLead)
-                            -- end,
-                        })
+        "sindrets/diffview.nvim",
+        config = function()
+            vim.api.nvim_create_user_command("DiffviewMergeBase", function(opts)
+                local base_branch = opts.args ~= "" and opts.args or "origin/develop"
+                local merge_base = vim.fn.systemlist("git merge-base HEAD " .. base_branch)[1]
+                if not merge_base or merge_base == "" then
+                    print("Could not determine merge-base with " .. base_branch)
+                    return
                 end
-            },
-            "nvim-telescope/telescope.nvim", -- optional
-        },
-        opts = {}
+                vim.cmd("DiffviewOpen " .. merge_base .. "..HEAD")
+            end, {
+                    nargs = "?",
+                    -- complete = function(ArgLead, CmdLine, CursorPos) -- List all local + remote branches for completion
+                    --     return branch_completion(ArgLead)
+                    -- end,
+                })
+        end
     },
     {
         'kdheepak/lazygit.nvim',
@@ -157,65 +149,66 @@ return {
     -- Mason, LSP, DAP -------------------------------------------------------------
 
     -- NOTE: install and initialize before nvim-lspconfig
-    { 'williamboman/mason.nvim', opts = {} },
+    { 'williamboman/mason.nvim', opts = {}, cmd="Mason" },
 
     { 'williamboman/mason-lspconfig.nvim', opts={
         ensure_installed = require('cfg.lsp').ensure_installed,
+        cmd="Mason"
     }},
 
-    { "jay-babu/mason-nvim-dap.nvim", opts = {}},
+    { "jay-babu/mason-nvim-dap.nvim", opts = {}, cmd="Mason"},
 
     'neovim/nvim-lspconfig', -- Built-in LSP configurations
     'onsails/lspkind-nvim',
     { 'ray-x/lsp_signature.nvim', config = true },
 
-    {
-        'mfussenegger/nvim-dap',
-        config = function()
-            require'cfg.plugins.dap'
-        end,
-        -- lunajson for a custom launch function. See dap.lua
-        -- rocks = 'lunajson'
-    },
+    -- {
+    --     'mfussenegger/nvim-dap',
+    --     config = function()
+    --         require'cfg.plugins.dap'
+    --     end,
+    --     -- lunajson for a custom launch function. See dap.lua
+    --     -- rocks = 'lunajson'
+    -- },
 
-    {
-        'mfussenegger/nvim-dap-python',
-        ft = "python",
-        dependencies = {
-            "mfussenegger/nvim-dap",
-        },
-        enabled = function()
-            local ok, registry = pcall(require, "mason-registry")
-            return ok and registry.is_installed("debugpy")
-        end,
-        opts = {}
-    },
+    -- {
+    --     'mfussenegger/nvim-dap-python',
+    --     ft = "python",
+    --     dependencies = {
+    --         "mfussenegger/nvim-dap",
+    --     },
+    --     enabled = function()
+    --         local ok, registry = pcall(require, "mason-registry")
+    --         return ok and registry.is_installed("debugpy")
+    --     end,
+    --     opts = {}
+    -- },
 
-    { 'theHamsta/nvim-dap-virtual-text', opts = {}},
+    -- { 'theHamsta/nvim-dap-virtual-text', opts = {}},
 
-    {
-        "rcarriga/nvim-dap-ui",
-        dependencies = {
-            "mfussenegger/nvim-dap",
-            "nvim-neotest/nvim-nio"
-        },
-        config = function()
-            local dap = require("dap")
-            local dapui = require("dapui")
-            dapui.setup()
-            map('n', '<space>dd', ':lua require"dapui".toggle()<CR>')
-
-            dap.listeners.after.event_initialized["dapui_config"] = function()
-                dapui.open()
-            end
-            dap.listeners.before.event_terminated["dapui_config"] = function()
-                dapui.close()
-            end
-            dap.listeners.before.event_exited["dapui_config"] = function()
-                dapui.close()
-            end
-        end
-    },
+    -- {
+    --     "rcarriga/nvim-dap-ui",
+    --     dependencies = {
+    --         "mfussenegger/nvim-dap",
+    --         "nvim-neotest/nvim-nio"
+    --     },
+    --     config = function()
+    --         local dap = require("dap")
+    --         local dapui = require("dapui")
+    --         dapui.setup()
+    --         map('n', '<space>dd', ':lua require"dapui".toggle()<CR>')
+    --
+    --         dap.listeners.after.event_initialized["dapui_config"] = function()
+    --             dapui.open()
+    --         end
+    --         dap.listeners.before.event_terminated["dapui_config"] = function()
+    --             dapui.close()
+    --         end
+    --         dap.listeners.before.event_exited["dapui_config"] = function()
+    --             dapui.close()
+    --         end
+    --     end
+    -- },
 
     -- Treesitter ------------------------------------------------------------------
     {
@@ -414,17 +407,17 @@ return {
     },
 
 
-    {
-        "nvim-tree/nvim-tree.lua",
-        version = "*",
-        lazy = false,
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-        },
-        config = function()
-            require('cfg.plugins.tree')
-        end,
-    },
+    -- {
+    --     "nvim-tree/nvim-tree.lua",
+    --     version = "*",
+    --     lazy = false,
+    --     dependencies = {
+    --         "nvim-tree/nvim-web-devicons",
+    --     },
+    --     config = function()
+    --         require('cfg.plugins.tree')
+    --     end,
+    -- },
 
 
 
