@@ -16,8 +16,9 @@ $dotPathParent = "$HOME\source\repos"
 $dotPath = "$dotPathParent\dotfiles"
 $dotURL = "https://github.com/jayghoshrao/dotfiles"
 
-cd $dotPathParent
-git clone $dotURL
+if (-not (Test-Path $dotPath)) {
+    git clone $dotURL $dotPath
+}
 
 New-Item -ItemType SymbolicLink -Path "$HOME\AppData\Local\nvim" -Target "$dotPath\.config\nvim"
 
