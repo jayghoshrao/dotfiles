@@ -280,8 +280,13 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 
 # bindsym $mod+n exec --no-startup-id i3-input -P 'Rename or renumber workspace: ' -F 'exec python3 ~/Repositories/i3-workspace-hinting/rename_ws.py rename "%s"'
 
-# bindsym $mod+m workspace next
-# bindsym $mod+n workspace prev
+bindsym $mod+m workspace next_on_output
+bindsym $mod+n workspace prev_on_output
+ 
+bindsym $mod+Shift+m exec --no-startup-id $SCRIPTS/i3-ws-right.sh
+bindsym $mod+Shift+n exec --no-startup-id $SCRIPTS/i3-ws-left.sh
+# # Non negative numbers
+# bindsym $mod+Shift+p exec --no-startup-id "CURRENT=$(i3-msg -t get_workspaces | jq '.[] | select(.focused==true).num'); for i in $(seq $((CURRENT-1)) -1 1); do i3-msg -t get_workspaces | grep -q '\"num\":$i' || { i3-msg workspace $i; break; }; done"
 
 bindsym $alt+bracketright workspace next_on_output
 bindsym $alt+bracketleft workspace prev_on_output
@@ -341,17 +346,18 @@ bindsym  XF86AudioMute         exec  "amixer  -D  pulse  set       Master  Playb
 # bindsym  $mod+shift+i  exec  "amixer  -q  sset   Master,0  10%-    unmute"
 bindsym  $mod+plus  exec  "amixer  -q  sset   Master,0  10%+    unmute"
 bindsym  $mod+minus  exec  "amixer  -q  sset   Master,0  10%-    unmute"
-bindsym  $mod+m exec  "amixer set Master Playback Switch toggle"
-bindsym  $mod+shift+m exec "$SCRIPTS/mic -m toggle"
-bindsym  $mod+$alt+m exec "$SCRIPTS/mic -ma 1"
+
+# bindsym  $mod+m exec  "amixer set Master Playback Switch toggle"
+# bindsym  $mod+shift+m exec "$SCRIPTS/mic -m toggle"
+# bindsym  $mod+$alt+m exec "$SCRIPTS/mic -ma 1"
 
 bindsym XF86AudioPrev exec $SCRIPTS/musickeys.sh prev
 bindsym XF86AudioPlay exec $SCRIPTS/musickeys.sh toggle
 bindsym XF86AudioNext exec $SCRIPTS/musickeys.sh next
 
-bindsym $mod+shift+p exec $SCRIPTS/musickeys.sh toggle
-bindsym $mod+shift+n exec $SCRIPTS/musickeys.sh next
-bindsym $mod+shift+b exec $SCRIPTS/musickeys.sh prev
+# bindsym $mod+shift+p exec $SCRIPTS/musickeys.sh toggle
+# bindsym $mod+shift+n exec $SCRIPTS/musickeys.sh next
+# bindsym $mod+shift+b exec $SCRIPTS/musickeys.sh prev
 
 # bindsym XF86AudioMute exec "amixer -q sset Master,0 toggle"
 # bindsym XF86AudioPlay exec playerctl play-pause
@@ -567,7 +573,7 @@ for_window [all] border pixel 1
 bindsym F4 exec $SCRIPTS/xc
 # bindsym $mod+shift+i exec $SCRIPTS/xc
 
-bindsym $mod+n exec --no-startup-id i3-input -F 'rename workspace to %s' -P 'New name: '
+# bindsym $mod+n exec --no-startup-id i3-input -F 'rename workspace to %s' -P 'New name: '
 
 # TODO: Depends on zinit. Decouple it
 # bindsym $mod+n exec --no-startup-id /home/jayghoshter/.zinit/plugins/jytrowbridge---i3-next-available-workspace/next_available_ws.sh
