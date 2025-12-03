@@ -10,10 +10,25 @@ scoop install git
 scoop install nodejs
 npm install -g @github/copilot
 
-$dotPath = "$HOME\source\repos"
+$dotPathParent = "$HOME\source\repos"
+$dotPath = "$dotPathParent\dotfiles"
 $dotURL = "https://github.com/jayghoshrao/dotfiles"
 
-cd $dotPath
+cd $dotPathParent
 git clone $dotURL
 
-New-Item -ItemType SymbolicLink -Path "$HOME\AppData\Local\nvim" -Target "$dotPath\dotfiles\.config\nvim"
+New-Item -ItemType SymbolicLink -Path "$HOME\AppData\Local\nvim" -Target "$dotPath\.config\nvim"
+
+# PowerShell profile symlink
+$profileSource = "$dotPath\local\share\powershell_profile.ps1"
+$profileDir = Split-Path $PROFILE -Parent
+
+if (-not (Test-Path $profileDir)) {
+    New-Item -ItemType Directory -Path $profileDir -Force
+}
+if (Test-Path $PROFILE) {
+    $backup = "$PROFILE.bak"
+    Move-Item -Path $PROFILE -Destination $backup -Force
+    Write-Host "Backed up existing profile to $backup"
+}
+New-Item -ItemType SymbolicLink -Path $PROFILE -Target $profileSource
