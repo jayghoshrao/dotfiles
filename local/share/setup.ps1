@@ -21,6 +21,8 @@ if (-not (Test-Path $dotPath)) {
 }
 
 New-Item -ItemType SymbolicLink -Path "$HOME\AppData\Local\nvim" -Target "$dotPath\.config\nvim"
+New-Item -ItemType SymbolicLink -Path "$HOME\AppData\Roaming\kanata" -Target "$dotPath\.config\kanata"
+New-Item -ItemType SymbolicLink -Path "$HOME\.wezterm.lua" -Target "$dotPath\local\share\.wezterm.lua"
 
 # PowerShell profile symlink
 $profileSource = "$dotPath\local\share\powershell_profile.ps1"
