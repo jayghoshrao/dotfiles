@@ -108,6 +108,11 @@ return {
                     --     return branch_completion(ArgLead)
                     -- end,
                 })
+
+            vim.api.nvim_create_user_command("DiffviewLast", function(opts)
+                local n = opts.args ~= "" and tonumber(opts.args) or 1
+                vim.cmd("DiffviewOpen HEAD~" .. n .. "..HEAD")
+            end, { nargs = "?" })
         end
     },
     {
