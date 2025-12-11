@@ -148,6 +148,13 @@ return {
             --         enabled = true,
             --     },
             -- },
+            cli = {
+                win = {
+                    keys = {
+                        prompt        = { "<c-s-p>", "prompt"    , mode = "t" , desc = "insert prompt or context" },
+                    }
+                }
+            }
         },
         keys = {
             {

@@ -89,7 +89,7 @@ map('n', '<leader>r', ":lua require('cfg.utils').cd_root()<CR>")
 -- map('n', '<F2>', ':%s/\s*$//e<CR>')
 
 map('n', '<space><space>', '<c-^>')
-map('n', '<BS><BS>', '<c-^>')
+-- map('n', '<BS><BS>', '<c-^>')
 
 map('n', '<space>x', ':bdelete!<CR>' )
 
