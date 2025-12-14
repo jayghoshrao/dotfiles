@@ -506,7 +506,7 @@ bindsym $mod+a exec $SCRIPTS/rofi-pomodoro.sh
 
 bindsym $mod+u exec fd --extension pdf | rofi -dmenu -i -p 'Open PDF' | xargs -i zathura {}
 bindsym $mod+shift+x exec $SCRIPTS/rofi-kill
-bindsym $mod+$alt+a exec $SCRIPTS/audiosinks.py
+bindsym $mod+v exec $SCRIPTS/audiosinks.py
 
 # }}}
 
@@ -588,7 +588,7 @@ exec --no-startup-id i3-autolayout autolayout &
 ## TODO: Look into this https://github.com/eliep/i3-layouts
 exec --no-startup-id syncthing serve --no-browser &
 
-bindsym $mod+v exec $SCRIPTS/sp-rofi
+# bindsym $mod+v exec $SCRIPTS/sp-rofi
 bindsym $mod+i focus mode_toggle
 
 # bindsym $mod+grave [urgent=latest] focus
