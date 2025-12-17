@@ -49,13 +49,6 @@ return {
 
     { 'norcalli/nvim-colorizer.lua', config = true, cmd={'ColorizerToggle'} },
 
-    -- {
-    --   'editorconfig/editorconfig-vim', -- Project-specific settings
-    --   config = function()
-    --     vim.g.EditorConfig_preserve_formatoptions = 1
-    --   end,
-    -- }
-
     -- { 'vim-pandoc/vim-pandoc', ft = { 'markdown', 'tex', 'pandoc' } },
     -- { 'vim-pandoc/vim-pandoc-syntax', ft = {'markdown', 'pandoc'} },
 

@@ -10,6 +10,7 @@
 
 vim.g.mapleader = ','
 vim.g.maplocalleader = '\\'
+vim.g.editorconfig = true
 
 require 'cfg.settings'
 require 'cfg.commands'

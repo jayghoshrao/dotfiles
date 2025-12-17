@@ -21,7 +21,7 @@ return {
 
             toggleterm.setup({
                 direction = "float",
-                -- Don’t set open_mapping here; we’ll handle custom keymaps below
+                open_mapping=[[<C-q>]],
             })
 
             -- Helper function to toggle terminal N
