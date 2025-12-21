@@ -1,5 +1,5 @@
 # vim: fdm=marker
- 
+
 #                 ██              ████          ████
 #                ░██             ░██░          ░██░
 #  ██████  ██████░██            ██████ ██████ ██████
@@ -8,7 +8,7 @@
 #   ██    ░░░░░██░██  ░██        ░██    ██     ░██
 #  ██████ ██████ ░██  ░██        ░██   ██████  ░██
 # ░░░░░░ ░░░░░░  ░░   ░░         ░░   ░░░░░░   ░░
-# 
+#
 #  ~/.zshrc
 #  ~/.zsh-local
 #
@@ -19,6 +19,9 @@
 #       - No app should require an argument, just like fl works
 
 ZSH_CACHE_DIR=~/.cache
+
+# Common fzf preview command
+FZF_PREVIEW_CMD='scope.sh {q} {1}'
 fzf-history-widget-accept() {
   fzf-history-widget
   zle accept-line
@@ -42,7 +45,7 @@ export FZF_ALT_C_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
 export FZF_CTRL_T_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
 export FZF_DEFAULT_OPTS="--preview-window wrap --bind 'ctrl-v:toggle,ctrl-s:toggle+down,ctrl-n:down,ctrl-p:up,ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@,ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@','ctrl-r:execute@frifle {}@','alt-j:half-page-down','alt-k:half-page-up','ctrl-f:jump' --color='bg+:#5E81AC,prompt:#EBCB8B' --reverse"
 
-if [[ -x "$(command -v fd)" ]]; then 
+if command -v fd &>/dev/null; then
     # Use fd (https://github.com/sharkdp/fd) instead of the default find
     # command for listing path candidates.
     # - The first argument to the function ($1) is the base path to start traversal
@@ -83,12 +86,11 @@ bindkey '^F' fzf_locate
 
 #fj - fuzzy cd (jump) from anywhere (auto){{{
 #ex: cf word1 word2 ... (even part of a file name)
-autoload fj
 fj() {
   local file
 
   # file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
-  file=$(fd --base-directory=$HOME -L "$@" . | fuzscope --base-directory "$HOME") 
+  file=$(fd --base-directory=$HOME -L "$@" . | fuzscope --base-directory "$HOME")
 
   if [[ -n $file ]]
   then
@@ -107,9 +109,9 @@ fj() {
 vg() {
     # TODO: instead of grepping the line in preview, use line number
     if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
-    if [ -x "$(command -v rg)" ]; then
+    if command -v rg &>/dev/null; then
         rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' --preview 'rg --ignore-case --pretty --with-filename --context 10 -F '"{3..}"' {1}' --bind "enter:execute: $EDITOR {1} +{2}"
-    elif [ -x "$(command -v ag)"]; then
+    elif command -v ag &>/dev/null; then
         ag -S --nobreak --noheading "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
     else
         grep -irE "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
@@ -154,7 +156,6 @@ dp() {
 # fs: fuzzy subdir - cd into the directory of the selected file {{{
 fs() {
    local file
-   local dir
    file=$(fd | fzf +m -q "$1")
 
   if [[ -n $file ]]
@@ -172,7 +173,6 @@ fs() {
 # fe: fuzzy edit- edit selected file
 fe() {
    local file
-   local dir
    file=$(fd | fzf +m -q "$1")
    [ -f "$file" ] || return
 
@@ -214,14 +214,14 @@ fshow_preview() {
 #}}}
 
 # fjrnl: {{{
-fjrnl() {                                                                                                                                                                                               
+fjrnl() {
     title=$(jrnl --short | fzf --tac --no-sort) && jrnl -on "$(echo $title | cut -c 1-16)" $1
 }
 #}}}
 
 # Autojump: {{{
 j() {
-    if [[ ! -x "$(command -v autojump)" ]]; then
+    if ! command -v autojump &>/dev/null; then
         fj
         return
     fi
@@ -230,11 +230,11 @@ j() {
         cd $(autojump $@)
         return
     fi
-    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --tac)" 
+    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --tac)"
 }
 
 k() {
-    if [[ ! -x "$(command -v zoxide)" ]]; then
+    if ! command -v zoxide &>/dev/null; then
         fj
         return
     fi
@@ -243,7 +243,7 @@ k() {
         cd $(__zoxide_z $@)
         return
     fi
-    cd "$(zoxide query --list --score | sed 's/^\s*[0-9,.:]*\s*//' |  fzf --height 40% --tac)" 
+    cd "$(zoxide query --list --score | sed 's/^\s*[0-9,.:]*\s*//' |  fzf --height 40% --tac)"
 }
 #}}}
 
@@ -280,11 +280,11 @@ p () {
 #}}}
 
 # FSH / Fuzzy SSH: {{{
-function fsh() {
+fsh() {
   ssh -Y "$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -q "$1" -1)"
 }
 
-function fst() {
+fst() {
   grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -m -q "$1" -1 | while read host ; do
   ssh -O stop "$host"
 done
@@ -293,10 +293,10 @@ done
 #}}}
 
 # fsend:{{{
-function fsend() {
+fsend() {
     # TODO: Allow depth=1 for home dir
     # TODO: Fix for files with spaces
-    BAK="$FZF_DEFAULT_COMMAND"
+    local BAK="$FZF_DEFAULT_COMMAND"
     # export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
     export FZF_DEFAULT_COMMAND='fd .'
 
@@ -318,7 +318,7 @@ function fsend() {
 # }}}
 
 # cd-files: {{{
-function cd() {
+cd() {
     if [[ "$#" != 0 ]]; then
         builtin cd "$@"
         return
@@ -351,7 +351,7 @@ function cd() {
 # }}}
 
 # fkill: {{{
-function fkill() {
+fkill() {
     pid=$(ps -ef | \
         sed 1d | \
         fzf -m --preview="ps -p {2}" --preview-window=down:3 | \
@@ -365,22 +365,19 @@ function fkill() {
 # }}}
 
 ## fuzzy locate config: {{{
-function fzf_locate_config()
-{
+fzf_locate_config() {
+    local QUERY
     [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
 
     # fd . ~ | fuzscope "$QUERY" | filer
     # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
 
-    # OUT=$(locate home media | fuzscope "$QUERY" ) 
-    OUT=$(fd . -L --base-directory=$HOME/.config | fuzscope --base-directory $HOME/.config $QUERY ) 
-    if [[ ! -z "$OUT" ]]; then 
-        FILE=$(echo -e "$OUT" | tail -1)
-        # echo "$FILE"
-        # [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | filer 
+    # OUT=$(locate home media | fuzscope "$QUERY" )
+    local OUT=$(fd . -L --base-directory=$HOME/.config | fuzscope --base-directory $HOME/.config $QUERY)
+    if [[ -n "$OUT" ]]; then
+        FILE="${OUT##*$'\n'}"
         [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | peek
     fi
-
 }
 alias flc="fzf_locate_config"
 
@@ -397,19 +394,15 @@ alias flc="fzf_locate_config"
 # }
 
 
-autoload fzf_copy
-function fzf_copy()
-{
+fzf_copy() {
     # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
-    # OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2) 
+    # OUT=$(fd . ~ | fuzscope -m "$QUERY" | tail -n+2)
 
-    OUT=$(fd "$@" . ~ | fuzscope -m) 
-   
+    local OUT=$(fd "$@" . ~ | fuzscope -m)
+
     while IFS= read -r file; do
         cp -r "$file" .
     done <<< "$OUT"
-
-
 }
 
 alias fcp="fzf_copy"

@@ -178,7 +178,11 @@ unsetopt AUTO_NAME_DIRS     # Don't add variable-stored paths to ~ list
 
 # Basics:{{{
 
-function! prependToEnv()
+# Helper functions
+_has() { command -v "$1" &>/dev/null }
+_bg() { nohup "$@" >/dev/null 2>&1 & disown }
+
+prependToEnv()
 {
     case ":$(printenv $1):" in
         *":$2:"*) :;; # already there
@@ -186,7 +190,7 @@ function! prependToEnv()
     esac
 }
 
-function! appendToEnv()
+appendToEnv()
 {
     case ":$(printenv $1):" in
         *":$2:"*) :;; # already there
@@ -256,8 +260,8 @@ export LANG=en_US.UTF-8
 
 ## Exports: }}}
 
-command -v nvim >/dev/null && export EDITOR='nvim' || export EDITOR='vim'
-command -v nvim >/dev/null && alias vim="nvim" vimdiff="nvim -d" # Use neovim for vim if present.
+_has nvim && export EDITOR='nvim' || export EDITOR='vim'
+_has nvim && alias vim="nvim" vimdiff="nvim -d" # Use neovim for vim if present.
 
 #Alias {{{
 
@@ -324,13 +328,13 @@ xo()
             EXT=${ARG##*.}
             scp -rC "$ARG" "/tmp/remotefile.$EXT"
             if [[ $? -eq 0 ]] ; then
-                nohup xdg-open "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+                _bg xdg-open "/tmp/remotefile.$EXT"
             else
                 >&2 echo "file not found!"
                 return -1
             fi
         else
-            nohup xdg-open "$ARG" >/dev/null 2>&1 & disown
+            _bg xdg-open "$ARG"
         fi
     done
 
@@ -341,7 +345,7 @@ xo()
 x()
 {
     if [[ -z "$2" ]]; then
-        nohup $1 >/dev/null 2>&1 & disown
+        _bg $1
         return
     fi
 
@@ -355,32 +359,31 @@ x()
             EXT=${ARG##*.}
             scp -rC "$ARG" "/tmp/remotefile.$EXT"
             if [[ $? -eq 0 ]] ; then
-                nohup $OPENER "/tmp/remotefile.$EXT" >/dev/null 2>&1 & disown
+                _bg $OPENER "/tmp/remotefile.$EXT"
             else
                 >&2 echo "file not found!"
                 return -1
             fi
         else
-            nohup $OPENER "$ARG" >/dev/null 2>&1 & disown
+            _bg $OPENER "$ARG"
         fi
     done
 }
 #}}}
 
-function cht() { curl cht.sh/$1 }
+cht() { curl cht.sh/$1 }
 fgkey() { fg }
 zle -N fgkey
 bindkey '^Z' fgkey
-function vimw() { vim $(readlink -f $(which "$@")) }
-function! vq() { nvim -q <( rg -S --vimgrep "$@" ) }
-function mkc() { mkdir "$1" && cd "$1" }
-function yp() {echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard}
-function yd() {echo "$PWD" | tr -d '\n' | xclip -i -selection clipboard}
+vimw() { vim $(readlink -f $(which "$@")) }
+vq() { nvim -q <( rg -S --vimgrep "$@" ) }
+mkc() { mkdir "$1" && cd "$1" }
+yp() { echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard }
+yd() { echo "$PWD" | tr -d '\n' | xclip -i -selection clipboard }
 #}}}
 # MAN: {{{
 
-function man() {
-
+man() {
 # LESS_TERMCAP_mb # blinking mode (not common in manpages)
 # LESS_TERMCAP_md # double-bright mode (used for boldface)
 # LESS_TERMCAP_me # exit/reset all modes
@@ -450,7 +453,7 @@ ring() {
 # }}}
 
 # yazi: cd on quit: {{{
-function y() {
+y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
   yazi "$@" --cwd-file="$tmp"
   if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
@@ -464,41 +467,41 @@ alias f='y'
 # Dotfile management: {{{
 ## Functions are better for pipes
 export DOTDIR=$HOME/.dots
-function dot()  {command git --git-dir=$DOTDIR --work-tree=$HOME "$@"}
-function dots() {command git --git-dir=$DOTDIR --work-tree=$HOME status "$@"}
-function dotc() {command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"}
-function dota() {command git --git-dir=$DOTDIR --work-tree=$HOME add "$@"}
-function dotu() {command git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@"}
-function dotd() {command git --git-dir=$DOTDIR --work-tree=$HOME diff "$@"}
-function dotr() {command git --git-dir=$DOTDIR --work-tree=$HOME rm "$@"}
-function dotlg() {lazygit --git-dir=$DOTDIR --work-tree=$HOME}
+dot() { command git --git-dir=$DOTDIR --work-tree=$HOME "$@" }
+dots() { command git --git-dir=$DOTDIR --work-tree=$HOME status "$@" }
+dotc() { command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@" }
+dota() { command git --git-dir=$DOTDIR --work-tree=$HOME add "$@" }
+dotu() { command git --git-dir=$DOTDIR --work-tree=$HOME add --update "$@" }
+dotd() { command git --git-dir=$DOTDIR --work-tree=$HOME diff "$@" }
+dotr() { command git --git-dir=$DOTDIR --work-tree=$HOME rm "$@" }
+dotlg() { lazygit --git-dir=$DOTDIR --work-tree=$HOME }
 
-function dotf(){
+dotf() {
     ## setting the env vars helps vim-fugitive know what's going on
     [ -n "$@" ] && QUERY="-q $@"
     command git --git-dir=$DOTDIR --work-tree=$HOME ls-tree --full-tree -r HEAD | awk -F'\t' '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME peek
 }
 
-function dotaf(){
+dotaf() {
     files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
     [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add
 }
 
-function dotcf(){
+dotcf() {
     files=$(command git --git-dir=$DOTDIR --work-tree=$HOME diff --name-only | sed "s@^@$HOME/@" | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}" )
     [ -n "$files" ] && echo "$files" | xargs command git --git-dir=$DOTDIR --work-tree=$HOME add
     command git --git-dir=$DOTDIR --work-tree=$HOME commit --verbose "$@"
 }
 
-function dotsparsity(){
+dotsparsity() {
     $EDITOR $DOTDIR/info/sparse-checkout
     dot read-tree -m -u HEAD
 }
 
-function dotziupg() { dot pull && zi self-update && zi update --parallel 40 && zi cclear }
+dotziupg() { dot pull && zi self-update && zi update --parallel 40 && zi cclear }
 
 ## FZF
-function dotlog(){
+dotlog() {
     _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
     _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git --git-dir=$DOTDIR --work-tree=$HOME show --color=always % | less '"
     dot log --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr% C(auto)%an" "$@" |
@@ -561,12 +564,12 @@ peek()
 
     open()
     {
-        nohup "$@" > /dev/null 2>&1 & disown
+        _bg "$@"
     }
 
     guiopen()
     {
-        nohup xdg-open "$@" >/dev/null 2>&1 & disown
+        _bg xdg-open "$@"
     }
 
     special()
@@ -578,7 +581,7 @@ peek()
         FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
 
         if [[ "$FILE" =~ $urlregex ]]; then
-            if [[ -x $(command -v urler.sh) ]]; then
+            if _has urler.sh; then
                 urler.sh "$FILE"
             else
                 guiopen "$FILE"
@@ -666,7 +669,7 @@ add-zsh-hook precmd set_longrunning_alert
 
 ## SSH TMUX REFRESH ENV: {{{
 # updates DISPLAY env in outdated tmux sessions
-function tmux_update_display(){
+tmux_update_display() {
     [[ -z $commands[grep] ]] || [[ -z $commands[sed] ]] && return
     if [ -n "$TMUX" ]; then
         if [[ $(tmux show-env | grep "^DISPLAY" | sed 's/DISPLAY=//') != $DISPLAY ]]; then
@@ -679,8 +682,7 @@ add-zsh-hook preexec tmux_update_display
 
 ## SSH TMUX REFRESH ENV: }}}
 
-function vimfu()
-{
+vimfu() {
     file=$(findup.py "$@")
     if [ -n "$file" ]; then
         $EDITOR "$file"
@@ -702,17 +704,17 @@ alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 alias znix="module load nix && nix-shell --command zsh"
 
 alias an="archlinux-nix"
-function nsd(){ nix show-derivation $(nix path-info --derivation "nixpkgs#$1") }
-function nsp(){ storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath'); echo $storepath }
-function ned(){ nix edit 'nixpkgs#'$1 }
+nsd() { nix show-derivation $(nix path-info --derivation "nixpkgs#$1") }
+nsp() { storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath'); echo $storepath }
+ned() { nix edit 'nixpkgs#'$1 }
 
-function fml(){ module load $(fmod $@) }
+fml() { module load $(fmod $@) }
 
 ## Use this to trace the libs loaded at runtime
 ## LDTRACE ./main
 alias LDTRACE="LD_TRACE_LOADED_OBJECTS=1"
 
-function is_chroot(){
+is_chroot() {
     awk 'BEGIN{exit_code=1} $2 == "/" {exit_code=0} END{exit exit_code}' /proc/mounts
     echo $?
 }
@@ -727,11 +729,11 @@ alias newsc="vim ~/.newsboat/config"
 alias newsu="vim ~/.newsboat/urls"
 
 alias sst="ssh -O stop"
-function ssr() { ssh -O stop "$1"; ssh "$1" }
-function rep() { repeat "$1" { echo "${@:2}" } }
-function ff() { fuzscope "$@" | peek }
+ssr() { ssh -O stop "$1"; ssh "$1" }
+rep() { repeat "$1" { echo "${@:2}" } }
+ff() { fuzscope "$@" | peek }
 
-function goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
+goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
 
 alias nvim-sync='nvim --headless "+Lazy! sync" +qa'
 
