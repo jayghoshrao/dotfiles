@@ -253,8 +253,8 @@ k() {
 # ALT-I - Paste the selected entry from locate output into the command line
 fzf-locate-widget() {
   local selected
-  # Use fd instead of locate for better performance
-  if selected=$(fd . / --hidden --follow --type f 2>/dev/null | fzf -q "$LBUFFER"); then
+  # Search from home directory for practical interactive use (not entire filesystem)
+  if selected=$(fd . "$HOME" --hidden --follow --type f 2>/dev/null | fzf -q "$LBUFFER"); then
     LBUFFER=$selected
   fi
   zle redisplay
