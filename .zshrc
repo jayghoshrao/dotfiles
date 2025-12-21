@@ -710,7 +710,6 @@ alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 # ============================================================================
 alias n='nav'          # Quick navigation (n, n j, n k, n p, n r)
 alias s='search'       # Quick search/edit (s, s pattern, s v, s f, s x)
-alias h='hist'         # Quick history (h, h g, h f, h x)
 
 # ============================================================================
 # CUSTOM KEYBINDING WIDGETS
@@ -780,7 +779,7 @@ fzf-functions-help() {
 ║          NAVIGATION & EDITING KEYBINDS - Complete Reference            ║
 ╚═════════════════════════════════════════════════════════════════════════╝
 
-YOUR CUSTOM KEYBINDINGS:
+YOUR CUSTOM KEYBINDINGS FOR NAVIGATION:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Alt+F            Find file, jump to its directory (recursive from cwd)
   Alt+D            Find subdirectory, jump to it (recursive from cwd)
@@ -816,7 +815,7 @@ ZSH DEFAULT KEYBINDINGS - HISTORY & SEARCH:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Ctrl+P           Previous command (history search)
   Ctrl+N           Next command (history search)
-  Ctrl+R           Reverse history search (your custom fuzzy search)
+  Ctrl+R           Reverse history search (custom fuzzy search)
   Ctrl+X Ctrl+R    History search with fuzzy accept
   Page-Up          Scroll up in history
   Page-Down        Scroll down in history
@@ -842,7 +841,6 @@ COMMAND LINE ALIASES (Type these):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   n                Navigate to directory
   s                Search and edit
-  h                History search
   cd               Interactive directory picker (no args)
 
 ═════════════════════════════════════════════════════════════════════════
@@ -865,6 +863,11 @@ Alt+S - Search and edit
   Alt+S → "Search for: bug" → opens files containing "bug" in editor
 
 ═════════════════════════════════════════════════════════════════════════
+
+USE Ctrl+R FOR HISTORY SEARCH (built-in zsh):
+  Ctrl+R          Reverse history search
+  Ctrl+X Ctrl+R   History search with fuzzy accept
+  fzf-history-cwd Available function for custom history needs
 EOF
 }
 
