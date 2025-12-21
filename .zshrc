@@ -705,6 +705,109 @@ alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 
+# ============================================================================
+# UNIFIED ENTRY POINT ALIASES & KEYBINDINGS
+# ============================================================================
+alias n='nav'          # Quick navigation (n, n j, n k, n p, n r)
+alias s='search'       # Quick search/edit (s, s pattern, s v, s f, s x)
+alias h='hist'         # Quick history (h, h g, h f, h x)
+
+# Create ZLE widgets for keybindings
+_nav_widget() { zle reset-prompt; nav; }
+_search_widget() { zle reset-prompt; search; }
+_hist_widget() { zle reset-prompt; hist; }
+
+zle -N _nav_widget
+zle -N _search_widget
+zle -N _hist_widget
+
+# Easy keybindings (choose one set below based on preference)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# OPTION 1: Alt Keybindings (RECOMMENDED - less conflicts)
+# Easy to remember: Alt + first letter of function
+bindkey '^[n' _nav_widget         # Alt+N → Navigate
+bindkey '^[s' _search_widget       # Alt+S → Search
+bindkey '^[h' _hist_widget         # Alt+H → History
+
+# OPTION 2: Ctrl Keybindings (uncomment to use instead)
+# Less intuitive but faster to type
+# bindkey '^N' _nav_widget          # Ctrl+N → Navigate
+# bindkey '^S' _search_widget        # Ctrl+S → Search (might conflict with flow control)
+# bindkey '^H' _hist_widget          # Ctrl+H → History (might conflict with backspace)
+
+# OPTION 3: Custom Keybindings (uncomment and modify as needed)
+# bindkey '^[j' _nav_widget         # Alt+J → Jump (nav)
+# bindkey '^[f' _search_widget      # Alt+F → Find (search)
+# bindkey '^[;' _hist_widget        # Alt+; → History
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# RECOMMENDED SETUP:
+# Use Alt+N, Alt+S, Alt+H (OPTION 1 - already enabled above)
+# Easy to remember, no conflicts, works in vim mode
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Show available functions
+fzf-functions-help() {
+    cat << 'EOF'
+
+╔═════════════════════════════════════════════════════════════════════════╗
+║           UNIFIED FUNCTION ENTRY POINTS - Quick Reference              ║
+╚═════════════════════════════════════════════════════════════════════════╝
+
+KEYBINDINGS (Type with keyboard):
+  Alt+N            Jump to directory (fuzzy search)
+  Alt+S            Grep and edit files
+  Alt+H            Recent commands in current directory
+
+Or use aliases / type commands:
+  n                Same as Alt+N
+  s                Same as Alt+S
+  h                Same as Alt+H
+
+NAVIGATION - n [option] [args]
+  n                Jump to directory (fuzzy search)
+  n j pattern      Autojump to frequently visited dir
+  n k pattern      Zoxide - smart directory jump
+  n p              Go to parent directory
+  n r              Jump to recent directory
+
+SEARCH/EDIT - s [option] [pattern]
+  s                Grep and edit files (default)
+  s pattern        Search for pattern and edit matching files
+  s v command      Edit command source code
+  s r pattern      Search recent commands by pattern
+  s f              Most frequently used files
+  s a pattern      Search all file types
+
+HISTORY - h [option]
+  h                Recent commands in current directory
+  h g              Recent git/dotfile commands
+  h c              Commands in current directory
+  h f              Most frequently used commands
+  h x              Search and execute (Ctrl+E to edit first)
+
+NATIVE TOOLS (Keep using these):
+  vim/nvim         Edit files
+  git              Version control
+  dot              Dotfile management
+  cd               Directory change
+  ls               List files
+
+═════════════════════════════════════════════════════════════════════════
+
+QUICK REFERENCE:
+  Want to jump dirs?    → Alt+N       (or n j, n k, n p)
+  Want to find & edit?  → Alt+S       (or s pattern)
+  Want to re-run cmd?   → Alt+H       (or h g, h f, h x)
+
+Type 'hfuncs' to see this again
+═════════════════════════════════════════════════════════════════════════
+EOF
+}
+
+alias hfuncs='fzf-functions-help'
+
 alias znix="module load nix && nix-shell --command zsh"
 
 alias an="archlinux-nix"

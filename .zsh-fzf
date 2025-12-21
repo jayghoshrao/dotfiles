@@ -22,6 +22,135 @@ ZSH_CACHE_DIR=~/.cache
 
 # Common fzf preview command
 FZF_PREVIEW_CMD='scope.sh {q} {1}'
+
+# ============================================================================
+# UNIFIED ENTRY POINTS - Consolidated navigation and search functions
+# ============================================================================
+
+# nav: Unified navigation entry point
+# Usage: nav [option] [args]
+# Options: (empty), j, k, p, locate
+nav() {
+    case "$1" in
+        "")
+            # Default: fuzzy jump in home directory
+            fj
+            ;;
+        "j"|"jump")
+            # Autojump - remembers frequently visited dirs
+            j "${@:2}"
+            ;;
+        "k"|"zoxide")
+            # Zoxide - modern directory jumper
+            k "${@:2}"
+            ;;
+        "p"|"parent")
+            # Go to parent directory interactively
+            dp
+            ;;
+        "locate"|"find")
+            # Find files in home directory
+            fj "$@"
+            ;;
+        "recent"|"r")
+            # Jump to recently accessed directory
+            cd "$(autojump -s | awk '{$1=""; print substr($0,2)}' | fzf --height 40% --tac)"
+            ;;
+        *)
+            # Unknown option, treat as pattern for fj
+            fj "$@"
+            ;;
+    esac
+}
+
+# search: Unified search and edit entry point
+# Usage: search [option] [pattern]
+# Options: (empty/grep), vim, all, git
+search() {
+    case "$1" in
+        "")
+            # Default: grep and edit in current directory
+            vg "${@:2}"
+            ;;
+        "vim"|"v")
+            # Edit command source
+            vimw "$2"
+            ;;
+        "recent"|"r")
+            # Search recent commands by pattern
+            local pattern="${2:-.}"
+            fc -rl 1 | grep "$pattern" | \
+                awk '{$1=""; print substr($0,2)}' | \
+                fzf --height 40% --reverse --preview "echo {}"
+            ;;
+        "config"|"c")
+            # Search config files
+            vg --type-list | grep -i config
+            ;;
+        "all"|"a")
+            # Search everything (all file types)
+            rg -S --type-list "${@:2}" 2>/dev/null || vg "${@:2}"
+            ;;
+        *)
+            # Unknown option, treat as pattern
+            vg "$@"
+            ;;
+    esac
+}
+
+# hist: Unified history search entry point
+# Usage: hist [option]
+# Options: (empty), git, cwd, freq
+hist() {
+    case "$1" in
+        "")
+            # Default: recent commands
+            fzf-history-cwd
+            ;;
+        "git"|"g")
+            # Git/dotfile commands
+            fc -rl 1 | grep -E '^\s*(git|dot|lazygit|lg)' | \
+                awk '{$1=""; print substr($0,2)}' | \
+                fzf --height 40% --reverse --preview "echo {}"
+            ;;
+        "cwd"|"c")
+            # Commands in current directory
+            fzf-history-cwd
+            ;;
+        "freq"|"f")
+            # Most frequently used commands
+            fc -rl 1 | awk '{$1=""; print substr($0,2)}' | sort | uniq -c | sort -rn | \
+                fzf --height 40% --reverse --preview 'echo "Used {1} times: {2..}"' | \
+                awk '{$1=$2=""; print substr($0,3)}'
+            ;;
+        "exec"|"x")
+            # Search and execute with edit option
+            local cmd=$(fc -rl 1 | awk '{$1=""; print substr($0,2)}' | \
+                fzf --height 40% --reverse \
+                    --expect=ctrl-e \
+                    --bind 'enter:accept,ctrl-e:accept')
+
+            local key=$(head -1 <<< "$cmd")
+            local command=$(tail -1 <<< "$cmd")
+
+            if [[ "$key" == "ctrl-e" ]]; then
+                echo "$command" | $EDITOR -
+            else
+                eval "$command"
+            fi
+            ;;
+        *)
+            fzf-history-cwd
+            ;;
+    esac
+}
+
+# ============================================================================
+# NOTE: hist() consolidates history search
+# Replaces: fzf-history-cwd, git history search, frequent commands
+# Usage: hist, hist g, hist f, hist x
+# ============================================================================
+
 fzf-history-widget-accept() {
   fzf-history-widget
   zle accept-line
