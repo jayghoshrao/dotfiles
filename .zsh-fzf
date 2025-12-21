@@ -100,16 +100,24 @@ fzf-history-cwd() {
 }
 
 # ============================================================================
-# fzf-history-widget-accept: Execute history item and run it immediately
+# fzf-history-widget-accept: Execute history item immediately (Ctrl+X Ctrl+R)
 # ============================================================================
 
 fzf-history-widget-accept() {
-  fzf-history-widget
-  zle accept-line
+    fzf-history-widget
+    zle accept-line
 }
-zle     -N     fzf-history-widget-accept
+zle -N fzf-history-widget-accept
 bindkey '^X^R' fzf-history-widget-accept
-# bindkey '^R' fzf-history-widget
+
+# FZF Ctrl+R options - customize history search behavior
+export FZF_CTRL_R_OPTS="
+    --height=40%
+    --reverse
+    --bind='ctrl-r:toggle-sort'
+    --bind='ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'
+    --header='Ctrl-R: toggle sort | Ctrl-Y: copy command'
+"
 
 if _has rg; then
     export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" -g "!*.o" 2> /dev/null'
