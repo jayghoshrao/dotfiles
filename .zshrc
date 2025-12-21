@@ -524,127 +524,36 @@ alias DD="GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME"
 
 # }}}
 # peek: {{{
-peek()
-{
-    urlregex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
-    DEBUG="OFF"
-    MODE="EDIT"
+# Smart file opener - edit or print based on mime type
+peek() {
+    local mode="edit"
+    [[ "$1" == "-p" || "$1" == "--print" ]] && { mode="print"; shift; }
 
-    POSITIONAL=()
-    while [[ $# -gt 0 ]]
-    do
-        key="$1"
-        case $key in
-            -p|--print)
-                shift # past value
-                MODE="PRINT"
-                ;;
-            -d|--debug)
-                DEBUG="ON"
-                shift # past value
-                ;;
-            *)    # unknown option
-                POSITIONAL+=("$1") # save it in an array for later
-                shift # past argument
-                ;;
+    # Collect files from args or stdin
+    local files=("$@")
+    [[ ${#files[@]} -eq 0 ]] && while IFS= read -r line; do files+=("$line"); done
+
+    for f in "${files[@]}"; do
+        local file=$(realpath "$f" 2>/dev/null) || continue
+        [[ -L "$file" ]] && file=$(readlink -f "$file")
+        local mime=$(file --brief --mime-type "$file" 2>/dev/null)
+
+        case "$mime" in
+            inode/directory)
+                [[ "$mode" == "edit" ]] && builtin cd "$file" || ls "$file" ;;
+            text/*|application/json|inode/x-empty)
+                [[ "$mode" == "edit" ]] && $EDITOR "$file" || cat "$file" ;;
+            application/pdf|text/html)
+                _bg xdg-open "$file" ;;
+            application/octet-stream)
+                [[ "$mode" == "edit" ]] && dex -e "$file" || dex -p "$file" ;;
+            *)
+                if _has urler.sh && [[ "$file" =~ ^https?:// ]]; then
+                    urler.sh "$file"
+                else
+                    _bg xdg-open "$file"
+                fi ;;
         esac
-    done
-    set -- "${POSITIONAL[@]}" # restore positional parameters
-
-
-    if [[ -n "$@" ]]; then
-        FILES="$@"
-    else
-        ## Space separated
-        # read -r FILES
-
-    ## Newline separated, becuase fzf pipes
-    FILES=()
-    while read -r line; do
-        # echo "> $line"
-        FILES+=( "$line" )
-    done
-    fi
-
-    open()
-    {
-        _bg "$@"
-    }
-
-    guiopen()
-    {
-        _bg xdg-open "$@"
-    }
-
-    special()
-    {
-        # FILE="$@"
-        FILE=$(realpath "$@")
-        FILEBASENAME=$(basename "$FILE")
-        [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
-        FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
-
-        if [[ "$FILE" =~ $urlregex ]]; then
-            if _has urler.sh; then
-                urler.sh "$FILE"
-            else
-                guiopen "$FILE"
-            fi
-        else
-            guiopen "$FILE"
-        fi
-
-    }
-
-    driver()
-    {
-        # FILE="$@"
-        FILE=$(realpath "$@")
-        FILEBASENAME=$(basename "$FILE")
-        [[ "$FILEBASENAME" =~ "." ]] && EXT=${FILEBASENAME##*.} || EXT=""
-        FILETYPE="$(file --mime-type "$FILE" | awk -F ': ' '{print $2}')"
-
-        if [[ "$FILETYPE" == "inode/symlink" ]]; then
-            driver "$(readlink -f "$FILE")"
-        fi
-
-        if [[ "$DEBUG" == "ON" ]]; then
-            echo "file=$FILE"
-            echo "filebasename=$FILEBASENAME"
-            echo "ext=$EXT"
-            echo "c[0]=${FILEBASENAME:0:1}"
-            echo "filetype=$FILETYPE"
-            echo "------------------"
-        fi
-
-        if [[ "$MODE" == "EDIT" ]]; then
-            case "$FILETYPE" in
-                "inode/directory"         ) builtin cd "$FILE"            ; return ;;
-                "inode/x-empty"           ) $EDITOR "$FILE"               ; return ;;
-                "application/octet-stream") dex -e "$FILE"                ; return ;;
-                "text/html"               ) guiopen "$FILE"               ; return ;;
-                "application/pdf"         ) guiopen "$FILE"               ; return ;;
-                "application/json"        ) $EDITOR "$FILE"               ; return ;;
-                text/*              ) $EDITOR "$FILE"               ; return ;;
-                *                         ) special "$FILE"               ; return ;;
-            esac
-        elif [[ "$MODE" == "PRINT" ]]; then
-            case "$FILETYPE" in
-                "inode/directory"         ) ls "$FILE"                    ; return ;;
-                "inode/x-empty"           ) cat "$FILE"                   ; return ;;
-                "application/octet-stream") dex -p "$FILE"                ; return ;;
-                "text/html"               ) guiopen "$FILE"               ; return ;;
-                "application/pdf"         ) guiopen "$FILE"               ; return ;;
-                "application/json"        ) cat "$FILE"                   ; return ;;
-                text/*              ) cat "$FILE"                   ; return ;;
-                *                         ) special "$FILE"               ; return ;;
-            esac
-        fi
-
-    }
-
-    for FILE in "${FILES[@]}"; do
-        driver "$FILE"
     done
 }
 # peek: }}}
