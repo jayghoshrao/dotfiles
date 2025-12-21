@@ -634,7 +634,7 @@ _fzf_find_file() {
     zle reset-prompt
 }
 zle -N _fzf_find_file
-bindkey '^[f' _fzf_find_file
+bindkey '^F' _fzf_find_file
 
 # Alt+d: Find and jump to subdirectory, recursively from here
 _fzf_find_dir() {
@@ -690,7 +690,8 @@ fzf-functions-help() {
 
 YOUR CUSTOM KEYBINDINGS FOR NAVIGATION:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Alt+F            Find file, jump to its directory (recursive from cwd)
+  Ctrl+F           Find file, jump to its directory (recursive from cwd)
+  Ctrl+Shift+F     Fuzzy locate from home (fl) - requires CSI u terminal
   Alt+D            Find subdirectory, jump to it (recursive from cwd)
   Alt+R            Jump to git root (silent if not in git repo)
   Alt+P            Fuzzy pick parent directory and jump
@@ -701,9 +702,8 @@ ZSH DEFAULT KEYBINDINGS - NAVIGATION:
   Ctrl+A           Go to beginning of line
   Ctrl+E           Go to end of line
   Ctrl+B           Go back one character
-  Ctrl+F           Go forward one character
-  Alt+B            Go back one word
   Alt+F            Go forward one word
+  Alt+B            Go back one word
   Alt+Left         Go back one word
   Alt+Right        Go forward one word
   Ctrl+Left        Go back one word (vim mode)
@@ -756,8 +756,8 @@ COMMAND LINE ALIASES (Type these):
 
 CUSTOM KEYBINDINGS - DETAILED EXAMPLES:
 
-Alt+F - Find and jump to file's directory
-  In ~/project: Alt+F → select src/main.py → jumps to src/
+Ctrl+F - Find and jump to file's directory
+  In ~/project: Ctrl+F → select src/main.py → jumps to src/
 
 Alt+D - Find and jump to subdirectory
   In ~/project: Alt+D → select tests/unit/ → jumps to tests/unit/

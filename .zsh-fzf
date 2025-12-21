@@ -182,9 +182,7 @@ fzf_locate()
 
 alias fl="fzf_locate"
 zle -N fzf_locate
-bindkey '^F' fzf_locate
-# bindkey -M viins '^F' fzf_locate
-# bindkey -M vicmd '^F' fzf_locate
+bindkey '^[[70;6u' fzf_locate  # Ctrl+Shift+F (requires terminal CSI u support)
 
 # }}}
 
