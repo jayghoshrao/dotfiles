@@ -107,6 +107,20 @@ fzf-history-cwd() {
 }
 
 # ============================================================================
+# Custom fzf-history-widget: History search without command numbers
+# ============================================================================
+
+fzf-history-widget() {
+    local selected
+    selected=$(fc -rl 1 | awk '{$1=""; print substr($0,2)}' | \
+        FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --height 40% --reverse" \
+        fzf --query "$LBUFFER")
+    [[ -n "$selected" ]] && LBUFFER="$selected"
+    zle redisplay
+}
+zle -N fzf-history-widget
+
+# ============================================================================
 # fzf-history-widget-accept: Execute history item and run it immediately
 # ============================================================================
 
@@ -115,8 +129,8 @@ fzf-history-widget-accept() {
   zle accept-line
 }
 zle     -N     fzf-history-widget-accept
+bindkey '^R' fzf-history-widget
 bindkey '^X^R' fzf-history-widget-accept
-# bindkey '^R' fzf-history-widget
 
 if [[ -x "$(command -v rg)" ]]; then 
     export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" -g "!*.o" 2> /dev/null'
