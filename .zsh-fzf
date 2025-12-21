@@ -11,13 +11,6 @@
 #
 #  ~/.zshrc
 #  ~/.zsh-local
-#
-#
-#  TODO: Ideas on how an ideal fzf-based shell should work for me
-#       - DONE: fl: fuzzy locate any file/folder. File => open with peek, folder => cd
-#       - TODO: fh: same as fuzzy locate, but in the current directory
-#       - No app should require an argument, just like fl works
-
 ZSH_CACHE_DIR=~/.cache
 
 # Common fzf preview command
@@ -118,9 +111,9 @@ zle     -N     fzf-history-widget-accept
 bindkey '^X^R' fzf-history-widget-accept
 # bindkey '^R' fzf-history-widget
 
-if [[ -x "$(command -v rg)" ]]; then 
+if _has rg; then
     export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" -g "!*.o" 2> /dev/null'
-elif [[ -x "$(command -v fd)" ]]; then 
+elif _has fd; then
     export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git'
 else
     export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
@@ -131,9 +124,24 @@ export FZF_CTRL_T_COMMAND='fd -t f'
 export FZF_ALT_C_COMMAND='fd -t d'
 export FZF_ALT_C_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
 export FZF_CTRL_T_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
-export FZF_DEFAULT_OPTS="--preview-window wrap --bind 'ctrl-v:toggle,ctrl-s:toggle+down,ctrl-n:down,ctrl-p:up,ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@,ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@','ctrl-r:execute@frifle {}@','alt-j:half-page-down','alt-k:half-page-up','alt-v:execute@vipe <<< {}@','ctrl-f:jump' --color='bg+:#5E81AC,prompt:#EBCB8B' --reverse"
+export FZF_DEFAULT_OPTS="
+    --preview-window wrap
+    --reverse
+    --color='bg+:#5E81AC,prompt:#EBCB8B'
+    --bind 'ctrl-v:toggle'
+    --bind 'ctrl-s:toggle+down'
+    --bind 'ctrl-n:down'
+    --bind 'ctrl-p:up'
+    --bind 'ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@'
+    --bind 'ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@'
+    --bind 'ctrl-r:execute@frifle {}@'
+    --bind 'alt-j:half-page-down'
+    --bind 'alt-k:half-page-up'
+    --bind 'alt-v:execute@vipe <<< {}@'
+    --bind 'ctrl-f:jump'
+"
 
-if command -v fd &>/dev/null; then
+if _has fd; then
     # Use fd (https://github.com/sharkdp/fd) instead of the default find
     # command for listing path candidates.
     # - The first argument to the function ($1) is the base path to start traversal
@@ -180,13 +188,11 @@ fj() {
   # file="$(locate -Ai -0 $@ | grep -z -vE '~$' | grep -z -vE '.local/share/nvim|gutentags_cache_dir|.cache/*|.cpan' | fzf --read0 -0 -1)"
   file=$(fd --base-directory=$HOME -L "$@" . | fuzscope --base-directory "$HOME")
 
-  if [[ -n $file ]]
-  then
-     if [[ -d $file ]]
-     then
-        cd -- $file
+  if [[ -n "$file" ]]; then
+     if [[ -d "$file" ]]; then
+        cd -- "$file"
      else
-        cd -- ${file:h}
+        cd -- "${file:h}"
      fi
   fi
 }
@@ -196,34 +202,17 @@ fj() {
 # vg: persistent fuzzy grep-edit via rg/ag/grep {{{
 vg() {
     if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
-    if command -v rg &>/dev/null; then
+    if _has rg; then
         rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' \
             --preview 'rg --pretty --with-filename --context 3 . {1} | sed -n "$((({2}-3>0?{2}-3:1)),({2}+3))p"' \
             --bind "enter:execute: $EDITOR {1} +{2}"
-    elif command -v ag &>/dev/null; then
+    elif _has ag; then
         ag -S --nobreak --noheading "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
     else
         grep -irEnH "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
     fi
 }
 
-#}}}
-
-# dj - jump to selected directory {{{
-dj() {
-  local dir
-  dir=$(find ${1:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m) &&
-  cd "$dir"
-}
-
-#}}}
-
-# dja - including hidden directories {{{
-dja() {
-  local dir
-  dir=$(find ${1:-.} -type d 2> /dev/null | fzf +m) && cd "$dir"
-}
 #}}}
 
 # dp - cd to selected parent directory {{{
@@ -239,33 +228,6 @@ dp() {
   }
   local DIR=$(get_parent_dirs $(realpath "${1:-$PWD}") | fzf-tmux )
   cd "$DIR"
-}
-#}}}
-
-# fs: fuzzy subdir - cd into the directory of the selected file {{{
-fs() {
-   local file
-   file=$(fd | fzf +m -q "$1")
-
-  if [[ -n $file ]]
-  then
-     if [[ -d $file ]]
-     then
-        cd -- $file
-     else
-        cd -- ${file:h}
-     fi
-  fi
-}
-#}}}
-
-# fe: fuzzy edit- edit selected file
-fe() {
-   local file
-   file=$(fd | fzf +m -q "$1")
-   [ -f "$file" ] || return
-
-   "$EDITOR" "$file"
 }
 #}}}
 
@@ -311,29 +273,29 @@ fjrnl() {
 
 # Autojump: {{{
 j() {
-    if ! command -v autojump &>/dev/null; then
+    if ! _has autojump; then
         fj
         return
     fi
 
     if [[ "$#" -ne 0 ]]; then
-        cd $(autojump "$@")
+        cd "$(autojump "$@")"
         return
     fi
-    cd "$(autojump -s | awk '/_____/{exit} {$1=""; print substr($0,2)}' |  fzf --height 40% --tac)"
+    cd "$(autojump -s | awk '/_____/{exit} {$1=""; print substr($0,2)}' | fzf --height 40% --tac)"
 }
 
 k() {
-    if ! command -v zoxide &>/dev/null; then
+    if ! _has zoxide; then
         fj
         return
     fi
 
     if [[ "$#" -ne 0 ]]; then
-        cd $(__zoxide_z "$@")
+        cd "$(__zoxide_z "$@")"
         return
     fi
-    cd "$(zoxide query --list --score | awk '{$1=""; print substr($0,2)}' |  fzf --height 40% --tac)"
+    cd "$(zoxide query --list --score | awk '{$1=""; print substr($0,2)}' | fzf --height 40% --tac)"
 }
 #}}}
 
@@ -427,9 +389,9 @@ cd() {
         local key="${lines[2]}"
         local fname="${lines[3]}"
 
-        if [[ -f "$fname" ]] && command -v filer &>/dev/null; then
+        if [[ -f "$fname" ]] && _has filer; then
             printf '%s\n' "$query" "$fname" | filer
-        elif [[ -f "$query" ]] && command -v filer &>/dev/null; then
+        elif [[ -f "$query" ]] && _has filer; then
             printf '%s\n' "$query" "$fname" | filer
         elif [[ -d "$fname" ]]; then
             builtin cd "$fname" &>/dev/null
@@ -472,17 +434,6 @@ fzf_locate_config() {
 alias flc="fzf_locate_config"
 
 # }}}
-
-# function fuzscope()
-# {
-#     fzf "$@"\
-#         -0 -1 -e -d "\t" \
-#         --preview="scope.sh {q} {1} | bat" \
-#         --preview-window up:75% \
-#         --expect=ctrl-e,ctrl-b \
-#         --bind 'ctrl-space:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@,ctrl-y:execute@echo {1} | xclip -i -selection clipboard@,ctrl-x:execute@nohup xdg-open {1} >/dev/null 2>&1 & disown@'
-# }
-
 
 fzf_copy() {
     # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
