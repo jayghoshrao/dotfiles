@@ -116,7 +116,8 @@ export FZF_CTRL_R_OPTS="
     --reverse
     --bind='ctrl-r:toggle-sort'
     --bind='ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'
-    --header='Ctrl-R: toggle sort | Ctrl-Y: copy command'
+    --bind='alt-v:become(echo {2..} | vipe)'
+    --header='Ctrl-R: toggle sort | Ctrl-Y: copy | Alt-V: edit'
 "
 
 if _has rg; then
