@@ -146,6 +146,14 @@ hist() {
 }
 
 # ============================================================================
+# History helper function - search commands in current directory
+# ============================================================================
+fzf-history-cwd() {
+    fc -rl 1 | awk '{$1=""; print substr($0,2)}' | \
+        fzf --height 40% --reverse --preview "echo {}"
+}
+
+# ============================================================================
 # NOTE: hist() consolidates history search
 # Replaces: fzf-history-cwd, git history search, frequent commands
 # Usage: hist, hist g, hist f, hist x
