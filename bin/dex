@@ -108,9 +108,10 @@ elif [[ "$MODE" == "UNLOCK" ]]; then
 elif [[ "$MODE" == "EDIT" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
         # Uses lockfiles to ensure file is not multiply modified
+        # NOTE: 9>&- closes fd 9 for child processes to prevent editors from inheriting the lock
         ( flock -n 9 || die "Failure to acquire lockfile: $LOCKFILE."
         echo "Acquiring lock..."
-        data=$(gpg -dq "$FILENAME" | vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+        data=$(gpg -dq "$FILENAME" 9>&- | vipe --suffix "$VIPE_SUFFIX" 9>&-) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
         unset data
         echo "Releasing lock..."
         ) 9>"$LOCKFILE"
@@ -121,8 +122,9 @@ elif [[ "$MODE" == "EDIT" ]]; then
         if ${ENCRYPT_NONEXIST}; then
             # if file doesn't exist
             # Uses lockfiles to ensure file is not multiply modified
+            # NOTE: 9>&- closes fd 9 for child processes to prevent editors from inheriting the lock
             ( flock -n 9 || exit 1
-            data=$(vipe --suffix "$VIPE_SUFFIX") && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
+            data=$(vipe --suffix "$VIPE_SUFFIX" 9>&-) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
             unset data
             ) 9>"$LOCKFILE"
         else
