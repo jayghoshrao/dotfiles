@@ -761,7 +761,9 @@ bindkey '^[p' _fuzzy_parent
 # Alt+s: Ask for a string, then run vg string
 _vg_prompt() {
     local search_term
-    read -p "Search for: " search_term
+    zle reset-prompt
+    print -n "Search for: "
+    read search_term
     if [[ -n "$search_term" ]]; then
         vg "$search_term"
     fi
