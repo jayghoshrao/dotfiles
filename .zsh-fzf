@@ -58,25 +58,19 @@ if [[ -x "$(command -v fd)" ]]; then
 fi
 
 # fl - fzf-locate: {{{
-autoload fzf_locate
-function fzf_locate()
+fzf_locate()
 {
-    # [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+    # Fuzzy locate any file/folder in home directory
+    # Pipes fd output to fuzscope for efficient filtering and preview
+    local OUT FILE
 
-    # fd . ~ | fuzscope "$QUERY" | filer
-    # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
+    OUT=$(fd -L --base-directory="$HOME" "$@" . | fuzscope --base-directory "$HOME")
 
-    # OUT=$(locate home media | fuzscope "$QUERY" ) 
-    # OUT=$(fd "$@" . ~ | fuzscope ) 
-
-    OUT=$(fd -L --base-directory=$HOME "$@" . | fuzscope --base-directory "$HOME") 
-
-    if [[ -n "$OUT" ]]; then 
-        FILE=$(echo -e "$OUT" | tail -1)
-        # echo "$FILE"
+    if [[ -n "$OUT" ]]; then
+        # Get last selected line (handles multiple selections from peek)
+        FILE="${OUT##*$'\n'}"
         [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | peek
     fi
-
 }
 
 alias fl="fzf_locate"
@@ -257,7 +251,8 @@ k() {
 # ALT-I - Paste the selected entry from locate output into the command line
 fzf-locate-widget() {
   local selected
-  if selected=$(locate / | fzf -q "$LBUFFER"); then
+  # Use fd instead of locate for better performance
+  if selected=$(fd . / --hidden --follow --type f 2>/dev/null | fzf -q "$LBUFFER"); then
     LBUFFER=$selected
   fi
   zle redisplay
@@ -325,28 +320,31 @@ function fsend() {
 # cd-files: {{{
 function cd() {
     if [[ "$#" != 0 ]]; then
-        builtin cd "$@";
+        builtin cd "$@"
         return
     fi
+
     while true; do
-        # local lsd=$(echo ".." && ls -pL | grep '/$' | sed 's;/$;;')
-        # local lsd=$(ls -pLa --group-directories-first | tail -n+2)
+        # Build listing once before fzf, not inside the loop
         local lsd=$(echo ".." && ls -pL --group-directories-first --color=never)
-        local sel="$(printf '%s\n' "${lsd[@]}" | fzf --reverse --print-query --expect=ctrl-e --bind="ctrl-y:execute@echo ${PWD}/{} | xclip -i -selection clipboard@" --preview 'scope.sh {q} {}')"
-        [ -z "$sel" ] && return 0
-        # TODO: Stop dependence on sed, write pure sh/bash
-        query="$(echo -e "$sel" | sed -n 1p)"
-        filerform="$(echo -e "$sel" | sed -n '2,3p')"
-        filerformquery="$(echo -e "$sel" | sed -n -e '1p' -e '3p')"
-        fname="$(echo -e "$sel" | sed -n 3p)"
-        if [[ -f "$fname" ]] && [ -n $(command -v filer) ]; then 
-            echo -e "$filerform" | filer
-        elif [[ -f "$query" ]] && [ -n $(command -v filer) ]; then 
-            echo -e "$filerformquery" | filer
-        elif [[ -d "$fname" ]]; then 
-            builtin cd "$fname" &> /dev/null
+        local sel="$(printf '%s\n' "$lsd" | fzf --reverse --print-query --expect=ctrl-e --bind="ctrl-y:execute@echo ${PWD}/{} | xclip -i -selection clipboard@" --preview 'scope.sh {q} {}')"
+
+        [[ -z "$sel" ]] && return 0
+
+        # Parse fzf output using parameter expansion instead of sed for efficiency
+        local lines=("${(@f)sel}")
+        local query="${lines[1]}"
+        local key="${lines[2]}"
+        local fname="${lines[3]}"
+
+        if [[ -f "$fname" ]] && command -v filer &>/dev/null; then
+            printf '%s\n' "$query" "$fname" | filer
+        elif [[ -f "$query" ]] && command -v filer &>/dev/null; then
+            printf '%s\n' "$query" "$fname" | filer
+        elif [[ -d "$fname" ]]; then
+            builtin cd "$fname" &>/dev/null
         elif [[ -d "$query" ]]; then
-            builtin cd "$query" &> /dev/null
+            builtin cd "$query" &>/dev/null
         fi
     done
 }

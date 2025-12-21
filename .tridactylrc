@@ -49,7 +49,6 @@ set searchurls.osm https://www.openstreetmap.org/search?query=
 set searchurls.mdn https://developer.mozilla.org/en-US/search?q=
 set searchurls.gentoo_wiki https://wiki.gentoo.org/index.php?title=Special%3ASearch&profile=default&fulltext=Search&search=
 set searchurls.qwant https://www.qwant.com/?q=
-set searchurls.mso https://rwth.zoom.us/j/97725900365?pwd=QnRFbkI1YnBSN0xPSExSb2VYb2lwdz09
 set searchurls.gl http://www.google.com/search?q=%s&btnI=I%27m+Feeling+Lucky
 set searchurls.mar https://search.marginalia.nu/search?query=
 set searchurls.gh https://github.com/search?q=%s
