@@ -777,54 +777,92 @@ fzf-functions-help() {
     cat << 'EOF'
 
 ╔═════════════════════════════════════════════════════════════════════════╗
-║                    CUSTOM KEYBINDINGS - Quick Reference                ║
+║          NAVIGATION & EDITING KEYBINDS - Complete Reference            ║
 ╚═════════════════════════════════════════════════════════════════════════╝
 
-KEYBINDINGS (Type with keyboard):
-  Alt+F            Find file, jump to its directory recursively
-  Alt+D            Find subdirectory, jump to it recursively
-  Alt+R            Jump to git root (does nothing if not in git repo)
-  Alt+P            Fuzzy choose parent directory and jump
+YOUR CUSTOM KEYBINDINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Alt+F            Find file, jump to its directory (recursive from cwd)
+  Alt+D            Find subdirectory, jump to it (recursive from cwd)
+  Alt+R            Jump to git root (silent if not in git repo)
+  Alt+P            Fuzzy pick parent directory and jump
   Alt+S            Prompt for search string, then grep and edit
 
+ZSH DEFAULT KEYBINDINGS - NAVIGATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl+A           Go to beginning of line
+  Ctrl+E           Go to end of line
+  Ctrl+B           Go back one character
+  Ctrl+F           Go forward one character
+  Alt+B            Go back one word
+  Alt+F            Go forward one word
+  Alt+Left         Go back one word
+  Alt+Right        Go forward one word
+  Ctrl+Left        Go back one word (vim mode)
+  Ctrl+Right       Go forward one word (vim mode)
+
+ZSH DEFAULT KEYBINDINGS - EDITING/DELETION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl+H           Delete character before cursor (backspace)
+  Ctrl+D           Delete character at cursor
+  Ctrl+K           Kill (delete) from cursor to end of line
+  Ctrl+U           Kill from start of line to cursor
+  Ctrl+W           Kill previous word
+  Alt+D            Kill next word
+  Ctrl+Y           Yank (paste) killed text
+  Ctrl+X Ctrl+U    Undo last change
+
+ZSH DEFAULT KEYBINDINGS - HISTORY & SEARCH:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl+P           Previous command (history search)
+  Ctrl+N           Next command (history search)
+  Ctrl+R           Reverse history search (your custom fuzzy search)
+  Ctrl+X Ctrl+R    History search with fuzzy accept
+  Page-Up          Scroll up in history
+  Page-Down        Scroll down in history
+
+YOUR VIM MODE KEYBINDINGS (ESC to enter):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ESC              Enter vim command mode
+  v                Edit current command in $EDITOR (from normal mode)
+  H                Go to beginning of line (normal mode)
+  L                Go to end of line (normal mode)
+  Space            Accept autosuggest (insert mode)
+
+OTHER USEFUL KEYBINDINGS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl+L           Clear screen
+  Ctrl+Z           Suspend (foreground with fg command)
+  Tab              Auto-complete
+  Shift+Tab        Reverse auto-complete
+  Ctrl+F           Fuzzy locate widget (find files)
+  Ctrl+O           Fuzzy locate widget (paste path to command line)
+
+COMMAND LINE ALIASES (Type these):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  n                Navigate to directory
+  s                Search and edit
+  h                History search
+  cd               Interactive directory picker (no args)
+
 ═════════════════════════════════════════════════════════════════════════
 
-DETAILED USAGE:
+CUSTOM KEYBINDINGS - DETAILED EXAMPLES:
 
 Alt+F - Find and jump to file's directory
-  • Searches all files recursively from current directory
-  • Shows fuzzy finder
-  • Jumps to containing directory when selected
-  • Example: In ~/project, Alt+F to find src/main.py → jumps to src/
+  In ~/project: Alt+F → select src/main.py → jumps to src/
 
 Alt+D - Find and jump to subdirectory
-  • Searches all directories recursively from current directory
-  • Shows fuzzy finder
-  • Jumps to selected directory
-  • Example: In ~/project, Alt+D to find and jump to tests/unit/
+  In ~/project: Alt+D → select tests/unit/ → jumps to tests/unit/
 
 Alt+R - Go to git root
-  • Goes to root of current git repository
-  • Does nothing if not in a git repository
-  • Example: Anywhere in ~/project/src/ → jumps to ~/project/
+  In ~/repo/src/components: Alt+R → jumps to ~/repo/
 
-Alt+P - Fuzzy parent directory
-  • Shows interactive list of parent directories
-  • Select one to jump there
-  • Example: In ~/a/b/c/d/ → select and jump to ~/a/b/
+Alt+P - Fuzzy pick parent directory
+  In ~/a/b/c/d: Alt+P → select ~/a/b/ → jumps there
 
 Alt+S - Search and edit
-  • Prompts: "Search for: _"
-  • Runs vg with your search string
-  • Finds and opens matching files in editor
-  • Example: Alt+S → "Search for: error" → finds and edits error matches
-
-═════════════════════════════════════════════════════════════════════════
-
-ALIASES (Type these):
-  n                Jump to directory (fuzzy search)
-  s                Grep and edit files
-  h                Recent commands
+  Alt+S → "Search for: bug" → opens files containing "bug" in editor
 
 ═════════════════════════════════════════════════════════════════════════
 EOF
