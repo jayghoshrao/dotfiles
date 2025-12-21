@@ -121,7 +121,7 @@ bindkey -M vicmd 'v' edit-command-line
 bindkey '  ' autosuggest-accept
 bindkey '^s' vi-kill-line
 bindkey '^v' vi-backward-blank-word
-bindkey '^e' vi-forward-blank-word-end
+bindkey '^e' vi-forward-blank-word
 # bindkey '^p' up-history
 # bindkey '^n' down-history
 bindkey '^p' history-search-backward # only searches for typed commands, not full history
@@ -163,7 +163,7 @@ setopt PUSHD_TO_HOME        # Push to home directory when no argument is given.
 setopt CDABLE_VARS          # Change directory to a path stored in a variable.
 setopt MULTIOS              # Write to multiple descriptors.
 setopt EXTENDED_GLOB        # Use extended globbing syntax.
-unsetopt GLOB_DOTS
+unsetopt GLOB_DOTS          # Don't let globs capture dotfiles
 unsetopt AUTO_NAME_DIRS     # Don't add variable-stored paths to ~ list
 
 # ## Jobs
@@ -604,12 +604,6 @@ vimfu() {
 
 alias F="sudo -E nnn -dH" # sudo file browser
 
-alias ma="mamba"
-alias maa="mamba activate"
-alias mad="mamba deactivate"
-alias mai="mamba install"
-alias mae="mamba env"
-
 alias lg="lazygit"
 alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
 alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
@@ -617,7 +611,7 @@ alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
 # ============================================================================
 # UNIFIED ENTRY POINT ALIASES & KEYBINDINGS
 # ============================================================================
-alias n='nav'          # Quick navigation (n, n j, n k, n p, n r)
+# alias n='nav'          # Quick navigation (n, n j, n k, n p, n r)
 alias s='search'       # Quick search/edit (s, s pattern, s v, s f, s x)
 
 # ============================================================================
@@ -782,9 +776,9 @@ EOF
 
 alias hfuncs='fzf-functions-help'
 
-alias znix="module load nix && nix-shell --command zsh"
+# alias znix="module load nix && nix-shell --command zsh"
+# alias an="archlinux-nix"
 
-alias an="archlinux-nix"
 nsd() { nix show-derivation $(nix path-info --derivation "nixpkgs#$1") }
 nsp() { storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath'); echo $storepath }
 ned() { nix edit 'nixpkgs#'$1 }
