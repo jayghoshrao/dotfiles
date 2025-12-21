@@ -712,96 +712,118 @@ alias n='nav'          # Quick navigation (n, n j, n k, n p, n r)
 alias s='search'       # Quick search/edit (s, s pattern, s v, s f, s x)
 alias h='hist'         # Quick history (h, h g, h f, h x)
 
-# Create ZLE widgets for keybindings
-_nav_widget() { zle reset-prompt; nav; }
-_search_widget() { zle reset-prompt; search; }
-_hist_widget() { zle reset-prompt; hist; }
+# ============================================================================
+# CUSTOM KEYBINDING WIDGETS
+# ============================================================================
 
-zle -N _nav_widget
-zle -N _search_widget
-zle -N _hist_widget
+# Alt+f: Find and jump to subdirectory containing file, recursively from here
+_fzf_find_file() {
+    local file
+    file=$(fd --type f | fzf +m -q "$1")
+    if [[ -n "$file" ]]; then
+        builtin cd -- "${file%/*}"  # cd to directory containing the file
+    fi
+    zle reset-prompt
+}
+zle -N _fzf_find_file
+bindkey '^[f' _fzf_find_file
 
-# Easy keybindings (choose one set below based on preference)
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Alt+d: Find and jump to subdirectory, recursively from here
+_fzf_find_dir() {
+    local dir
+    dir=$(find . -type d 2>/dev/null | fzf +m)
+    if [[ -n "$dir" ]]; then
+        builtin cd -- "$dir"
+    fi
+    zle reset-prompt
+}
+zle -N _fzf_find_dir
+bindkey '^[d' _fzf_find_dir
 
-# OPTION 1: Alt Keybindings (RECOMMENDED - less conflicts)
-# Easy to remember: Alt + first letter of function
-bindkey '^[n' _nav_widget         # Alt+N → Navigate
-bindkey '^[s' _search_widget       # Alt+S → Search
-bindkey '^[h' _hist_widget         # Alt+H → History
+# Alt+r: Go to git root, else do nothing
+_git_root() {
+    local root
+    root=$(git rev-parse --show-toplevel 2>/dev/null) || { zle reset-prompt; return; }
+    builtin cd -- "$root"
+    zle reset-prompt
+}
+zle -N _git_root
+bindkey '^[r' _git_root
 
-# OPTION 2: Ctrl Keybindings (uncomment to use instead)
-# Less intuitive but faster to type
-# bindkey '^N' _nav_widget          # Ctrl+N → Navigate
-# bindkey '^S' _search_widget        # Ctrl+S → Search (might conflict with flow control)
-# bindkey '^H' _hist_widget          # Ctrl+H → History (might conflict with backspace)
+# Alt+p: Fuzzy cd parent (uses your dp function)
+_fuzzy_parent() {
+    dp
+    zle reset-prompt
+}
+zle -N _fuzzy_parent
+bindkey '^[p' _fuzzy_parent
 
-# OPTION 3: Custom Keybindings (uncomment and modify as needed)
-# bindkey '^[j' _nav_widget         # Alt+J → Jump (nav)
-# bindkey '^[f' _search_widget      # Alt+F → Find (search)
-# bindkey '^[;' _hist_widget        # Alt+; → History
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# RECOMMENDED SETUP:
-# Use Alt+N, Alt+S, Alt+H (OPTION 1 - already enabled above)
-# Easy to remember, no conflicts, works in vim mode
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Alt+s: Ask for a string, then run vg string
+_vg_prompt() {
+    local search_term
+    read -p "Search for: " search_term
+    if [[ -n "$search_term" ]]; then
+        vg "$search_term"
+    fi
+    zle reset-prompt
+}
+zle -N _vg_prompt
+bindkey '^[s' _vg_prompt
 
 # Show available functions
 fzf-functions-help() {
     cat << 'EOF'
 
 ╔═════════════════════════════════════════════════════════════════════════╗
-║           UNIFIED FUNCTION ENTRY POINTS - Quick Reference              ║
+║                    CUSTOM KEYBINDINGS - Quick Reference                ║
 ╚═════════════════════════════════════════════════════════════════════════╝
 
 KEYBINDINGS (Type with keyboard):
-  Alt+N            Jump to directory (fuzzy search)
-  Alt+S            Grep and edit files
-  Alt+H            Recent commands in current directory
-
-Or use aliases / type commands:
-  n                Same as Alt+N
-  s                Same as Alt+S
-  h                Same as Alt+H
-
-NAVIGATION - n [option] [args]
-  n                Jump to directory (fuzzy search)
-  n j pattern      Autojump to frequently visited dir
-  n k pattern      Zoxide - smart directory jump
-  n p              Go to parent directory
-  n r              Jump to recent directory
-
-SEARCH/EDIT - s [option] [pattern]
-  s                Grep and edit files (default)
-  s pattern        Search for pattern and edit matching files
-  s v command      Edit command source code
-  s r pattern      Search recent commands by pattern
-  s f              Most frequently used files
-  s a pattern      Search all file types
-
-HISTORY - h [option]
-  h                Recent commands in current directory
-  h g              Recent git/dotfile commands
-  h c              Commands in current directory
-  h f              Most frequently used commands
-  h x              Search and execute (Ctrl+E to edit first)
-
-NATIVE TOOLS (Keep using these):
-  vim/nvim         Edit files
-  git              Version control
-  dot              Dotfile management
-  cd               Directory change
-  ls               List files
+  Alt+F            Find file, jump to its directory recursively
+  Alt+D            Find subdirectory, jump to it recursively
+  Alt+R            Jump to git root (does nothing if not in git repo)
+  Alt+P            Fuzzy choose parent directory and jump
+  Alt+S            Prompt for search string, then grep and edit
 
 ═════════════════════════════════════════════════════════════════════════
 
-QUICK REFERENCE:
-  Want to jump dirs?    → Alt+N       (or n j, n k, n p)
-  Want to find & edit?  → Alt+S       (or s pattern)
-  Want to re-run cmd?   → Alt+H       (or h g, h f, h x)
+DETAILED USAGE:
 
-Type 'hfuncs' to see this again
+Alt+F - Find and jump to file's directory
+  • Searches all files recursively from current directory
+  • Shows fuzzy finder
+  • Jumps to containing directory when selected
+  • Example: In ~/project, Alt+F to find src/main.py → jumps to src/
+
+Alt+D - Find and jump to subdirectory
+  • Searches all directories recursively from current directory
+  • Shows fuzzy finder
+  • Jumps to selected directory
+  • Example: In ~/project, Alt+D to find and jump to tests/unit/
+
+Alt+R - Go to git root
+  • Goes to root of current git repository
+  • Does nothing if not in a git repository
+  • Example: Anywhere in ~/project/src/ → jumps to ~/project/
+
+Alt+P - Fuzzy parent directory
+  • Shows interactive list of parent directories
+  • Select one to jump there
+  • Example: In ~/a/b/c/d/ → select and jump to ~/a/b/
+
+Alt+S - Search and edit
+  • Prompts: "Search for: _"
+  • Runs vg with your search string
+  • Finds and opens matching files in editor
+  • Example: Alt+S → "Search for: error" → finds and edits error matches
+
+═════════════════════════════════════════════════════════════════════════
+
+ALIASES (Type these):
+  n                Jump to directory (fuzzy search)
+  s                Grep and edit files
+  h                Recent commands
+
 ═════════════════════════════════════════════════════════════════════════
 EOF
 }
