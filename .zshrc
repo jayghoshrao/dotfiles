@@ -375,7 +375,10 @@ cht() { curl cht.sh/$1 }
 fgkey() { fg }
 zle -N fgkey
 bindkey '^Z' fgkey
-vimw() { vim $(readlink -f $(which "$@")) }
+vimw() {
+    local cmd=$(which "$1") || { echo "Command not found: $1" >&2; return 1; }
+    vim $(readlink -f "$cmd")
+}
 vq() { nvim -q <( rg -S --vimgrep "$@" ) }
 mkc() { mkdir "$1" && cd "$1" }
 yp() { echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard }
@@ -448,7 +451,7 @@ ring() {
     time=$(echo $time | tr -d ':')
     time=$time[1,4] ## Move to 'at' format
     # echo $time
-    echo "notify-send --urgency=critical 'Reminder' $@" | at $time
+    echo "notify-send --urgency=critical 'Reminder' $*" | at $time
 }
 # }}}
 
@@ -478,7 +481,8 @@ dotlg() { lazygit --git-dir=$DOTDIR --work-tree=$HOME }
 
 dotf() {
     ## setting the env vars helps vim-fugitive know what's going on
-    [ -n "$@" ] && QUERY="-q $@"
+    local QUERY=""
+    [ $# -gt 0 ] && QUERY="-q $*"
     command git --git-dir=$DOTDIR --work-tree=$HOME ls-tree --full-tree -r HEAD | awk -F'\t' '{print $NF}' | sed "s@^@$HOME/@" | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY | GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME peek
 }
 
@@ -708,7 +712,7 @@ nsd() { nix show-derivation $(nix path-info --derivation "nixpkgs#$1") }
 nsp() { storepath=$(nix eval --raw 'nixpkgs#'$1'.outPath'); echo $storepath }
 ned() { nix edit 'nixpkgs#'$1 }
 
-fml() { module load $(fmod $@) }
+fml() { module load $(fmod "$@") }
 
 ## Use this to trace the libs loaded at runtime
 ## LDTRACE ./main
@@ -733,7 +737,10 @@ ssr() { ssh -O stop "$1"; ssh "$1" }
 rep() { repeat "$1" { echo "${@:2}" } }
 ff() { fuzscope "$@" | peek }
 
-goto() { cd $(dirname $(readlink -f $(which "$1") ) ) }
+goto() {
+    local cmd=$(which "$1") || { echo "Command not found: $1" >&2; return 1; }
+    cd $(dirname $(readlink -f "$cmd"))
+}
 
 alias nvim-sync='nvim --headless "+Lazy! sync" +qa'
 

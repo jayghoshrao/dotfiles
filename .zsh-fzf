@@ -107,14 +107,15 @@ fj() {
 
 # vg: persistent fuzzy grep-edit via rg/ag/grep {{{
 vg() {
-    # TODO: instead of grepping the line in preview, use line number
     if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
     if command -v rg &>/dev/null; then
-        rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' --preview 'rg --ignore-case --pretty --with-filename --context 10 -F '"{3..}"' {1}' --bind "enter:execute: $EDITOR {1} +{2}"
+        rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' \
+            --preview 'rg --pretty --with-filename --context 3 . {1} | sed -n "$((({2}-3>0?{2}-3:1)),({2}+3))p"' \
+            --bind "enter:execute: $EDITOR {1} +{2}"
     elif command -v ag &>/dev/null; then
         ag -S --nobreak --noheading "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
     else
-        grep -irE "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
+        grep -irEnH "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
     fi
 }
 
@@ -215,7 +216,8 @@ fshow_preview() {
 
 # fjrnl: {{{
 fjrnl() {
-    title=$(jrnl --short | fzf --tac --no-sort) && jrnl -on "$(echo $title | cut -c 1-16)" $1
+    local title=$(jrnl --short | fzf --tac --no-sort)
+    [[ -n "$title" ]] && jrnl -on "${title:0:16}" $1
 }
 #}}}
 
@@ -227,10 +229,10 @@ j() {
     fi
 
     if [[ "$#" -ne 0 ]]; then
-        cd $(autojump $@)
+        cd $(autojump "$@")
         return
     fi
-    cd "$(autojump -s | sed '/_____/Q; s/^[0-9,.:]*\s*//' |  fzf --height 40% --tac)"
+    cd "$(autojump -s | awk '/_____/{exit} {$1=""; print substr($0,2)}' |  fzf --height 40% --tac)"
 }
 
 k() {
@@ -240,10 +242,10 @@ k() {
     fi
 
     if [[ "$#" -ne 0 ]]; then
-        cd $(__zoxide_z $@)
+        cd $(__zoxide_z "$@")
         return
     fi
-    cd "$(zoxide query --list --score | sed 's/^\s*[0-9,.:]*\s*//' |  fzf --height 40% --tac)"
+    cd "$(zoxide query --list --score | awk '{$1=""; print substr($0,2)}' |  fzf --height 40% --tac)"
 }
 #}}}
 
@@ -367,7 +369,7 @@ fkill() {
 ## fuzzy locate config: {{{
 fzf_locate_config() {
     local QUERY
-    [ $# -gt 0 ] && QUERY="--query=\"$@\"" || QUERY=""
+    [ $# -gt 0 ] && QUERY="--query=\"$*\"" || QUERY=""
 
     # fd . ~ | fuzscope "$QUERY" | filer
     # The above one liner resolves the 'builtin cd' command inside filer, which doesn't work. Here's another option
