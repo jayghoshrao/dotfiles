@@ -562,6 +562,7 @@ return {
 
     {
         "y3owk1n/undo-glow.nvim",
+		enabled = vim.g.is_linux,
         event = { "VeryLazy" },
         ---@type UndoGlow.Config
         opts = {
