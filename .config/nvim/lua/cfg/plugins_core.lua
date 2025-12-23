@@ -93,6 +93,7 @@ return {
     'tpope/vim-fugitive',
     {
         "sindrets/diffview.nvim",
+        cmd = {"DiffviewMergeBase", "DiffviewLast", "DiffviewOpen", "DiffviewFileHistory" },
         config = function()
             vim.api.nvim_create_user_command("DiffviewMergeBase", function(opts)
                 local base_branch = opts.args ~= "" and opts.args or "origin/develop"
@@ -117,6 +118,7 @@ return {
     },
     {
         'kdheepak/lazygit.nvim',
+        keys = { '<leader>gg' },
         config = function()
             map('n', '<leader>gg', [[<cmd>LazyGit<cr>]])
             vim.g.lazygit_floating_window_scaling_factor = 1.0 -- scaling factor for floating window
@@ -166,7 +168,7 @@ return {
 
     'neovim/nvim-lspconfig', -- Built-in LSP configurations
     'onsails/lspkind-nvim',
-    { 'ray-x/lsp_signature.nvim', config = true },
+    -- { 'ray-x/lsp_signature.nvim', config = true },
 
     -- {
     --     'mfussenegger/nvim-dap',
@@ -465,8 +467,9 @@ return {
         end
     },
 
-    { "folke/zen-mode.nvim", config = function() require 'cfg.plugins.zen-mode' end },
-    { "folke/twilight.nvim", opts = {} },
+    {"folke/zen-mode.nvim", config = function() require 'cfg.plugins.zen-mode' end, cmd = {"ZenMode"}},
+    {"folke/twilight.nvim", opts = {}, cmd = {"ZenMode"}},
+
     {
         'szw/vim-maximizer',
         config = function()

@@ -28,24 +28,24 @@ return {
     { 'mboughaba/i3config.vim', ft = 'i3config'},
     'ggandor/lightspeed.nvim',
 
-    {
-        'onsails/diaglist.nvim',
-        config = function()
-            require("diaglist").init({
-                debug = false,
-                debounce_ms = 150,
-            })
-
-            vim.api.nvim_create_user_command('DiagBuf', function()
-                require('diaglist').open_buffer_diagnostics()
-            end, {})
-
-            vim.api.nvim_create_user_command('DiagAll', function()
-                require('diaglist').open_all_diagnostics()
-            end, {})
-
-        end
-    },
+    -- {
+    --     'onsails/diaglist.nvim',
+    --     config = function()
+    --         require("diaglist").init({
+    --             debug = false,
+    --             debounce_ms = 150,
+    --         })
+    --
+    --         vim.api.nvim_create_user_command('DiagBuf', function()
+    --             require('diaglist').open_buffer_diagnostics()
+    --         end, {})
+    --
+    --         vim.api.nvim_create_user_command('DiagAll', function()
+    --             require('diaglist').open_all_diagnostics()
+    --         end, {})
+    --
+    --     end
+    -- },
 
     { 'norcalli/nvim-colorizer.lua', config = true, cmd={'ColorizerToggle'} },
 
@@ -215,6 +215,12 @@ return {
             --     desc = "Sidekick Toggle Claude",
             -- },
         },
+    }, 
+
+    {
+        "esmuellert/vscode-diff.nvim",
+        dependencies = { "MunifTanjim/nui.nvim" },
+        cmd = "CodeDiff",
     }
 
 }
