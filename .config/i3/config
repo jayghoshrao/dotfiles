@@ -218,7 +218,7 @@ exec --no-startup-id blueman-applet &
 exec --no-startup-id $SCRIPTS/battery.sh &
 exec --no-startup-id dropbox &
 exec --no-startup-id recollindex &
-exec --no-startup-id discord & 
+# exec --no-startup-id discord & 
 exec --no-startup-id playerctld daemon &
 
 # exec --no-startup-id owncloud &
