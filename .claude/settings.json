@@ -1,0 +1,11 @@
+{
+    "enabledPlugins": {
+        "clangd-lsp@claude-plugins-official": true
+    },
+
+    "notifications": {
+        "sound": true,
+        "onIdle": true,
+        "onQuestion": true
+    }
+}

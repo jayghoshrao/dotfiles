@@ -1,0 +1,16 @@
+debug/
+file-history/
+cache/
+plans/
+plugins/cache/
+plugins/marketplaces/
+projects/
+tasks/
+todos/
+shell-snapshots/
+session-env/
+statsig/
+Notes/
+history.jsonl
+stats-cache.json
+.credentials.json
