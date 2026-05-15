@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+
+function die() { echo -e "ERROR: $@" >&2; exit -1; }
+function ensure_command() { [[ -x $(command -v "$1") ]] || die "no such command: ${1}"; }
+function check_command() { [[ -x $(command -v "$1") ]] && return 0 || return -1; }
+function check_file() { [[ -f "$1" ]] && return 0 || return -1; }
+function check_dir() { [[ -d "$1" ]] && return 0 || return -1; }
+function ensure_dir() { [[ -d "$1" ]] || die "Dir not found: $1"; }
+function ensure_file() { [[ -f "$1" ]] || die "File not found: $1"; }
+
+function run_command()
+{
+    local COMPOSE_FILE="${STACKS_ROOT}/${STACK}/docker-compose.yml"
+    ensure_file "${COMPOSE_FILE}"
+
+    ## change dir to help run-parts execute scripts in the stack dir
+    cd "${STACKS_ROOT}/${STACK}" || die "could not change to dir: ${STACKS_ROOT}/${STACK}"
+
+    check_dir "${STACKS_ROOT}/${STACK}/pre-hooks" && run-parts --arg "$1" "${STACKS_ROOT}/${STACK}/pre-hooks"
+
+    local COMPOSE_OVERRIDE_FILE="${STACKS_ROOT}/${STACK}/docker-compose.override.yml"
+    if check_file "${COMPOSE_OVERRIDE_FILE}" ; then
+        docker compose -f "${COMPOSE_FILE}" -f "${COMPOSE_OVERRIDE_FILE}" "$@"
+    else
+        docker compose -f "${COMPOSE_FILE}" "$@"
+    fi
+
+    check_dir "${STACKS_ROOT}/${STACK}/post-hooks" && run-parts --arg "$1" "${STACKS_ROOT}/${STACK}/post-hooks"
+
+    cd "${STACKS_ROOT}" || die "could not change to dir: ${STACKS_ROOT}"
+}
+
+function dump_volumes()
+{
+    local COMPOSE_FILE="${STACKS_ROOT}/${STACK}/docker-compose.yml"
+    ensure_file "${COMPOSE_FILE}"
+
+    local OUTPUT_DIR="${STACKS_ROOT}/__dumped_volumes__/${DATETIME}"
+    mkdir -p "${OUTPUT_DIR}"
+    echo "Dumping volumes to: ${OUTPUT_DIR}"
+
+    local YQ_CMD=yq
+    check_command yq || YQ_CMD="docker run --rm -v ${STACKS_ROOT}:${STACKS_ROOT} nixery.dev/yq yq"
+
+    local PROJECT_NAME
+    PROJECT_NAME=$(${YQ_CMD} -r '.name' "${COMPOSE_FILE}" 2>/dev/null)
+    [[ -n "${PROJECT_NAME}" ]] || PROJECT_NAME=$(basename "${STACKS_ROOT}/${STACK}")
+
+    local VOLUMES=()
+    mapfile -t VOLUMES < <(${YQ_CMD} -r '.volumes | keys[]' "${COMPOSE_FILE}" 2>/dev/null)
+
+    if [[ ${#VOLUMES[@]} -eq 0 ]]; then
+        echo "No volumes found for stack '${STACK}'."
+        return
+    fi
+
+    local STACK_OUTPUT_DIR="${OUTPUT_DIR}/${STACK}"
+    mkdir -p "${STACK_OUTPUT_DIR}"
+
+    for vol in "${VOLUMES[@]}"; do
+        local FULL_VOL_NAME="${PROJECT_NAME}_${vol}"
+
+        if ! docker volume inspect "${FULL_VOL_NAME}" &>/dev/null; then
+            echo "Volume ${FULL_VOL_NAME} not found, skipping."
+            continue
+        fi
+
+        echo "Dumping volume: ${FULL_VOL_NAME}"
+        docker run --rm \
+            -v "${FULL_VOL_NAME}:/source:ro" \
+            -v "${STACK_OUTPUT_DIR}:/backup" \
+            alpine tar czf "/backup/${FULL_VOL_NAME}.tar.gz" -C /source .
+    done
+
+    echo "Done."
+}
+
+function restore_dumped_volumes()
+{
+    local DUMP_ID="${1:-}"
+    [[ -n "${DUMP_ID}" ]] || die "Usage: stack <name> restore_dumped_volumes <datetime>"
+
+    local DUMP_DIR="${STACKS_ROOT}/__dumped_volumes__/${DUMP_ID}"
+    [[ -d "${DUMP_DIR}" ]] || die "Dump not found: ${DUMP_DIR}"
+
+    local STACK_DUMP_DIR="${DUMP_DIR}/${STACK}"
+    [[ -d "${STACK_DUMP_DIR}" ]] || die "No dump found for stack '${STACK}' in: ${DUMP_DIR}"
+
+    local COMPOSE_FILE="${STACKS_ROOT}/${STACK}/docker-compose.yml"
+    ensure_file "${COMPOSE_FILE}"
+
+    local YQ_CMD=yq
+    check_command yq || YQ_CMD="docker run --rm -v ${STACKS_ROOT}:${STACKS_ROOT} nixery.dev/yq yq"
+
+    local PROJECT_NAME
+    PROJECT_NAME=$(${YQ_CMD} -r '.name' "${COMPOSE_FILE}" 2>/dev/null)
+    [[ -n "${PROJECT_NAME}" ]] || PROJECT_NAME=$(basename "${STACKS_ROOT}/${STACK}")
+
+    local VOLUMES=()
+    mapfile -t VOLUMES < <(${YQ_CMD} -r '.volumes | keys[]' "${COMPOSE_FILE}" 2>/dev/null)
+
+    if [[ ${#VOLUMES[@]} -eq 0 ]]; then
+        echo "No volumes found for stack '${STACK}'."
+        return
+    fi
+
+    echo "Restoring volumes from: ${STACK_DUMP_DIR}"
+    local CONFIRM=""
+    read -p "This will overwrite existing volume data. Stack '${STACK}' will be brought down and back up. Proceed? [y/N] " -r CONFIRM
+    [[ "${CONFIRM}" == "y" ]] || { echo "Aborted."; return; }
+
+    run_command down
+
+    for vol in "${VOLUMES[@]}"; do
+        local FULL_VOL_NAME="${PROJECT_NAME}_${vol}"
+        local ARCHIVE="${STACK_DUMP_DIR}/${FULL_VOL_NAME}.tar.gz"
+
+        if [[ ! -f "${ARCHIVE}" ]]; then
+            echo "No archive found for volume ${FULL_VOL_NAME}, skipping."
+            continue
+        fi
+
+        docker volume inspect "${FULL_VOL_NAME}" &>/dev/null || docker volume create "${FULL_VOL_NAME}"
+
+        echo "Restoring volume: ${FULL_VOL_NAME}"
+        docker run --rm \
+            -v "${FULL_VOL_NAME}:/target" \
+            -v "${STACK_DUMP_DIR}:/backup:ro" \
+            alpine sh -c "find /target -mindepth 1 -delete && tar xzf /backup/${FULL_VOL_NAME}.tar.gz -C /target"
+    done
+
+    run_command up -d
+    echo "Done."
+}
+
+function edit()
+{
+    local COMPOSE_FILE="${STACKS_ROOT}/${STACK}/docker-compose.yml"
+    mkdir -p "${STACKS_ROOT}/${STACK}"
+    ${EDITOR} "${COMPOSE_FILE}"
+}
+
+function shell_posix()
+{
+    local CONTAINER="$1"
+    run_command exec -it "${CONTAINER}" /bin/sh
+}
+
+function shell_bash()
+{
+    local CONTAINER="$1"
+    run_command exec -it "${CONTAINER}" /bin/bash
+}
+
+ensure_command docker
+DATETIME=$(date "+%Y-%m-%d_%H-%M-%S")
+
+STACK="$1"
+shift
+STACKS_ROOT=${STACKS_ROOT:-$HOME/docker}
+ensure_dir "${STACKS_ROOT}"
+cd "${STACKS_ROOT}" || die "could not cd into ${STACKS_ROOT}"
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+    case $key in
+        down) # Allows calling subcommands after this one `stack utils down decrypt_secrets edit` etc.
+            shift ; run_command down ;;
+        attach|build|commit|config|cp|create|down|events|exec|export|images|kill|logs|ls|pause|port|ps|pull|push|restart|rm|run|scale|start|stats|stop|top|unpause|up|version|wait|watch)
+            run_command "$@" ; exit ;;
+        edit) 
+            shift ; edit ;;
+        recreate) 
+            shift ; run_command down ; run_command up -d ;;
+        reconf|reconfigure) 
+            shift ; run_command down ; edit ; run_command up -d ;;
+        update)
+            shift ; run_command down ; run_command up -d --pull always --build ;;
+        sh)
+            shift ; shell_posix "$@"; exit ;;
+        bash)
+            shift ; shell_bash "$@"; exit ;;
+        dump_volumes)
+            shift ; dump_volumes ; exit ;;
+        restore_dumped_volumes)
+            shift ; restore_dumped_volumes "$@" ; exit ;;
+        help)
+            echo -e "stack: manage a docker stack.\nUsage 'stack <stack_name> <command>'\nCommands:"
+            SCRIPT_PATH=$(readlink -f -- "$BASH_SOURCE")
+            grep -Po '^\s*[^\) \()]*\)' "$SCRIPT_PATH"
+            exit ;;
+        *) POSITIONAL+=("$1"); shift ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+# run_command "$@"
