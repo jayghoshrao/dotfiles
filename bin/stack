@@ -157,7 +157,15 @@ DATETIME=$(date "+%Y-%m-%d_%H-%M-%S")
 
 STACK="$1"
 shift
-STACKS_ROOT=${STACKS_ROOT:-$HOME/docker}
+if [[ -n "${STACKS_ROOT:-}" ]]; then
+    :
+elif [[ -d "$HOME/docker" ]]; then
+    STACKS_ROOT="$HOME/docker"
+elif [[ -d "/opt/docker" ]]; then
+    STACKS_ROOT="/opt/docker"
+else
+    die "STACKS_ROOT not set and neither $HOME/docker nor /opt/docker exist"
+fi
 ensure_dir "${STACKS_ROOT}"
 cd "${STACKS_ROOT}" || die "could not cd into ${STACKS_ROOT}"
 

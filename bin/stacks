@@ -2,6 +2,17 @@
 
 set -u
 
+if [[ -n "${STACKS_ROOT:-}" ]]; then
+    :
+elif [[ -d "$HOME/docker" ]]; then
+    STACKS_ROOT="$HOME/docker"
+elif [[ -d "/opt/docker" ]]; then
+    STACKS_ROOT="/opt/docker"
+else
+    echo "ERROR: STACKS_ROOT not set and neither $HOME/docker nor /opt/docker exist" >&2
+    exit 1
+fi
+
 STACKS=( $(find "${STACKS_ROOT}" -maxdepth 2 -name "docker-compose.yml" \
   -not -path "*/__staging__/*" \
   -exec dirname {} \; | xargs -n1 basename | sort) )
@@ -375,7 +386,6 @@ ensure_command docker
 
 HOST=$(hostnamectl --static)
 DATETIME=$(date "+%Y-%m-%d_%H-%M-%S")
-STACKS_ROOT=${STACKS_ROOT:-$HOME/docker}
 echo "STACKS_ROOT=${STACKS_ROOT}" >&2
 ensure_dir "${STACKS_ROOT}"
 cd "${STACKS_ROOT}" || die "could not cd into ${STACKS_ROOT}"
