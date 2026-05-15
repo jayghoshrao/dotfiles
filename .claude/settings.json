@@ -1,11 +1,11 @@
 {
-    "enabledPlugins": {
-        "clangd-lsp@claude-plugins-official": true
-    },
-
-    "notifications": {
-        "sound": true,
-        "onIdle": true,
-        "onQuestion": true
-    }
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "notifications": {
+    "sound": true,
+    "onIdle": true,
+    "onQuestion": true
+  }
 }
