@@ -139,14 +139,14 @@ map('i', '<a-k>', '<esc>:m .-2<CR>==i')
 map('v', '<a-j>', ":m '>+1<CR>gv=gv" )
 map('v', '<a-k>', ":m '<-2<CR>gv=gv" )
 
--- -- Quick German mappings
--- map('i', '<a-s>', 'ß')
--- map('i', '<a-a>', 'ä')
--- map('i', '<a-o>', 'ö')
--- map('i', '<a-u>', 'ü')
--- map('i', '<a-s-a>', 'Ä')
--- map('i', '<a-s-o>', 'Ö')
--- map('i', '<a-s-u>', 'Ü')
+-- Quick German mappings
+map('i', '<A-s>', 'ß')
+map('i', '<A-a>', 'ä')
+map('i', '<A-o>', 'ö')
+map('i', '<A-u>', 'ü')
+map('i', '<A-s-a>', 'Ä')
+map('i', '<A-s-o>', 'Ö')
+map('i', '<A-s-u>', 'Ü')
 
 -- Go to the beginning and end of current line in insert mode quickly
 vim.keymap.set("i", "<C-A>", "<HOME>")

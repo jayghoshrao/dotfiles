@@ -1,11 +1,11 @@
 -- require('nvim-treesitter.install').compilers = { 'gcc' }
-require('nvim-treesitter.configs').setup {
+require('nvim-treesitter').setup {
     refactor = {
         highlight_definitions = {enable = true},
         highlight_current_scope = {enable = false},
     },
     highlight = {
-        enable = true,
+        enable = false,
         use_languagetree = true,
         additional_vim_regex_highlighting = false,
         disable = {'pandoc', 'vimwiki', 'markdown', 'tex', 'latex'},

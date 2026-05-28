@@ -408,7 +408,8 @@ dpi=-1
 ; monitor = ${env:DISPLAY0}
 height = 40
 
-modules-left = date left1 pomodoro left2
+;modules-left = date left1 pomodoro left2
+modules-left = date 
 modules-center = i3
 modules-right = right6 updates right5 pulseaudio-control audiowhat right4 battery right3 vpnstatus right2 microphone
 

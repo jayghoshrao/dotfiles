@@ -105,7 +105,7 @@ bindsym $mod+space exec rofi -show combi
 bindsym $mod+shift+space exec rofi -show drun -matching fuzzy -p App
 # bindsym $mod+control+space exec rofi -show calc -modi calc -s 'exp 1'
 bindsym $mod+control+space exec rofi -show calc -modi calc -theme nord-calc
-bindsym $mod+g exec $SCRIPTS/rpass
+bindsym $mod+g exec thunar --class _float --name _float &
 
 
 # bindsym $mod+control+$alt+space exec rofi-pass -matching fuzzy
@@ -492,6 +492,7 @@ for_window [title="Quick Format Citation"] floating enable
 # for_window [class="mpv"] floating enable, move to output right, fullscreen
 for_window [instance="Navigator"] floating disable
 for_window [window_role="_float"] floating enable
+for_window [class="_float"] floating enable
 for_window [class="whatsapp-nativefier*"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="TelegramDesktop"] floating enable, resize set 70 ppt 80 ppt, move position center  
 for_window [class="Rocket.Chat"] floating enable, resize set 70 ppt 80 ppt, move position center  

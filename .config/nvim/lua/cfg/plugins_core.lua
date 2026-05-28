@@ -230,8 +230,8 @@ return {
         end,
         dependencies = {
             -- 'nvim-treesitter/playground',
-            'nvim-treesitter/nvim-treesitter-textobjects',
-            'RRethy/nvim-treesitter-textsubjects',
+            -- 'nvim-treesitter/nvim-treesitter-textobjects',
+            -- 'RRethy/nvim-treesitter-textsubjects',
             {
                 'numToStr/Comment.nvim',
                 opts = {
@@ -257,7 +257,6 @@ return {
         },
     },
 
-    'nvim-treesitter/nvim-treesitter-context',
 
     -- Completion ------------------------------------------------------------------
 
@@ -546,13 +545,13 @@ return {
     -- Future ----------------------------------------------------------------------
     -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
-    {
-        'MeanderingProgrammer/render-markdown.nvim',
-        ft = {"markdown", "Avante"},
-        opts = {
-            file_types = { "markdown", "Avante" },
-        },
-    },
+    -- {
+    --     'MeanderingProgrammer/render-markdown.nvim',
+    --     ft = {"markdown", "Avante"},
+    --     opts = {
+    --         file_types = { "markdown", "Avante" },
+    --     },
+    -- },
 
     -- {
     --     "karb94/neoscroll.nvim",
