@@ -6,16 +6,18 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User jayghoshter@gmail.com
-PassCmd "pass mutt-jayghoshter | head -n 1"
+PassCmd "rbw get -f app-password google-jayghoshter"
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 #
 # Use SSL
-SSLType IMAPS
+TLSType IMAPS
 # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 #CertificateFile ~/.cert/imap.gmail.com.pem
 #CertificateFile ~/.cert/Equifax_Secure_CA.pem
+# Multiple IMAP commands, parallelization 
+# PipelineDepth 100
 
 IMAPStore jayghoshter-remote
 Account gmail
@@ -29,14 +31,12 @@ Inbox ~/.local/share/mail/jayghoshter/INBOX
 Channel jayghoshter
 Far :jayghoshter-remote:
 Near :jayghoshter-local:
-# Exclude everything under the internal [Gmail] folder, except the interesting folders
-# Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
-# Or include everything
-Patterns *
+Patterns * "![Gmail]/All Mail" ![Gmail]/Important ![Gmail]/Starred
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
 # Save the synchronization state files in the relevant directory
 SyncState *
+
 
 ##########################################
 # jayghosh.rao@gmail.com
@@ -46,16 +46,20 @@ IMAPAccount jayghoshrao
 # Address to connect to
 Host imap.gmail.com
 User jayghosh.rao@gmail.com
-PassCmd "pass mutt-jayghoshrao | head -n 1"
+# PassCmd "pass mutt-jayghoshrao | head -n 1"
+PassCmd "rbw get -f app-password google-jayghoshrao"
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 #
 # Use SSL
-SSLType IMAPS
+TLSType IMAPS
 # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 #CertificateFile ~/.cert/imap.gmail.com.pem
 #CertificateFile ~/.cert/Equifax_Secure_CA.pem
+# Multiple IMAP commands, parallelization 
+# PipelineDepth 100
+
 
 IMAPStore jayghoshrao-remote
 Account jayghoshrao
@@ -63,47 +67,42 @@ Account jayghoshrao
 MaildirStore jayghoshrao-local
 SubFolders Verbatim
 # The trailing "/" is important
-Path ~/.local/share/mail/jrao/
-Inbox ~/.local/share/mail/jrao/INBOX
+Path ~/.local/share/mail/jayghoshrao/
+Inbox ~/.local/share/mail/jayghoshrao/INBOX
 
 Channel jayghoshrao
 Far :jayghoshrao-remote:
 Near :jayghoshrao-local:
-# Exclude everything under the internal [Gmail] folder, except the interesting folders
-# Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
-Patterns *
-# Or include everything
-#Patterns *
+Patterns * "![Gmail]/All Mail" ![Gmail]/Important ![Gmail]/Starred
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
 # Save the synchronization state files in the relevant directory
 SyncState *
 
-
-##########################################
-# j.rao@fz-juelich.de / rao@ibtwebmail.ibt.w2k....
-##########################################
-
-IMAPStore modsim-remote
-Host webmail.fz-juelich.de
-User j.rao
-PassCmd "pass mutt-modsim | head -n 1"
-SSLType STARTTLS
-AuthMechs PLAIN
-# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
-CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-MaildirStore modsim-local
-SubFolders Verbatim
-Path ~/.local/share/mail/modsim-migrated/
-Inbox ~/.local/share/mail/modsim-migrated/INBOX
-
-Channel modsim
-Far :modsim-remote:
-Near :modsim-local:
-Patterns *
-Create Both
-SyncState *
+# ##########################################
+# # j.rao@fz-juelich.de / rao@ibtwebmail.ibt.w2k....
+# ##########################################
+#
+# IMAPStore modsim-remote
+# Host webmail.fz-juelich.de
+# User j.rao
+# PassCmd "pass mutt-modsim | head -n 1"
+# TLSType STARTTLS
+# AuthMechs PLAIN
+# # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+# CertificateFile /etc/ssl/certs/ca-certificates.crt
+#
+# MaildirStore modsim-local
+# SubFolders Verbatim
+# Path ~/.local/share/mail/modsim-migrated/
+# Inbox ~/.local/share/mail/modsim-migrated/INBOX
+#
+# Channel modsim
+# Far :modsim-remote:
+# Near :modsim-local:
+# Patterns *
+# Create Both
+# SyncState *
 
 ##############################################
 ## shreyarao68@gmail.com
@@ -118,7 +117,7 @@ SyncState *
 ## PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 ##
 ## Use SSL
-#SSLType IMAPS
+#TLSType IMAPS
 #AuthMechs PLAIN
 ## The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
 #CertificateFile /etc/ssl/certs/ca-certificates.crt
@@ -146,54 +145,54 @@ SyncState *
 ## Save the synchronization state files in the relevant directory
 #SyncState *
 
-##############################################
-# CATS
-##############################################
+# ##############################################
+# # CATS
+# ##############################################
+#
+# IMAPStore cats-remote
+# Host mail.rwth-aachen.de
+# User jr198806@cats.rwth-aachen.de
+# PassCmd "pass mutt-cats | head -n 1"
+# TLSType IMAPS
+# AuthMechs LOGIN
+# Port 993
+# # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+# CertificateFile /etc/ssl/certs/ca-certificates.crt
+#
+# MaildirStore cats-local
+# SubFolders Verbatim
+# Path ~/.local/share/mail/cats/
+# Inbox ~/.local/share/mail/cats/INBOX
+#
+# Channel cats
+# Far :cats-remote:
+# Near :cats-local:
+# Patterns *
+# Create Both
+# SyncState *
 
-IMAPStore cats-remote
-Host mail.rwth-aachen.de
-User jr198806@cats.rwth-aachen.de
-PassCmd "pass mutt-cats | head -n 1"
-SSLType IMAPS
-AuthMechs LOGIN
-Port 993
-# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
-CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-MaildirStore cats-local
-SubFolders Verbatim
-Path ~/.local/share/mail/cats/
-Inbox ~/.local/share/mail/cats/INBOX
-
-Channel cats
-Far :cats-remote:
-Near :cats-local:
-Patterns *
-Create Both
-SyncState *
-
-#############################################
-# RWTH Aachen 
-#############################################
-
-IMAPStore rwth-remote
-Host mail.rwth-aachen.de
-User jr198806@rwth-aachen.de
-PassCmd "pass mutt-rwth | head -n 1"
-SSLType IMAPS
-AuthMechs LOGIN
-Port 993
-# The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
-CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-MaildirStore rwth-local
-SubFolders Verbatim
-Path ~/.local/share/mail/rwth/
-Inbox ~/.local/share/mail/rwth/INBOX
-
-Channel rwth
-Far :rwth-remote:
-Near :rwth-local:
-Patterns *
-Create Both
-SyncState *
+# #############################################
+# # RWTH Aachen 
+# #############################################
+#
+# IMAPStore rwth-remote
+# Host mail.rwth-aachen.de
+# User jr198806@rwth-aachen.de
+# PassCmd "pass mutt-rwth | head -n 1"
+# TLSType IMAPS
+# AuthMechs LOGIN
+# Port 993
+# # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
+# CertificateFile /etc/ssl/certs/ca-certificates.crt
+#
+# MaildirStore rwth-local
+# SubFolders Verbatim
+# Path ~/.local/share/mail/rwth/
+# Inbox ~/.local/share/mail/rwth/INBOX
+#
+# Channel rwth
+# Far :rwth-remote:
+# Near :rwth-local:
+# Patterns *
+# Create Both
+# SyncState *

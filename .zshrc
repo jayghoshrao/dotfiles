@@ -247,7 +247,8 @@ LISTMAX=9999    # In the line editor, number of matches to show before asking pe
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-[[ -n $(infocmp xterm-256color-italic 2>/dev/null) ]] && export TERM="xterm-256color-italic"
+# [[ -n $(infocmp xterm-256color-italic 2>/dev/null) ]] && export TERM="xterm-256color-italic"
+export TERM="xterm-256color"
 export LESS="-iR"
 
 export NNN_FIFO=/tmp/nnn.fifo
@@ -800,6 +801,8 @@ alias he="home-manager edit"
 alias hg="home-manager generations"
 
 alias news="newsboat"
+alias mail="aerc"
+alias mail-sync="~/.config/aerc/sync.sh"
 alias newsc="vim ~/.newsboat/config"
 alias newsu="vim ~/.newsboat/urls"
 
