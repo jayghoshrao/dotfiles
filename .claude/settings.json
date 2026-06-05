@@ -1,8 +1,10 @@
 {
+  "model": "sonnet[1m]",
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
   "effortLevel": "high",
+  "theme": "dark",
   "notifications": {
     "sound": true,
     "onIdle": true,
