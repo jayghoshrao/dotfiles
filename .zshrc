@@ -92,7 +92,8 @@ if [[ $LOAD_ZINIT != false ]] ; then
         if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit \
         if'[[ -z "$commands[jq]" ]]' mv"jq*->jq" @jqlang/jq \
         if'[[ -z "$commands[zenta]" ]]' mv"zenta*->zenta" @e6a5/zenta \
-        if'[[ -z "$commands[yazi]" ]]' mv"yazi*->yazi" pick"yazi/yazi" @sxyazi/yazi
+        if'[[ -z "$commands[yazi]" ]]' mv"yazi*->yazi" pick"yazi/yazi" @sxyazi/yazi \
+        if'[[ -z "$commands[uv]" ]]' mv"uv*->uv" pick"uv/uv" @astral-sh/uv
 
     # Load scripts directly from repo
     zinit from"gh" as"command" light-mode for \
@@ -163,7 +164,7 @@ setopt PUSHD_SILENT         # Do not print the directory stack after pushd or po
 setopt PUSHD_TO_HOME        # Push to home directory when no argument is given.
 setopt CDABLE_VARS          # Change directory to a path stored in a variable.
 setopt MULTIOS              # Write to multiple descriptors.
-setopt EXTENDED_GLOB        # Use extended globbing syntax.
+unsetopt EXTENDED_GLOB        # Dont use extended globbing syntax.*, ~, and ^ disabled in globs.
 unsetopt GLOB_DOTS          # Don't let globs capture dotfiles
 unsetopt AUTO_NAME_DIRS     # Don't add variable-stored paths to ~ list
 
@@ -300,6 +301,7 @@ alias -g L='| less'
 alias -g C='| xclip -i -selection clipboard'
 alias -g V='| vipe'
 alias -g R='rep'
+alias -g H='--help | less'
 
 alias ls='ls --color -v -N'
 alias la='ls -la --color -v -N'
@@ -796,8 +798,12 @@ is_chroot() {
     echo $?
 }
 
+
+export NIXPKGS_ALLOW_UNFREE=1
+alias hh="home-manager switch --flake ~/.config/home-manager#${USER} --impure"
+
 alias h="home-manager"
-alias hh="home-manager switch"
+# alias hh="home-manager switch"
 alias he="home-manager edit"
 alias hg="home-manager generations"
 
