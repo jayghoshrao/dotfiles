@@ -52,10 +52,11 @@ do
             MODE='PRINT'
             shift ;;
         -clf|--clean-lockfiles)
-            for FILE in $LOCKFOLDER/*; do 
+            for FILE in "$LOCKFOLDER"/*; do
+                [[ -f "$FILE" ]] || continue
                 LOCK_STATUS=$(flock -n -x "$FILE" echo 'unlocked!')
                 [[ -n "$LOCK_STATUS" ]] && rm "$FILE"
-            done 
+            done
             exit
             ;;
         --pager)
@@ -72,6 +73,8 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
+[[ $# -lt 1 ]] && die "Usage: dex [opts] <file>"
+
 FILENAME="$1"
 FILEPATH=$(realpath "$FILENAME")
 FILEPATHENC=${FILEPATH//\//%}
@@ -81,15 +84,15 @@ VIPE_SUFFIX="$(basename "$FILENAME")"
 
 typestr=$(file "$FILENAME")
 
-if [[ "$MODE" == "EXCHANGE" ]]; then 
-    if [[ "$typestr" =~ "encrypted" ]]; then 
-        result=$(gpg -dq "$FILENAME" ) && printf '%s' "$result" > "$FILENAME"
-        unset result
+if [[ "$MODE" == "EXCHANGE" ]]; then
+    TMPFILE=$(mktemp)
+    if [[ "$typestr" =~ "encrypted" ]]; then
+        gpg -dq -o "$TMPFILE" "$FILENAME" && mv "$TMPFILE" "$FILENAME"
     else
-        data=$(gpg -o - -e "$FILENAME" > >(base64)) && printf '%s' "$data" | base64 -d > "$FILENAME"
-        unset data
+        gpg -o "$TMPFILE" -e "$FILENAME" && mv "$TMPFILE" "$FILENAME"
     fi
-elif [[ "$MODE" == "PAGER" ]]; then 
+    rm -f "$TMPFILE" 2>/dev/null
+elif [[ "$MODE" == "PAGER" ]]; then
     if [[ "$typestr" =~ "encrypted" ]]; then 
         gpg -dq "$FILENAME" | less
     else
@@ -102,43 +105,46 @@ elif [[ "$MODE" == "PRINT" ]]; then
         cat "$FILENAME"
     fi
 elif [[ "$MODE" == "UNLOCK" ]]; then
-    if [[ -f "$LOCKFILE" ]]; then
-        flock -u "$LOCKFILE"
-    fi
+    rm -f "$LOCKFILE"
 elif [[ "$MODE" == "EDIT" ]]; then
-    if [[ "$typestr" =~ "encrypted" ]]; then 
+    if [[ "$typestr" =~ "encrypted" ]]; then
         # Uses lockfiles to ensure file is not multiply modified
         # NOTE: 9>&- closes fd 9 for child processes to prevent editors from inheriting the lock
+        # Temp file avoids $() trailing-newline stripping and drops the vipe dependency
         ( flock -n 9 || die "Failure to acquire lockfile: $LOCKFILE."
         echo "Acquiring lock..."
-        data=$(gpg -dq "$FILENAME" 9>&- | vipe --suffix "$VIPE_SUFFIX" 9>&-) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
-        unset data
+        TMPFILE=$(mktemp --suffix=".${VIPE_SUFFIX}")
+        gpg -dq -o "$TMPFILE" "$FILENAME" 9>&- && \
+            ${EDITOR:-vi} "$TMPFILE" && \
+            gpg -e --batch --yes -o "$FILENAME" < "$TMPFILE"
+        shred -u "$TMPFILE" 2>/dev/null || rm -f "$TMPFILE"
         echo "Releasing lock..."
         ) 9>"$LOCKFILE"
     elif [ -f "$FILENAME" ]; then
         # If file exists and not encrypted
-        "$EDITOR" "$FILENAME"
+        ${EDITOR:-vi} "$FILENAME"
     else
         if ${ENCRYPT_NONEXIST}; then
-            # if file doesn't exist
-            # Uses lockfiles to ensure file is not multiply modified
-            # NOTE: 9>&- closes fd 9 for child processes to prevent editors from inheriting the lock
+            # if file doesn't exist, create and encrypt
             ( flock -n 9 || exit 1
-            data=$(vipe --suffix "$VIPE_SUFFIX" 9>&-) && gpg -e --batch --yes -o "$FILENAME" < <(printf '%s' "$data")
-            unset data
+            TMPFILE=$(mktemp --suffix=".${VIPE_SUFFIX}")
+            ${EDITOR:-vi} "$TMPFILE" && gpg -e --batch --yes -o "$FILENAME" < "$TMPFILE"
+            shred -u "$TMPFILE" 2>/dev/null || rm -f "$TMPFILE"
             ) 9>"$LOCKFILE"
         else
-            "$EDITOR" "$FILENAME"
+            ${EDITOR:-vi} "$FILENAME"
         fi
     fi
 elif [[ "$MODE" == "ENCRYPT" ]]; then
-    if [[ ! "$typestr" =~ "encrypted" ]]; then 
-        data=$(gpg -o - -e "$FILENAME" > >(base64)) && printf '%s' "$data" | base64 -d > "$FILENAME"
-        unset data
+    if [[ ! "$typestr" =~ "encrypted" ]]; then
+        TMPFILE=$(mktemp)
+        gpg -o "$TMPFILE" -e "$FILENAME" && mv "$TMPFILE" "$FILENAME"
+        rm -f "$TMPFILE" 2>/dev/null
     fi
 elif [[ "$MODE" == "DECRYPT" ]]; then
-    if [[ "$typestr" =~ "encrypted" ]]; then 
-        result=$(gpg -dq "$FILENAME" ) && printf '%s' "$result" > "$FILENAME"
-        unset result
+    if [[ "$typestr" =~ "encrypted" ]]; then
+        TMPFILE=$(mktemp)
+        gpg -dq -o "$TMPFILE" "$FILENAME" && mv "$TMPFILE" "$FILENAME"
+        rm -f "$TMPFILE" 2>/dev/null
     fi
 fi

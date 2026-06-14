@@ -25,7 +25,7 @@ MODE="EDIT"
 # JRNL_DIR="$NOTES_DIR/journal"
 JRNL_DIR="${JRNL_DIR:-$HOME/journal}"
 DATESTR="now"
-ENCRYPTION=true
+ENCRYPTION=false
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -41,7 +41,10 @@ do
         -D|--directory)
             JRNL_DIR="$2"
             shift; shift ;;
-        +e|-ne|--no-encrypt-new)
+        -e|--encrypt)
+            ENCRYPTION=true
+            shift ;;
+        +e|-ne|--no-encrypt)
             ENCRYPTION=false
             shift ;;
         -u|--unlock)
@@ -54,7 +57,7 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-DATESTR="$@"
+DATESTR="${*:-now}"
 
 DATE=$(date -d "$DATESTR" '+%Y-%m-%d')
 JRNL_FILENAME="${DATE}.md"
@@ -63,7 +66,7 @@ JRNL_FILE="$JRNL_DIR/$JRNL_FILENAME"
 [ -d "$JRNL_DIR" ] || mkdir -p "$JRNL_DIR"
 
 if [[ $MODE == "LAST" ]]; then
-    OUT=$(fd --base-directory "$JRNL_DIR" . | tail -n 1)
+    OUT=$(fd --base-directory "$JRNL_DIR" . | sort | tail -n 1)
     if [[ -f "$JRNL_DIR/$OUT" ]]; then 
         peek "$JRNL_DIR/$OUT"
     fi
@@ -85,6 +88,6 @@ else
         # dex -e also creates a file if none exists
         dex --edit "$JRNL_FILE"
     else
-        dex --edit --noencrypt-nonexist "$JRNL_FILE"
+        ${EDITOR:-vi} "$JRNL_FILE"
     fi
 fi
