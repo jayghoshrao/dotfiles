@@ -530,7 +530,7 @@ return {
             workspaces = {
                 {
                     name = "Notes",
-                    path = "~/Documents/Notes",
+                    path = vim.fn.expand("$NOTES_DIR"),
                 },
             },
             ui = {
