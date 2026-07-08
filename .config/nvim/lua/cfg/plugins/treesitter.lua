@@ -10,11 +10,15 @@
 
 -- Parsers to compile (needs the tree-sitter CLI + a C compiler on PATH).
 -- No-ops for already-built parsers; safe to run on every startup.
-require('nvim-treesitter').install({
-    'bash', 'bibtex', 'c', 'cmake', 'comment', 'cpp', 'css', 'dockerfile',
-    'fortran', 'html', 'http', 'json', 'json5', 'llvm', 'lua', 'markdown',
-    'markdown_inline', 'nix', 'python', 'rust', 'toml', 'vim', 'yaml',
-})
+-- Skip entirely if the `tree-sitter` CLI isn't installed, so this doesn't
+-- try to download/compile parsers (or error) on machines without it.
+if vim.fn.executable('tree-sitter') == 1 then
+    require('nvim-treesitter').install({
+        'bash', 'bibtex', 'c', 'cmake', 'comment', 'cpp', 'css', 'dockerfile',
+        'fortran', 'html', 'http', 'json', 'json5', 'llvm', 'lua', 'markdown',
+        'markdown_inline', 'nix', 'python', 'rust', 'toml', 'vim', 'yaml',
+    })
+end
 
 -- Filetypes that should get treesitter highlighting + indent. Deliberately
 -- EXCLUDES markdown / tex / latex / pandoc / vimwiki (the old config's

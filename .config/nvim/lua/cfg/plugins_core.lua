@@ -224,7 +224,8 @@ return {
         branch = 'main',            -- the rewrite; master is frozen
         build = ':TSUpdate',
         enabled = function()
-            return vim.fn.executable('gcc')==1 or vim.fn.executable('clang')==1
+            return vim.fn.executable('tree-sitter') == 1
+                and (vim.fn.executable('gcc') == 1 or vim.fn.executable('clang') == 1)
         end,
         config = function()
             require 'cfg.plugins.treesitter'
