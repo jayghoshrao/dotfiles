@@ -1,0 +1,935 @@
+# vim: fdm=marker
+# ~/.bashrc — consolidated from ~/.zshrc, ~/.zsh-fzf, ~/.zsh-local
+#
+# Zsh-only features intentionally dropped (no clean bash equivalent):
+#   - zinit plugin manager  -> replaced by gh_get/bin_sync below
+#   - pure prompt, zsh-autosuggestions, fast-syntax-highlighting, fzf-tab
+#   - global aliases (alias -g G/F/X/...) — bash has no global aliases
+#   - zstyle completion styling
+#   - most ZLE widgets; a few are reimplemented with `bind -x`
+#
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+stty -ixon 2>/dev/null   # Disable ctrl-s/ctrl-q flow control
+
+# Helpers: {{{
+_has() { command -v "$1" >/dev/null 2>&1; }
+_bg()  { nohup "$@" >/dev/null 2>&1 & disown; }
+
+prependToEnv() {
+    case ":$(printenv "$1"):" in
+        *":$2:"*) : ;;                                   # already there
+        *) export "$1"="$2:$(printenv "$1")" ;;
+    esac
+}
+appendToEnv() {
+    case ":$(printenv "$1"):" in
+        *":$2:"*) : ;;                                   # already there
+        *) export "$1"="$(printenv "$1"):$2" ;;
+    esac
+}
+# }}}
+
+# Package manager replacement: gh-r binary fetcher {{{
+# Replaces the zinit `from"gh-r" as"command"` block. Downloads the release
+# asset matching the current architecture into an arch-namespaced bin dir
+# (so a shared $HOME works across x86_64 and aarch64). Run `bin_sync` once
+# per machine to install anything missing; PATH always includes BIN_DIR.
+export BIN_DIR="$HOME/.local/bin-$(uname -m)"
+[[ -d "$BIN_DIR" ]] || mkdir -p "$BIN_DIR"
+
+# Shared $HOME across architectures: a PATH inherited from a different-arch
+# node (e.g. an x86 login node -> an arm compute node under `srun --export=ALL`)
+# leaves the wrong arch's bin dir on PATH, where its binaries shadow ours and
+# fail to exec. Drop any ~/.local/bin-* that isn't this machine's BIN_DIR, then
+# put BIN_DIR first so freshly-synced binaries win.
+_clean_other_arch_path() {
+    local newp= entry
+    local -a parts
+    IFS=: read -r -a parts <<< "$PATH"
+    for entry in "${parts[@]}"; do
+        [[ -z "$entry" ]] && continue
+        case "$entry" in
+            "$HOME/.local/bin-"*) [[ "$entry" == "$BIN_DIR" ]] || continue ;;
+        esac
+        newp="${newp:+$newp:}$entry"
+    done
+    export PATH="$newp"
+}
+_clean_other_arch_path
+prependToEnv PATH "$BIN_DIR"
+
+# A GitHub token lifts the API limit from 60 -> 5000 req/hour. We look in the
+# usual env vars, then fall back to the gh CLI's stored token if present.
+_gh_token() {
+    if [[ -n "$GITHUB_TOKEN" ]]; then echo "$GITHUB_TOKEN"
+    elif [[ -n "$GH_TOKEN" ]]; then echo "$GH_TOKEN"
+    elif _has gh; then gh auth token 2>/dev/null
+    fi
+}
+
+# Emit all release-asset download URLs for <owner/repo>'s latest release.
+# Tries the REST API first (authenticated if a token is available); on failure
+# (e.g. unauthenticated 60/hour limit exhausted -> HTTP 403) it falls back to
+# scraping github.com, which uses the same un-rate-limited service as git clone.
+_gh_release_urls() {
+    local repo="$1" token urls tag
+    token=$(_gh_token)
+    local auth=()
+    [[ -n "$token" ]] && auth=(-H "Authorization: Bearer $token")
+
+    urls=$(curl -fsSL "${auth[@]}" "https://api.github.com/repos/$repo/releases/latest" 2>/dev/null \
+        | grep -oE '"browser_download_url": *"[^"]+"' | sed -E 's/.*"(https[^"]+)".*/\1/')
+
+    if [[ -z "$urls" ]]; then
+        # No-API fallback: resolve the latest tag via redirect, scrape its assets.
+        tag=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$repo/releases/latest" 2>/dev/null | sed -E 's#.*/tag/##')
+        [[ -n "$tag" ]] && urls=$(curl -fsSL "https://github.com/$repo/releases/expanded_assets/$tag" 2>/dev/null \
+            | grep -oE "/$repo/releases/download/[^\"']+" | sed 's#^#https://github.com#')
+    fi
+    [[ -n "$urls" ]] && printf '%s\n' "$urls"
+}
+
+# gh_get <owner/repo> [binary-name] [extra-asset-regex]
+# Skips if the binary is already on PATH or already in BIN_DIR.
+gh_get() {
+    local repo="$1" bin="${2:-${1##*/}}" extra="$3"
+    # Already installed for THIS architecture?
+    [[ -x "$BIN_DIR/$bin" ]] && return 0
+    # Otherwise present on PATH (e.g. a system package) — but ignore a binary
+    # living in a different arch's namespaced dir: it won't exec here.
+    local found; found=$(command -v "$bin" 2>/dev/null)
+    [[ -n "$found" && "$found" != "$HOME/.local/bin-"* ]] && return 0
+
+    local arch_pat
+    case "$(uname -m)" in
+        x86_64|amd64)  arch_pat='x86_64|amd64' ;;
+        aarch64|arm64) arch_pat='aarch64|arm64' ;;
+        *) echo "gh_get: unsupported arch $(uname -m)" >&2; return 1 ;;
+    esac
+
+    echo "Installing $bin from $repo ..." >&2
+
+    local url
+    url=$(_gh_release_urls "$repo" \
+        | grep -viE 'windows|darwin|macos|\.exe|\.msi|freebsd|netbsd|android|appimage|zsync|\.snap|\.apk' \
+        | grep -iE "$arch_pat" \
+        | grep -viE '\.(sha256|sha256sum|sha512|asc|sig|pem|deb|rpm|txt|sbom|json)([?#]|$)' \
+        | { if [[ -n "$extra" ]]; then grep -iE "$extra"; else cat; fi; } \
+        | head -1)
+
+    # No asset for this architecture (e.g. an aarch64 gap): a soft skip, not a
+    # hard error, so bin_sync keeps going. Signalled with rc 3.
+    [[ -z "$url" ]] && { echo "gh_get: no $(uname -m) asset for $repo — skipping" >&2; return 3; }
+
+    local tmp file found
+    tmp=$(mktemp -d) || return 1
+    file="$tmp/${url##*/}"
+    if ! curl -fsSL "$url" -o "$file"; then
+        echo "gh_get: download failed: $url" >&2; rm -rf "$tmp"; return 1
+    fi
+
+    case "$file" in
+        *.tar.gz|*.tgz)         tar -xzf "$file" -C "$tmp" ;;
+        *.tar.bz2|*.tbz|*.tbz2) tar -xjf "$file" -C "$tmp" ;;
+        *.tar.xz|*.txz)         tar -xJf "$file" -C "$tmp" ;;
+        *.zip)                  unzip -qo "$file" -d "$tmp" ;;
+        *)  # raw binary
+            install -m755 "$file" "$BIN_DIR/$bin" && echo "  -> $BIN_DIR/$bin" >&2
+            rm -rf "$tmp"; return 0 ;;
+    esac
+
+    found=$(find "$tmp" -type f -name "$bin" -perm -u+x 2>/dev/null | head -1)
+    [[ -z "$found" ]] && found=$(find "$tmp" -type f -name "$bin" 2>/dev/null | head -1)
+    if [[ -z "$found" ]]; then
+        echo "gh_get: '$bin' not found inside $repo asset" >&2; rm -rf "$tmp"; return 1
+    fi
+    install -m755 "$found" "$BIN_DIR/$bin" && echo "  -> $BIN_DIR/$bin" >&2
+    rm -rf "$tmp"
+}
+
+# gh_raw <owner/repo> <path-in-repo> [binary-name] [branch]
+# Installs a plain script straight from a repo (for tools shipped as source,
+# not release assets — the old zinit `from"gh" as"command"` case).
+gh_raw() {
+    local repo="$1" path="$2" bin="${3:-${2##*/}}" branch="${4:-main}"
+    [[ -x "$BIN_DIR/$bin" ]] && return 0
+    local found; found=$(command -v "$bin" 2>/dev/null)
+    [[ -n "$found" && "$found" != "$HOME/.local/bin-"* ]] && return 0
+    local token; token=$(_gh_token)
+    local auth=()
+    [[ -n "$token" ]] && auth=(-H "Authorization: Bearer $token")
+    echo "Installing $bin from $repo/$path ..." >&2
+    if curl -fsSL "${auth[@]}" "https://raw.githubusercontent.com/$repo/$branch/$path" -o "$BIN_DIR/$bin"; then
+        chmod +x "$BIN_DIR/$bin"; echo "  -> $BIN_DIR/$bin" >&2
+    else
+        echo "gh_raw: failed to fetch $repo/$path@$branch" >&2; rm -f "$BIN_DIR/$bin"; return 1
+    fi
+}
+
+# Install all the tools the old zinit block managed, if missing.
+bin_sync() {
+    mkdir -p "$BIN_DIR"
+    local -a unavailable=() failed=()
+    # Run one installer without letting a failure abort the whole sync. rc 3
+    # from gh_get means "no asset for this arch" (an expected gap, not a fault).
+    _sync() {
+        "$@"
+        case $? in
+            0) : ;;
+            3) unavailable+=("$2") ;;
+            *) failed+=("$2") ;;
+        esac
+    }
+    _sync gh_get junegunn/fzf           fzf
+    _sync gh_get BurntSushi/ripgrep     rg
+    _sync gh_get sharkdp/fd             fd
+    _sync gh_get cli/cli                gh
+    _sync gh_get aristocratos/btop      btop
+    _sync gh_get jesseduffield/lazygit  lazygit
+    _sync gh_get jqlang/jq              jq
+    _sync gh_get astral-sh/uv           uv
+    _sync gh_get sxyazi/yazi            yazi
+    _sync gh_get neovim/neovim          nvim
+    # nnn ships a prebuilt static binary for x86_64 only (asset has no "linux" in its name)
+    [[ "$(uname -m)" == x86_64 ]] && _sync gh_get jarun/nnn nnn 'nnn-static-'
+    # cb: clipboard helper shipped as a raw script (arch-independent)
+    _sync gh_raw niedzielski/cb cb
+    ((${#unavailable[@]})) && echo "bin_sync: no $(uname -m) asset (skipped): ${unavailable[*]}" >&2
+    ((${#failed[@]}))      && echo "bin_sync: failed (see errors above): ${failed[*]}" >&2
+    echo "bin_sync done for $(uname -m) -> $BIN_DIR" >&2
+}
+# }}}
+
+# History: {{{
+HISTFILE="${HOME}/.bash_history"
+HISTSIZE=120000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups   # ~ HIST_IGNORE_DUPS / IGNORE_SPACE
+HISTIGNORE=",*:cco*:ccp*"
+shopt -s histappend                # append, don't clobber
+# }}}
+
+# Shell options (setopt equivalents): {{{
+shopt -s checkwinsize
+shopt -s autocd      2>/dev/null   # AUTO_CD
+shopt -s cdable_vars 2>/dev/null   # CDABLE_VARS
+shopt -s globstar    2>/dev/null
+shopt -s dirspell    2>/dev/null
+shopt -s cdspell     2>/dev/null
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+# }}}
+
+# Exports: {{{
+export TERM="xterm-256color"
+export LESS="-iR"
+export LANG=en_US.UTF-8
+export LC_COLLATE="C"               # dotfiles clumped together in sorts
+
+export NNN_FIFO=/tmp/nnn.fifo
+export NNN_OPTS="exaAE"
+export NNN_COLORS="2136"
+export NNN_PLUG='g:getplugs;c:fuznavconf;f:fuznav;i:imgview;d:fuznavdir;j:jump;a:autojump;x:-!&xdg-open $nnn*;X:xdgdefault;p:!ptd -m "$nnn"*;r:!frifle "$nnn"*;s:fuznavsubdir;y:!xclip -selection clipboard -t image/png "$nnn"*'
+
+# From .zsh-local
+export NOTES_DIR=$HOME/Documents/Vault
+export JRNL_DIR=$HOME/Documents/Vault/journal
+export DOTDIR=$HOME/.dots
+export NIXPKGS_ALLOW_UNFREE=1
+
+# export PATH="/home/jayghoshsubo/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/jayghoshsubo/.local/bin:$PATH"
+
+_has nvim && export EDITOR='nvim' || export EDITOR='vim'
+# }}}
+
+# Prompt (replaces pure): {{{
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+_git_branch() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return
+    local b
+    b=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+    [[ -n "$b" ]] && printf ' (%s)' "$b"
+}
+PS1='${debian_chroot:+($debian_chroot)}\[\e[01;32m\]\u@\h\[\e[0m\]:\[\e[01;34m\]\w\[\e[0;33m\]$(_git_branch)\[\e[0m\]\$ '
+case "$TERM" in
+    xterm*|rxvt*) PS1="\[\e]0;\u@\h: \w\a\]$PS1" ;;
+esac
+# }}}
+
+# preexec/precmd emulation: long-run bell + tmux DISPLAY refresh: {{{
+LONGRUNTIME=30
+_preexec_ran=
+_cmd_timer() {
+    [[ -n "$COMP_LINE" ]] && return
+    [[ "$BASH_COMMAND" == _prompt_cmd ]] && return
+    [[ -n "$_preexec_ran" ]] && return
+    _preexec_ran=1
+    _timer=$SECONDS
+}
+trap '_cmd_timer' DEBUG
+
+# updates DISPLAY in stale tmux sessions
+tmux_update_display() {
+    _has grep && _has sed || return
+    if [ -n "$TMUX" ]; then
+        if [[ "$(tmux show-env 2>/dev/null | grep '^DISPLAY' | sed 's/DISPLAY=//')" != "$DISPLAY" ]]; then
+            export "$(tmux show-environment 2>/dev/null | grep '^DISPLAY')"
+        fi
+    fi
+}
+
+_prompt_cmd() {
+    if [[ -n "$_timer" ]]; then
+        (( SECONDS - _timer >= LONGRUNTIME )) && printf '\a'
+    fi
+    _preexec_ran=
+    _timer=
+    history -a
+    tmux_update_display
+}
+PROMPT_COMMAND=_prompt_cmd
+# }}}
+
+# Readline / bindings (bindkey equivalents): {{{
+set -o vi                                          # bindkey -v
+bind '"\C-p": history-search-backward'             # prefix history search
+bind '"\C-n": history-search-forward'
+bind '"\e[Z": menu-complete-backward'              # shift-tab reverse
+bind 'set show-all-if-ambiguous on'
+bind 'set menu-complete-display-prefix on'
+# vi command-mode H/L to line ends (v already opens $EDITOR in bash vi-mode)
+bind -m vi-command '"H": beginning-of-line'
+bind -m vi-command '"L": end-of-line'
+# }}}
+
+# Tool init (zoxide / autojump / fzf): {{{
+_has zoxide && eval "$(zoxide init bash)"
+[ -f /usr/share/autojump/autojump.bash ] && source /usr/share/autojump/autojump.bash
+[ -f "$HOME/.autojump/etc/profile.d/autojump.bash" ] && source "$HOME/.autojump/etc/profile.d/autojump.bash"
+# enable programmable completion
+if ! shopt -oq posix; then
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
+fi
+# }}}
+
+# ============================================================================
+# FZF configuration (from ~/.zsh-fzf)
+# ============================================================================
+# FZF env: {{{
+FZF_PREVIEW_CMD='scope.sh {q} {1}'
+
+export FZF_CTRL_R_OPTS="
+    --height=40%
+    --reverse
+    --bind='ctrl-r:toggle-sort'
+    --bind='ctrl-y:execute-silent(echo -n {2..} | xclip -sel clip)+abort'
+    --bind='alt-v:become(echo {2..} | vipe)'
+    --header='Ctrl-R: toggle sort | Ctrl-Y: copy | Alt-V: edit'
+"
+
+if _has rg; then
+    export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" -g "!*.o" 2> /dev/null'
+elif _has fd; then
+    export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git'
+else
+    export FZF_DEFAULT_COMMAND='find . -path ./.dropbox-dist -prune -o -printf "%P\\n"'
+fi
+
+export FZF_CTRL_T_COMMAND='fd -t f'
+export FZF_ALT_C_COMMAND='fd -t d'
+export FZF_ALT_C_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
+export FZF_CTRL_T_OPTS="--preview-window wrap --preview 'scope.sh {q} {1}'"
+export FZF_DEFAULT_OPTS="
+    --preview-window wrap
+    --reverse
+    --color='bg+:#5E81AC,prompt:#EBCB8B'
+    --bind 'ctrl-v:toggle'
+    --bind 'ctrl-s:toggle+down'
+    --bind 'ctrl-n:down'
+    --bind 'ctrl-p:up'
+    --bind 'ctrl-x:execute@nohup xdg-open {} >/dev/null 2>&1 & disown@'
+    --bind 'ctrl-e:execute@nohup litepub {} >/dev/null 2>&1 & disown@'
+    --bind 'ctrl-r:execute@frifle {}@'
+    --bind 'alt-j:half-page-down'
+    --bind 'alt-k:half-page-up'
+    --bind 'alt-v:execute@vipe <<< {}@'
+    --bind 'ctrl-f:jump'
+"
+
+# fzf key bindings + completion (Ctrl-T / Ctrl-R / Alt-C)
+if _has fzf; then
+    if fzf --bash >/dev/null 2>&1; then
+        eval "$(fzf --bash)"
+    else
+        for f in /usr/share/doc/fzf/examples/key-bindings.bash \
+                 /usr/share/fzf/key-bindings.bash \
+                 "$HOME/.fzf/shell/key-bindings.bash"; do
+            [ -f "$f" ] && source "$f" && break
+        done
+        for f in /usr/share/doc/fzf/examples/completion.bash \
+                 /usr/share/fzf/completion.bash \
+                 "$HOME/.fzf/shell/completion.bash"; do
+            [ -f "$f" ] && source "$f" && break
+        done
+    fi
+fi
+
+if _has fd; then
+    _fzf_compgen_path() { fd --hidden --follow --exclude ".git" . "$1"; }
+    _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1"; }
+fi
+# }}}
+
+# Unified nav / search entry points: {{{
+nav() {
+    case "$1" in
+        "")            fj ;;
+        j|jump)        j "${@:2}" ;;
+        k|zoxide)      k "${@:2}" ;;
+        p|parent)      dp ;;
+        locate|find)   fj "$@" ;;
+        recent|r)      cd "$(autojump -s | awk '{$1=""; print substr($0,2)}' | fzf --height 40% --tac)" ;;
+        *)             fj "$@" ;;
+    esac
+}
+search() {
+    case "$1" in
+        "")        vg "${@:2}" ;;
+        vim|v)     vimw "$2" ;;
+        recent|r)  local pattern="${2:-.}"
+                   fc -rl 1 | grep "$pattern" | awk '{$1=""; print substr($0,2)}' \
+                       | fzf --height 40% --reverse --preview "echo {}" ;;
+        config|c)  vg --type-list | grep -i config ;;
+        all|a)     rg -S --type-list "${@:2}" 2>/dev/null || vg "${@:2}" ;;
+        *)         vg "$@" ;;
+    esac
+}
+alias s='search'
+
+fzf-history-cwd() {
+    fc -rl 1 | awk '{$1=""; print substr($0,2)}' | fzf --height 40% --reverse --preview "echo {}"
+}
+# }}}
+
+# fzf navigation functions: {{{
+# fl - fuzzy locate anything under $HOME
+fzf_locate() {
+    local OUT FILE
+    OUT=$(fd -L --base-directory="$HOME" "$@" . | fuzscope --base-directory "$HOME")
+    if [[ -n "$OUT" ]]; then
+        FILE="${OUT##*$'\n'}"
+        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | peek
+    fi
+}
+alias fl="fzf_locate"
+
+# fj - fuzzy cd (jump) from anywhere
+fj() {
+    local file
+    file=$(fd --base-directory="$HOME" -L "$@" . | fuzscope --base-directory "$HOME")
+    if [[ -n "$file" ]]; then
+        if [[ -d "$file" ]]; then cd -- "$file"; else cd -- "${file%/*}"; fi
+    fi
+}
+
+# vg - fuzzy grep-edit via rg/ag/grep
+vg() {
+    if [ ! "$#" -gt 0 ]; then echo "Need a string to search for!"; return 1; fi
+    if _has rg; then
+        rg -S --no-heading --no-messages --line-number "$@" | fzf -e -d ':' \
+            --preview 'rg --pretty --with-filename --context 3 . {1} | sed -n "$((({2}-3>0?{2}-3:1)),({2}+3))p"' \
+            --bind "enter:execute: $EDITOR {1} +{2}"
+    elif _has ag; then
+        ag -S --nobreak --noheading "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
+    else
+        grep -irEnH "$@" | fzf -e -d ':' --bind "enter:execute: $EDITOR {1} +{2}"
+    fi
+}
+
+# dp - cd to a selected parent directory
+dp() {
+    local dirs=() DIR _dir
+    get_parent_dirs() {
+        if [[ -d "$1" ]]; then dirs+=("$1"); else return; fi
+        if [[ "$1" == '/' ]]; then
+            for _dir in "${dirs[@]}"; do echo "$_dir"; done
+        else
+            get_parent_dirs "$(dirname "$1")"
+        fi
+    }
+    DIR=$(get_parent_dirs "$(realpath "${1:-$PWD}")" | fzf-tmux)
+    [ -n "$DIR" ] && cd "$DIR"
+}
+
+# cd with no args -> interactive picker
+cd() {
+    if [[ "$#" != 0 ]]; then builtin cd "$@"; return; fi
+    local lsd sel lines query key fname
+    while true; do
+        lsd=$(echo ".." && ls -pL --group-directories-first --color=never)
+        sel="$(printf '%s\n' "$lsd" | fzf --reverse --print-query --expect=ctrl-e \
+            --bind="ctrl-y:execute@echo ${PWD}/{} | xclip -i -selection clipboard@" \
+            --preview 'scope.sh {q} {}')"
+        [[ -z "$sel" ]] && return 0
+        mapfile -t lines <<< "$sel"
+        query="${lines[0]}"; key="${lines[1]}"; fname="${lines[2]}"
+        if [[ -f "$fname" ]] && _has filer; then
+            printf '%s\n' "$query" "$fname" | filer
+        elif [[ -f "$query" ]] && _has filer; then
+            printf '%s\n' "$query" "$fname" | filer
+        elif [[ -d "$fname" ]]; then
+            builtin cd "$fname" &>/dev/null
+        elif [[ -d "$query" ]]; then
+            builtin cd "$query" &>/dev/null
+        fi
+    done
+}
+
+# fuzzy locate under ~/.config
+fzf_locate_config() {
+    local QUERY="" OUT FILE
+    [ $# -gt 0 ] && QUERY="--query=$*"
+    OUT=$(fd . -L --base-directory="$HOME/.config" | fuzscope --base-directory "$HOME/.config" $QUERY)
+    if [[ -n "$OUT" ]]; then
+        FILE="${OUT##*$'\n'}"
+        [ -d "$FILE" ] && cd "$FILE" || echo "$OUT" | peek
+    fi
+}
+alias flc="fzf_locate_config"
+
+fzf_copy() {
+    local OUT file
+    OUT=$(fd "$@" . ~ | fuzscope -m)
+    while IFS= read -r file; do [ -n "$file" ] && cp -r "$file" .; done <<< "$OUT"
+}
+alias fcp="fzf_copy"
+# }}}
+
+# git fzf helpers: {{{
+alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr% C(auto)%an" "$@"'
+_gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+_viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always % | less '"
+
+fshow() {
+    git log --graph --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr" "$@" |
+    fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
+        --header "enter to view, ctrl-y to copy hash" \
+        --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard" \
+        --bind "ctrl-m:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 |
+                xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+                {}
+FZF-EOF"
+}
+fshow_preview() {
+    glNoGraph |
+        fzf --no-sort --reverse --tiebreak=index --no-multi --ansi --preview="$_viewGitLogLine" \
+            --header "enter to view, ctrl-y to copy hash" \
+            --bind "enter:execute:$_viewGitLogLine   | less -R" \
+            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard"
+}
+# }}}
+
+# misc fzf functions: {{{
+fjrnl() {
+    local title; title=$(jrnl --short | fzf --tac --no-sort)
+    [[ -n "$title" ]] && jrnl -on "${title:0:16}" "$1"
+}
+
+j() {
+    if ! _has autojump; then fj; return; fi
+    if [[ "$#" -ne 0 ]]; then cd "$(autojump "$@")"; return; fi
+    cd "$(autojump -s | awk '/_____/{exit} {$1=""; print substr($0,2)}' | fzf --height 40% --tac)"
+}
+k() {
+    if ! _has zoxide; then fj; return; fi
+    if [[ "$#" -ne 0 ]]; then cd "$(__zoxide_z "$@")"; return; fi
+    cd "$(zoxide query --list --score | awk '{$1=""; print substr($0,2)}' | fzf --height 40% --tac)"
+}
+
+p() {
+    local open=xdg-open
+    ag -U -g ".pdf$" \
+    | fast-p \
+    | fzf --read0 --reverse -e -d $'\t' \
+        --preview-window down:80% --preview '
+            v=$(echo {q} | tr " " "|");
+            echo -e {1}"\n"{2} | grep -E "^|$v" -i --color=always;
+        ' \
+    | cut -z -f 1 -d $'\t' | tr -d '\n' | xargs -r --null $open > /dev/null 2>&1
+}
+
+fsh() { ssh -Y "$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -q "$1" -1)"; }
+fst() {
+    grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf -m -q "$1" -1 | while read -r host; do
+        ssh -O stop "$host"
+    done
+}
+fsend() {
+    local BAK="$FZF_DEFAULT_COMMAND" files host file
+    export FZF_DEFAULT_COMMAND='fd .'
+    files=$(fzf -m --reverse -q "$1")
+    [ -z "$files" ] && { export FZF_DEFAULT_COMMAND="$BAK"; return; }
+    host=$(grep '^Host\b' $HOME/.ssh/config* | awk '{print $2}' | fzf)
+    [ -z "$host" ] && { export FZF_DEFAULT_COMMAND="$BAK"; return; }
+    host=$host":sent"
+    while IFS=$'\n' read -r file; do scp -rC "$file" "$host"; done <<< "$files"
+    export FZF_DEFAULT_COMMAND="$BAK"
+}
+
+fkill() {
+    local pid
+    pid=$(ps -ef | sed 1d | fzf -m --preview="ps -p {2}" --preview-window=down:3 | awk '{print $2}')
+    [ -n "$pid" ] && kill -"${1:-9}" "$pid"
+}
+# }}}
+
+# ============================================================================
+# Aliases (from ~/.zshrc)
+# ============================================================================
+# Aliases: {{{
+alias sudo="sudo -E"
+alias i3c="dotf $HOME/.config/i3/config"
+alias bc="$EDITOR $HOME/.bashrc"
+alias bz="source $HOME/.bashrc"
+alias zz="source $HOME/.bashrc"
+alias nrc="GIT_DIR=$DOTDIR GIT_WORK_TREE=$HOME $EDITOR $HOME/.config/nvim/init.lua +'lcd %:p:h'"
+
+alias n="notes"
+alias nn="notes --new"
+alias fns="fnotesearch"
+alias nd="notes -d $HOME/Dropbox/DND"
+alias ndn="note -d $HOME/Dropbox/DND"
+
+alias t="thesaurus"
+alias gj="git-jump"
+alias fu="findup.py"
+
+_has nvim && alias vim="nvim" vimdiff="nvim -d"
+
+alias ls='ls --color -v -N'
+alias la='ls -la --color -v -N'
+alias ll='ls -la --color --group-directories-first'
+
+# Open modified files (ACMR = Added/Copied/Modified/Renamed)
+alias vd="$EDITOR \$(git diff HEAD --name-only --diff-filter=ACMR)"
+alias vds="$EDITOR \$(git diff --staged --name-only --diff-filter=ACMR)"
+alias vdc="$EDITOR \$(git diff HEAD^ --name-only --diff-filter=ACMR)"
+alias vdd="$EDITOR \$(git diff develop --name-only --diff-filter=ACMR)"
+
+alias stj="ssh -qTfnN2 -D 8086 ibt014"
+alias val='valgrind -v --leak-check=full --show-leak-kinds=all --track-origins=yes --show-reachable=yes'
+
+alias F="sudo -E nnn -dH"
+alias f='y'
+alias lg="lazygit"
+alias lgd="lazygit --git-dir=$DOTDIR --work-tree=$HOME"
+alias llgd="lazygit --git-dir=$HOME/.localdots --work-tree=$HOME"
+
+alias news="newsboat"
+alias mail="aerc"
+alias mail-sync="~/.config/aerc/sync.sh"
+alias newsc="vim ~/.newsboat/config"
+alias newsu="vim ~/.newsboat/urls"
+
+alias sst="ssh -O stop"
+alias LDTRACE="LD_TRACE_LOADED_OBJECTS=1"
+alias nvim-sync='nvim --headless "+Lazy! sync" +qa'
+
+alias hh="home-manager switch --flake ~/.config/home-manager#${USER} --impure"
+alias h="home-manager"
+alias he="home-manager edit"
+alias hg="home-manager generations"
+
+alias LD="DOTDIR=$HOME/.localdots"
+alias DD="GIT_DIR=$HOME/.dots GIT_WORK_TREE=$HOME"
+alias hfuncs='fzf-functions-help'
+alias ,=cco
+# }}}
+
+# ============================================================================
+# Functions (from ~/.zshrc)
+# ============================================================================
+# General functions: {{{
+xo() {
+    local ARG EXT
+    for ARG in "$@"; do
+        if [[ "$ARG" =~ : ]]; then
+            EXT=${ARG##*.}
+            scp -rC "$ARG" "/tmp/remotefile.$EXT" \
+                && _bg xdg-open "/tmp/remotefile.$EXT" \
+                || { >&2 echo "file not found!"; return 1; }
+        else
+            _bg xdg-open "$ARG"
+        fi
+    done
+}
+
+x() {
+    if [[ -z "$2" ]]; then _bg "$1"; return; fi
+    local OPENER=$1 ARG EXT; shift
+    for ARG in "$@"; do
+        if [[ "$ARG" =~ : ]]; then
+            EXT=${ARG##*.}
+            scp -rC "$ARG" "/tmp/remotefile.$EXT" \
+                && _bg "$OPENER" "/tmp/remotefile.$EXT" \
+                || { >&2 echo "file not found!"; return 1; }
+        else
+            _bg "$OPENER" "$ARG"
+        fi
+    done
+}
+
+cht()  { curl "cht.sh/$1"; }
+vimw() { local cmd; cmd=$(command -v "$1") || { echo "Command not found: $1" >&2; return 1; }; vim "$(readlink -f "$cmd")"; }
+vq()   { nvim -q <(rg -S --vimgrep "$@"); }
+mkc()  { mkdir "$1" && cd "$1"; }
+yp()   { echo "$PWD/$1" | tr -d '\n' | xclip -i -selection clipboard; }
+yd()   { echo "$PWD"     | tr -d '\n' | xclip -i -selection clipboard; }
+rep()  { local n="$1"; shift; local i; for ((i=0; i<n; i++)); do echo "$@"; done; }
+ff()   { fuzscope "$@" | peek; }
+ssr()  { ssh -O stop "$1"; ssh "$1"; }
+
+man() {
+    env \
+    LESS_TERMCAP_mb="$(printf "\e[1;31m")" \
+    LESS_TERMCAP_md="$(printf "\e[1;31m")" \
+    LESS_TERMCAP_me="$(printf "\e[0m")" \
+    LESS_TERMCAP_se="$(printf "\e[0m")" \
+    LESS_TERMCAP_so="$(printf "\e[1;44;33m")" \
+    LESS_TERMCAP_ue="$(printf "\e[0m")" \
+    LESS_TERMCAP_us="$(printf "\e[1;32m")" \
+    man "$@"
+}
+
+ring() {
+    local dtime=$1; shift
+    local time
+    if [[ $dtime =~ : ]]; then
+        time=$dtime
+    else
+        time=$(pdd --add "$(toseconds "$dtime")" | head -n 1)
+    fi
+    time=$(echo "$time" | tr -d ':')
+    time="${time:0:4}"
+    echo "notify-send --urgency=critical 'Reminder' $*" | at "$time"
+}
+
+# yazi: cd on quit
+y() {
+    local tmp cwd
+    tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+vimfu() { local file; file=$(findup.py "$@"); [ -n "$file" ] && $EDITOR "$file"; }
+
+goto() {
+    local cmd; cmd=$(command -v "$1") || { echo "Command not found: $1" >&2; return 1; }
+    cd "$(dirname "$(readlink -f "$cmd")")"
+}
+
+# nix helpers
+nsd() { nix show-derivation "$(nix path-info --derivation "nixpkgs#$1")"; }
+nsp() { local storepath; storepath=$(nix eval --raw "nixpkgs#$1.outPath"); echo "$storepath"; }
+ned() { nix edit "nixpkgs#$1"; }
+fml() { module load "$(fmod "$@")"; }
+
+is_chroot() {
+    awk 'BEGIN{exit_code=1} $2 == "/" {exit_code=0} END{exit exit_code}' /proc/mounts
+    echo $?
+}
+# }}}
+
+# Dotfile management: {{{
+dot()   { command git --git-dir="$DOTDIR" --work-tree="$HOME" "$@"; }
+dots()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" status "$@"; }
+dotc()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" commit --verbose "$@"; }
+dota()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" add "$@"; }
+dotu()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" add --update "$@"; }
+dotd()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" diff "$@"; }
+dotr()  { command git --git-dir="$DOTDIR" --work-tree="$HOME" rm "$@"; }
+dotlg() { lazygit --git-dir="$DOTDIR" --work-tree="$HOME"; }
+
+dotf() {
+    local QUERY=""
+    [ $# -gt 0 ] && QUERY="-q $*"
+    command git --git-dir="$DOTDIR" --work-tree="$HOME" ls-tree --full-tree -r HEAD \
+        | awk -F'\t' '{print $NF}' | sed "s@^@$HOME/@" \
+        | fzf --preview="scope.sh {q} {}" -1 -0 -e $QUERY \
+        | GIT_DIR="$DOTDIR" GIT_WORK_TREE="$HOME" peek
+}
+dotaf() {
+    local files
+    files=$(command git --git-dir="$DOTDIR" --work-tree="$HOME" diff --name-only | sed "s@^@$HOME/@" \
+        | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}")
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir="$DOTDIR" --work-tree="$HOME" add
+}
+dotcf() {
+    local files
+    files=$(command git --git-dir="$DOTDIR" --work-tree="$HOME" diff --name-only | sed "s@^@$HOME/@" \
+        | fzf -m --preview="command git --git-dir=$DOTDIR --work-tree=$HOME diff --color {}")
+    [ -n "$files" ] && echo "$files" | xargs command git --git-dir="$DOTDIR" --work-tree="$HOME" add
+    command git --git-dir="$DOTDIR" --work-tree="$HOME" commit --verbose "$@"
+}
+dotsparsity() { $EDITOR "$DOTDIR/info/sparse-checkout"; dot read-tree -m -u HEAD; }
+dotlog() {
+    local _gitLogLineToHash _viewGitLogLine
+    _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
+    _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git --git-dir=$DOTDIR --work-tree=$HOME show --color=always % | less '"
+    dot log --color=always --format="%C(auto)%h%d %s %C(cyan)%C(bold)%cr% C(auto)%an" "$@" |
+        fzf --no-sort --reverse --tiebreak=index --no-multi --ansi --preview="$_viewGitLogLine" \
+            --header "enter to view, ctrl-y to copy hash" \
+            --bind "enter:execute:$_viewGitLogLine   | less -R" \
+            --bind "ctrl-y:execute:$_gitLogLineToHash | xclip -i -selection clipboard"
+}
+# }}}
+
+# peek - smart file opener: {{{
+peek() {
+    local mode="edit"
+    [[ "$1" == "-p" || "$1" == "--print" ]] && { mode="print"; shift; }
+    local files=("$@") line
+    [[ ${#files[@]} -eq 0 ]] && while IFS= read -r line; do files+=("$line"); done
+    local f file mime
+    for f in "${files[@]}"; do
+        file=$(realpath "$f" 2>/dev/null) || continue
+        [[ -L "$file" ]] && file=$(readlink -f "$file")
+        mime=$(file --brief --mime-type "$file" 2>/dev/null)
+        case "$mime" in
+            inode/directory)
+                [[ "$mode" == "edit" ]] && builtin cd "$file" || ls "$file" ;;
+            text/*|application/json|inode/x-empty)
+                [[ "$mode" == "edit" ]] && $EDITOR "$file" || cat "$file" ;;
+            application/pdf|text/html)
+                _bg xdg-open "$file" ;;
+            application/octet-stream)
+                [[ "$mode" == "edit" ]] && dex -e "$file" || dex -p "$file" ;;
+            *)
+                if _has urler.sh && [[ "$file" =~ ^https?:// ]]; then
+                    urler.sh "$file"
+                else
+                    _bg xdg-open "$file"
+                fi ;;
+        esac
+    done
+}
+# }}}
+
+# ============================================================================
+# Claude Code: model + effort helpers (from ~/.zsh-local)
+# ============================================================================
+# cc helpers: {{{
+: "${CC_MODEL:=sonnet}"
+: "${CC_EFFORT:=medium}"
+
+# If $1 is a <model><effort> tag (e.g. oxhigh, omax, shigh), set model/effort.
+_cc_tag() {
+    [[ "$1" =~ ^([osh])(low|medium|high|xhigh|max)$ ]] || return 1
+    case "${BASH_REMATCH[1]}" in
+        o) model=opus   ;;
+        s) model=sonnet ;;
+        h) model=haiku  ;;
+    esac
+    effort="${BASH_REMATCH[2]}"
+}
+
+_cc() {
+    local mode="$1"; shift
+    local model="$CC_MODEL" effort="$CC_EFFORT"
+    _cc_tag "$1" && shift
+    if [[ "$mode" == print ]]; then
+        if (( $# )); then
+            echo "$*" | claude --model "$model" --effort "$effort" --fallback-model sonnet --print
+        else
+            claude --model "$model" --effort "$effort" --fallback-model sonnet --print
+        fi
+    else
+        claude --model "$model" --effort "$effort" "$@"
+    fi
+}
+
+cc()  { _cc interactive "$@"; }
+alias cci=cc
+ccp() { _cc print "$@"; }
+ccn() { cd "$NOTES_DIR" || return; cc "$@"; }
+cct() { local d; d="$(mktemp -d)" && cd "$d" || return; cc "$@"; cd - >/dev/null; }
+cco() { local d; d="$(mktemp -d)" && cd "$d" || return; ccp "$@"; cd - >/dev/null; }
+# }}}
+
+# Readline widgets (bind -x reimplementations of ZLE widgets): {{{
+_fzf_find_file() {
+    local file; file=$(fd --type f | fzf +m)
+    [[ -n "$file" ]] && builtin cd -- "${file%/*}"
+}
+_fzf_find_dir() {
+    local dir; dir=$(find . -type d 2>/dev/null | fzf +m)
+    [[ -n "$dir" ]] && builtin cd -- "$dir"
+}
+_git_root() {
+    local root; root=$(git rev-parse --show-toplevel 2>/dev/null) || return
+    builtin cd -- "$root"
+}
+_fuzzy_parent() { dp; }
+_vg_prompt() {
+    local search_term
+    read -e -p "Search for: " search_term
+    [[ -n "$search_term" ]] && vg "$search_term"
+}
+bind -x '"\C-f": _fzf_find_file'   # Ctrl-F : find file, cd to its dir
+bind -x '"\ed":  _fzf_find_dir'    # Alt-D  : find subdir, cd
+bind -x '"\er":  _git_root'        # Alt-R  : cd to git root
+bind -x '"\ep":  _fuzzy_parent'    # Alt-P  : fuzzy parent
+bind -x '"\es":  _vg_prompt'       # Alt-S  : prompt, then grep-edit
+# }}}
+
+# help reference: {{{
+fzf-functions-help() {
+    cat << 'EOF'
+
+NAVIGATION & EDITING KEYBINDS
+  Ctrl+F   Find file, cd to its directory (recursive from cwd)
+  Alt+D    Find subdirectory, cd to it
+  Alt+R    cd to git root (silent if not a repo)
+  Alt+P    Fuzzy-pick a parent directory and cd
+  Alt+S    Prompt for a search string, then grep and edit
+  Ctrl+P/N History prefix search
+
+COMMANDS
+  n / nav     Navigate (nav j|k|p|recent)
+  s / search  Search & edit (s v|recent|all)
+  cd          Interactive directory picker (no args)
+  fl / flc    Fuzzy locate under $HOME / ~/.config
+  fj vg dp    Fuzzy jump; grep-edit; parent picker
+  fshow fkill Git commit browser; pick & kill process
+  bin_sync    Install missing CLI tools for this arch
+EOF
+}
+# }}}
+
+# Tail: machine PATH extras, optional local overrides, fastfetch {{{
+[[ -d "$HOME/bin" ]] && appendToEnv PATH "$HOME/bin"
+[ -d /opt/p4v/bin ] && appendToEnv PATH /opt/p4v/bin
+[ -d /opt/pycharm-community-2020.3.3/bin ] && appendToEnv PATH /opt/pycharm-community-2020.3.3/bin
+
+# Optional per-machine overrides (keeps this rc portable)
+[ -f ~/.bash-local ] && source ~/.bash-local
+
+_has fastfetch && /usr/bin/fastfetch
+# }}}
+
+prependToEnv PATH $HOME/.local/bin
