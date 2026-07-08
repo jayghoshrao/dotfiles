@@ -28,15 +28,22 @@ stty -ixon                                                       # Disables ctrl
 # ZINIT: {{{
 # export LOAD_ZINIT=false # in docker images if necessary
 if [[ $LOAD_ZINIT != false ]] ; then
-    if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    # Architecture-namespaced zinit home: $HOME is shared across x86_64/aarch64
+    # machines, so keep a separate tree per arch. gh-r auto-detects the CPU and
+    # downloads the matching release asset into the right tree.
+    typeset -A ZINIT
+    ZINIT[HOME_DIR]="$HOME/.zinit-$(uname -m)"
+    ZINIT[BIN_DIR]="${ZINIT[HOME_DIR]}/bin"
+
+    if [[ ! -f ${ZINIT[BIN_DIR]}/zinit.zsh ]]; then
         print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-        command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-        command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
+        command mkdir -p "${ZINIT[HOME_DIR]}" && command chmod g-rwX "${ZINIT[HOME_DIR]}"
+        command git clone https://github.com/zdharma-continuum/zinit "${ZINIT[BIN_DIR]}" && \
             print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
             print -P "%F{160}▓▒░ The clone has failed.%f%b"
     fi
 
-    source "$HOME/.zinit/bin/zinit.zsh"
+    source "${ZINIT[BIN_DIR]}/zinit.zsh"
     autoload -Uz _zinit
     (( ${+_comps} )) && _comps[zinit]=_zinit
 
@@ -86,7 +93,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
         if'[[ -z "$commands[nvim]" ]]' mv"nvim*->nvim" pick"nvim/bin/nvim" @neovim/neovim \
         if'[[ -z "$commands[rg]" ]]' mv"ripgrep*->ripgrep" pick"ripgrep/rg" @BurntSushi/ripgrep \
         if'[[ -z "$commands[fd]" ]]' mv"fd*->fd" pick"fd/fd" @sharkdp/fd \
-        if'[[ -z "$commands[nnn]" ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
+        if'[[ -z "$commands[nnn]" && "$(uname -m)" == x86_64 ]]' bpick"nnn-static*" mv"nnn*->nnn" @jarun/nnn \
         if'[[ -z "$commands[gh]" ]]' mv"gh*->gh" pick"gh/bin/gh" @cli/cli \
         if'[[ -z "$commands[btop]" ]]' pick"btop/bin/btop" @aristocratos/btop \
         if'[[ -z "$commands[lazygit]" ]]' mv"lazygit*->lazygit" pick"lazygit" @jesseduffield/lazygit \
@@ -303,9 +310,9 @@ alias -g V='| vipe'
 alias -g R='rep'
 alias -g H='--help | less'
 
-alias ls='ls --color -v -N'
-alias la='ls -la --color -v -N'
-alias ll='ls -la --color --group-directories-first'
+alias ls='ls --color=auto -v -N'
+alias la='ls -la --color=auto -v -N'
+alias ll='ls -la --color=auto --group-directories-first'
 # alias ll='exa --long --all --links --git --git-ignore'
 
 # Open modified files
@@ -622,7 +629,7 @@ alias s='search'       # Quick search/edit (s, s pattern, s v, s f, s x)
 # CUSTOM KEYBINDING WIDGETS
 # ============================================================================
 
-# Alt+f: Find and jump to subdirectory containing file, recursively from here
+# +f: Find and jump to subdirectory containing file, recursively from here
 _fzf_find_file() {
     local file
     file=$(fd --type f | fzf +m -q "$1")
@@ -633,11 +640,12 @@ _fzf_find_file() {
 }
 zle -N _fzf_find_file
 bindkey '^F' _fzf_find_file
+bindkey '^[f' _fzf_find_file
 
 # Alt+d: Find and jump to subdirectory, recursively from here
 _fzf_find_dir() {
     local dir
-    dir=$(find . -type d 2>/dev/null | fzf +m)
+    dir=$(find . -type d -not -path '*/.git/*' 2>/dev/null | fzf +m)
     if [[ -n "$dir" ]]; then
         builtin cd -- "$dir"
     fi
@@ -688,7 +696,7 @@ fzf-functions-help() {
 
 YOUR CUSTOM KEYBINDINGS FOR NAVIGATION:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Ctrl+F           Find file, jump to its directory (recursive from cwd)
+  Ctrl+F|Alt+F     Find file, jump to its directory (recursive from cwd)
   Ctrl+Shift+F     Fuzzy locate from home (fl) - requires CSI u terminal
   Alt+D            Find subdirectory, jump to it (recursive from cwd)
   Alt+R            Jump to git root (silent if not in git repo)
@@ -807,6 +815,26 @@ alias h="home-manager"
 alias he="home-manager edit"
 alias hg="home-manager generations"
 
+# hhu: update the software stack — bump flake inputs, then switch.
+# No args updates every input; pass an input name to update just one,
+# e.g. `hhu nixpkgs` (leaves pinned tools like tsync/whisrs untouched).
+# Note: tsync's Python deps are locked separately — `uv lock` in
+# ~/.config/home-manager/pkgs/tsync/, not via flake update.
+hhu() {
+  ( cd ~/.config/home-manager && nix flake update "$@" ) \
+    && home-manager switch --flake ~/.config/home-manager#${USER} --impure
+}
+
+# hhr: roll back to the previous home-manager generation (the 2nd entry
+# in `home-manager generations`) by re-running its activation script.
+hhr() {
+  local prev
+  prev=$(home-manager generations | sed -n '2p' | grep -oE '/nix/store/[^ ]+')
+  [[ -z "$prev" ]] && { echo "hhr: no previous generation found" >&2; return 1; }
+  echo "Rolling back to: $prev"
+  "$prev/activate"
+}
+
 alias news="newsboat"
 alias mail="aerc"
 alias mail-sync="~/.config/aerc/sync.sh"
@@ -825,8 +853,17 @@ goto() {
 
 alias nvim-sync='nvim --headless "+Lazy! sync" +qa'
 
+alias ,awk="awk -F ',' -v OFS=','"
+
 # I've generally avoided setting PATH in this file
 # and delegated that to the zsh-local file, but it's
 # good to have this when working on multiple servers
 # for a quick and easy setup.
 [[ -d "$HOME/bin" ]] && appendToEnv PATH "$HOME/bin"
+
+# Auto-quote special chars (?, &, etc.) in URLs as typed/pasted.
+# url-quote-magic: typed input (self-insert); bracketed-paste-magic: pastes.
+autoload -Uz url-quote-magic bracketed-paste-magic
+zle -N self-insert url-quote-magic
+zle -N bracketed-paste bracketed-paste-magic
+

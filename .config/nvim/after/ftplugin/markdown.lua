@@ -3,7 +3,8 @@
 vim.opt_local.spell = true
 
 vim.opt_local.wrap = true
-vim.opt_local.textwidth = 80
+vim.opt_local.textwidth = 0 -- No hard line breaks at a fixed width
+vim.opt_local.formatoptions:remove 't' -- Don't auto-wrap text while typing
 
 -- Disable some weird autoindenting
 -- https://github.com/plasticboy/vim-markdown/issues/126

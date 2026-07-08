@@ -183,4 +183,4 @@ vim.cmd [[ let fortran_fold_multilinecomments = 1 ]]
 
 opt.winborder = 'rounded'
 
-opt.conceallevel = 1
+opt.conceallevel=0

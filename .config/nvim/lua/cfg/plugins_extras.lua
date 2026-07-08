@@ -221,7 +221,55 @@ return {
         "esmuellert/codediff.nvim",
         dependencies = { "MunifTanjim/nui.nvim" },
         cmd = "CodeDiff",
+    },
+
+    -- {
+    --     "cachebag/jumpy",
+    --     config = function()
+    --         require("jumpy").setup({
+    --             provider = "openai",
+    --             model = "gpt-5.5",
+    --             api_key = vim.env.OPENAI_API_KEY or vim.env.CODEX_API_KEY,
+    --             keymaps = {
+    --                 prompt = ";j",
+    --                 next_hunk = ";n",
+    --                 prev_hunk = ";p",
+    --                 accept = ";y",
+    --                 reject = ";x",
+    --                 accept_all = ";Y",
+    --                 reject_all = ";X",
+    --                 reprompt = ";r",
+    --                 quickfix = ";q",
+    --             },
+    --         })
+    --     end,
+    -- }
+
+    {
+        "rinogodson/curb.nvim",
+        config=function()
+            require("curb").setup({
+                trigger_key = ";j",
+                accept_key = "<C-y>",
+                reject_key = "<C-n>",
+                reprompt_key = "<C-p>",
+                provider = {
+                    endpoint = "https://inference-api.nvidia.com/v1/chat/completions",
+                    model = "nvidia/deepseek-ai/eccn-deepseek-v4-pro",
+                    api_key_env = "INFHUB_DEEPSEEK_API_KEY",
+                    api_key_file = nil,
+                },
+                highlights = {
+                    normal = "Normal",
+                    border = "Keyword",
+                    title_icon = "DiagnosticInfo",
+                    title_text = "Keyword",
+                    footer = "Comment",
+                },
+            })
+        end,
     }
+
 
 }
 

@@ -76,7 +76,7 @@ return {
         keys = {
             { ";m", "<cmd>Grapple toggle<cr>", desc = "Grapple toggle tag" },
             -- { ";;", "<cmd>Grapple toggle_tags<cr>", desc = "Grapple open tags window" },
-            { ";w", "<cmd>Grapple toggle_tags<cr>", desc = "Grapple open tags window" },
+            -- { ";w", "<cmd>Grapple toggle_tags<cr>", desc = "Grapple open tags window" },
 
             { ";1", "<cmd>Grapple select index=1<cr>", desc = "Select first tag" },
             { ";2", "<cmd>Grapple select index=2<cr>", desc = "Select second tag" },
@@ -221,7 +221,8 @@ return {
     -- Treesitter ------------------------------------------------------------------
     {
         'nvim-treesitter/nvim-treesitter',
-        -- build = ':TSUpdate',
+        branch = 'main',            -- the rewrite; master is frozen
+        build = ':TSUpdate',
         enabled = function()
             return vim.fn.executable('gcc')==1 or vim.fn.executable('clang')==1
         end,
@@ -230,7 +231,7 @@ return {
         end,
         dependencies = {
             -- 'nvim-treesitter/playground',
-            -- 'nvim-treesitter/nvim-treesitter-textobjects',
+            { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' },
             -- 'RRethy/nvim-treesitter-textsubjects',
             {
                 'numToStr/Comment.nvim',
@@ -545,6 +546,16 @@ return {
     -- Future ----------------------------------------------------------------------
     -- { 'jayghoshter/tasktags.vim', ft={'markdown', 'pandoc', 'vimwiki', 'tex'}},
 
+    {
+        dir = vim.fn.expand("~/dev/daylog.nvim"),
+        name = "daylog.nvim",
+        ft = { "markdown", "vimwiki" },
+        config = function()
+            require("daylog").setup()
+        end,
+    },
+
+    { 'glacambre/firenvim', build = ":call firenvim#install(0)" },
     -- {
     --     'MeanderingProgrammer/render-markdown.nvim',
     --     ft = {"markdown", "Avante"},

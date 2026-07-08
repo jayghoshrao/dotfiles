@@ -89,6 +89,21 @@ map('n', '<leader>r', ":lua require('cfg.utils').cd_root()<CR>")
 -- map('n', '<F2>', ':%s/\s*$//e<CR>')
 
 map('n', '<space><space>', '<c-^>')
+
+-- Add blank lines (like ]<space> / [<space> from vim-unimpaired)
+-- Keep the cursor on the original text line rather than on the new blank line.
+map('n', 'g<space>j', function()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  vim.cmd('put =repeat(nr2char(10), v:count1)')
+  vim.api.nvim_win_set_cursor(0, pos)
+end, silent)
+map('n', 'g<space>k', function()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  local n = vim.v.count1
+  vim.cmd('put! =repeat(nr2char(10), v:count1)')
+  -- put! inserts above, shifting the original line down by n lines.
+  vim.api.nvim_win_set_cursor(0, { pos[1] + n, pos[2] })
+end, silent)
 -- map('n', '<BS><BS>', '<c-^>')
 
 map('n', '<space>x', ':bdelete!<CR>' )
