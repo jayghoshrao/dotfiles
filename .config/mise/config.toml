@@ -1,0 +1,22 @@
+# Single source of truth for CLI tools across local + cluster machines.
+# Shared $HOME across archs: MISE_DATA_DIR/MISE_CACHE_DIR are arch-namespaced
+# in .zshrc/.bashrc; MISE_ENV=$(uname -m) pulls in config.$(uname -m).toml
+# for arch-specific tools (e.g. nnn, x86_64-static only).
+
+[tools]
+fzf = "latest"
+ripgrep = "latest"
+fd = "latest"
+jq = "latest"
+gh = "latest"
+lazygit = "latest"
+btop = "latest"
+neovim = "latest"
+uv = "latest"
+yazi = "latest"
+zoxide = "latest"
+"ubi:e6a5/zenta" = "latest"
+
+[tasks.install-zsh]
+description = "Install statically-linked zsh (romkatv/zsh-bin) into ~/.local/zsh-$(uname -m)"
+run = 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" -- -d "$HOME/.local/zsh-$(uname -m)" -e no'

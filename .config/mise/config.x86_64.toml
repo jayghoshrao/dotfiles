@@ -1,0 +1,5 @@
+# Loaded only when MISE_ENV=x86_64 (set from uname -m in shell rc).
+# nnn ships static builds for x86_64 only; asset names carry no OS string,
+# so ubi needs matching_regex instead of its default OS/arch filter.
+[tools]
+"ubi:jarun/nnn" = { version = "latest", matching_regex = "^nnn-static-.*x86_64", exe = "nnn" }

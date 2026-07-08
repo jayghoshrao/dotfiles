@@ -17,6 +17,22 @@
 
 stty -ixon                                                       # Disables ctrl-s/ctrl-q
 
+# mise: {{{
+# Single source of truth for CLI tools (see ~/.config/mise/config.toml).
+# $HOME is shared across x86_64/aarch64 nodes -> arch-namespaced data/cache
+# dirs, and MISE_ENV pulls in config.$(uname -m).toml for arch-only tools.
+export MISE_ENV="$(uname -m)"
+export MISE_DATA_DIR="$HOME/.local/share/mise-$MISE_ENV"
+export MISE_CACHE_DIR="$HOME/.cache/mise-$MISE_ENV"
+for _mise in "$HOME/.nix-profile/bin/mise" "$HOME/.local/bin-$MISE_ENV/mise" "$(command -v mise)"; do
+    if [[ -x "$_mise" ]]; then
+        eval "$("$_mise" activate zsh)"
+        break
+    fi
+done
+unset _mise
+# mise: }}}
+
 # autoload -U +X bashcompinit && bashcompinit
 # # NOTE: Uncomment in case compaudit complains of insecure directories
 # # Probably best to unset FPATH in bash before calling zsh in case of a nested call
