@@ -17,8 +17,9 @@ export MISE_CACHE_DIR="$HOME/.cache/mise-$ARCH"
 
 msg() { echo >&2 -e "==> ${1-}"; }
 
-# 1. Dotfiles (skip if already bootstrapped)
-if [[ ! -d "$HOME/.dots" ]]; then
+# 1. Dotfiles — skip entirely if configs are already in place (e.g. rsynced
+# by deploy-cluster.sh); only clone the repo as a fallback.
+if [[ ! -d "$HOME/.dots" && ! -f "$HOME/.zshrc" ]]; then
     msg "Cloning dotfiles"
     curl -fsSL https://raw.githubusercontent.com/jayghoshter/dotfiles/master/dots.sh | bash
 fi
