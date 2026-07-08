@@ -59,8 +59,7 @@ function process()
 
 
 
-# HOSTS=(jureca ibt012 ibt014 ibt067 ibt068 ibt069)
-HOSTS=( bhumi everest )
+mapfile -t SSH_HOSTS < <(awk '/^[Hh]ost / { for (i=2;i<=NF;i++) if ($i != "*") print $i }' ~/.ssh/config 2>/dev/null)
 
 FILEPATHS=$(xclip -selection c -o)
 [[ -z "${FILEPATHS}" ]] && exit
@@ -72,14 +71,18 @@ for FILEPATH in "${FILEPATHS[@]}"; do
     echo "PROCESSING $FILEPATH"
     if [[ ! -f ${FILEPATH} ]] ; then
         echo "No such file: ${FILEPATH}"
-        for host in ${HOSTS[@]}; do
-            echo "Looking in ${host}..."
-            if ssh "$host" test -e "'${FILEPATH}'"; then
-               echo "FOUND in $host"
-               process "$host:$FILEPATH"
-               break 1
-            fi
-        done
+        host=$(printf '%s\n' "${SSH_HOSTS[@]}" | fzf -0 -1 --prompt="Fetch from host> ")
+        if [[ -z "$host" ]]; then
+            echo "No host selected, skipping $FILEPATH"
+            continue
+        fi
+        echo "Looking in ${host}..."
+        if ssh "$host" test -e "'${FILEPATH}'"; then
+            echo "FOUND in $host"
+            process "$host:$FILEPATH"
+        else
+            echo "Not found in $host"
+        fi
     else
         process "$FILEPATH"
     fi

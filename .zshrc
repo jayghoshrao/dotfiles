@@ -311,7 +311,7 @@ alias ndn="note -d $HOME/Dropbox/DND"
 
 alias t="thesaurus"
 alias gj="git-jump"
-alias fu="findup.py"
+alias fu="findup"
 
 # alias -g ff="fuzscope | filer"
 alias -g FF="fuzscope | peek"
@@ -623,7 +623,7 @@ add-zsh-hook preexec tmux_update_display
 ## SSH TMUX REFRESH ENV: }}}
 
 vimfu() {
-    file=$(findup.py "$@")
+    file=$(findup "$@")
     if [ -n "$file" ]; then
         $EDITOR "$file"
     fi

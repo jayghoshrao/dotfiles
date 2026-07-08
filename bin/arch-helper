@@ -17,6 +17,7 @@
 #   install-packages    Install packages from package lists
 #   save-packages       Save current packages to list files
 #   update-mirrors      Update mirrorlist ranked by speed
+#   downgrade-to-date   Pin mirrorlist to archive snapshot and downgrade (arg: Y/m/d, last, week, or month)
 #   clean-cache         Clear pacman cache (keep last 2 versions)
 #   remove-orphans      Remove orphaned packages
 #   check-pacnew        Find .pacnew/.pacsave config files
@@ -342,6 +343,33 @@ update_mirrors() {
     head -10 "$mirrorlist" | grep -v '^#' | head -5
 }
 
+downgrade_to_date() {
+    local target="${1:-}"
+
+    if [[ -z "$target" ]]; then
+        log_error "Usage: $(basename "$0") downgrade-to-date <Y/m/d|last|week|month>"
+        return 1
+    fi
+
+    local mirrorlist="/etc/pacman.d/mirrorlist"
+    local date_dash
+    date_dash="$(date '+%Y-%m-%d')"
+
+    log_info "Backing up current mirrorlist to ${mirrorlist}.${date_dash}"
+    sudo mv "$mirrorlist" "${mirrorlist}.${date_dash}"
+
+    sudo tee "$mirrorlist" > /dev/null << EOFMARKER
+##
+## Arch Linux repository mirrorlist
+## Generated on $date_dash
+##
+Server=https://archive.archlinux.org/repos/$target/\$repo/os/\$arch
+EOFMARKER
+
+    log_info "Downgrading to archive snapshot: $target"
+    sudo pacman -Syyuu
+}
+
 clean_cache() {
     # Check if paccache is available (from pacman-contrib)
     if ! command -v paccache &> /dev/null; then
@@ -632,7 +660,7 @@ system_info() {
 }
 
 show_help() {
-    head -n 29 "${BASH_SOURCE[0]}" | tail -n 27
+    head -n 30 "${BASH_SOURCE[0]}" | tail -n 28
 }
 
 main() {
@@ -674,6 +702,9 @@ main() {
             ;;
         update-mirrors)
             update_mirrors "${2:-}"
+            ;;
+        downgrade-to-date)
+            downgrade_to_date "${2:-}"
             ;;
         clean-cache)
             clean_cache

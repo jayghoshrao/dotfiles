@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+## Search upward from a start dir toward a stop dir for files matching a
+## name pattern, then pick one interactively with fzf.
+##
+## TODO: doesn't work when run from home dir (start == stop edge case)
+
+usage() {
+    cat <<'EOF'
+Usage: findup [OPTIONS] QUERY
+
+Search upward from a start directory toward a stop directory for files
+matching QUERY, then pick one with fzf.
+  ctrl-x  xdg-open the selected file
+  ctrl-o  open the selected file in okular
+  ctrl-y  copy the selected path to the clipboard
+
+Options:
+  --start DIR        Start directory for upward searching (default: .)
+  --stop DIR         Stop directory for upward searching, inclusive (default: ~)
+  -m, --multi        Output all matches at the first level with results,
+                      instead of only the first match found.
+  -x, --no-break     Don't stop at the first level with matches; keep going
+                      to the stop dir and collect everything.
+  -nr, --no-recurse  Only look in the immediate directory at each level,
+                      don't recurse downward.
+  -h, --help         Show this help.
+EOF
+}
+
+start="."
+stop="$HOME"
+multi=0
+nobreak=0
+norecurse=0
+query=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --start) start="$2"; shift 2 ;;
+        --stop) stop="$2"; shift 2 ;;
+        -m|--multi) multi=1; shift ;;
+        -x|--no-break) nobreak=1; shift ;;
+        -nr|--no-recurse) norecurse=1; shift ;;
+        -h|--help) usage; exit 0 ;;
+        --) shift; break ;;
+        -*) echo "findup: unknown option: $1" >&2; usage; exit 1 ;;
+        *) query="$1"; shift ;;
+    esac
+done
+
+if [[ -z "$query" ]]; then
+    usage
+    exit 1
+fi
+
+command -v fzf >/dev/null || { echo "findup: fzf not found in PATH" >&2; exit 1; }
+
+path="$(readlink -f "$start")"
+stop_expanded="${stop/#\~/$HOME}"
+stop_resolved="$(readlink -f "$(dirname "$(readlink -f "$stop_expanded")")")"
+
+results=()
+
+while [[ "$path" != "$stop_resolved" ]]; do
+    level=()
+    if [[ "$norecurse" -eq 1 ]]; then
+        mapfile -t level < <(find "$path" -maxdepth 1 -mindepth 1 -name "$query" 2>/dev/null)
+    else
+        mapfile -t level < <(find "$path" -name "$query" 2>/dev/null)
+    fi
+
+    if [[ "$nobreak" -eq 1 ]]; then
+        results+=("${level[@]}")
+    elif [[ ${#level[@]} -gt 0 ]]; then
+        if [[ "$multi" -eq 1 ]]; then
+            results=("${level[@]}")
+        else
+            results=("${level[0]}")
+        fi
+        break
+    fi
+
+    [[ "$path" == "/" ]] && break
+    path="$(dirname "$path")"
+done
+
+if [[ "$nobreak" -eq 1 && ${#results[@]} -gt 0 ]]; then
+    mapfile -t results < <(printf '%s\n' "${results[@]}" | sort -u)
+fi
+
+[[ ${#results[@]} -eq 0 ]] && exit 0
+
+selected="$(printf '%s\n' "${results[@]}" | fzf --cycle --select-1 \
+    --bind='ctrl-x:execute(xdg-open {})' \
+    --bind='ctrl-o:execute(nohup okular {} >/dev/null 2>&1 & disown)' \
+    --bind='ctrl-y:execute(echo {} | xclip -i -selection clipboard)')" || exit 0
+
+[[ -n "$selected" ]] && echo "$selected"

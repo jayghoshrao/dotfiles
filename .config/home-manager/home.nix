@@ -108,7 +108,6 @@ in
     # dunst
     playerctl
     pdd
-    at
     # gcc
     file
     pass

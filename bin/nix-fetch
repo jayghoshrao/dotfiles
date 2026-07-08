@@ -50,7 +50,7 @@ REV=
 # fi
 
 if [ -z "$BRANCH" ] && [ -z "$TAG" ]; then 
-    TAG=$(curl -fsSl "https://api.github.com/repos/$OWNER/$REPO/releases" | jq -r '.[] | .tag_name' | fzf --preview '' -p "Release Tag")
+    TAG=$(curl -fsSl "https://api.github.com/repos/$OWNER/$REPO/releases" | jq -r '.[] | .tag_name' | fzf --preview '')
 fi
 
 [ -z "$BRANCH" ] && [ -z "$TAG" ] &&  die "Either branch or tag must be specified!"

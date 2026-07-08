@@ -3,11 +3,11 @@
 """
 Snip and download as mp4 a portion of the given youtube video.
 
-usage: ./youtube-dl-ranged.sh <link> <start-time> <duration> <output-file>
+usage: ./yt-dlp-slice.sh <link> <start-time> <duration> <output-file>
 
 """
 
-STREAMS=$(youtube-dl -g $1)
+STREAMS=$(yt-dlp -g $1)
 
 readarray -t y <<<"$STREAMS"
 
