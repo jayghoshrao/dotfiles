@@ -15,7 +15,7 @@ neovim = "latest"
 uv = "latest"
 yazi = "latest"
 zoxide = "latest"
-"ubi:e6a5/zenta" = "latest"
+"github:e6a5/zenta" = "latest"
 
 [tasks.install-zsh]
 description = "Install statically-linked zsh (romkatv/zsh-bin) into ~/.local/zsh-$(uname -m)"
