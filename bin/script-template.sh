@@ -34,11 +34,7 @@ setup_colors() {
   fi
 }
 
-msg() {
-  echo >&2 -e "${1-}"
-}
-
-die() {
+die2() {
   local msg=$1
   local code=${2-1} # default exit status 1
   msg "$msg"
@@ -85,71 +81,38 @@ msg "- flag: ${flag}"
 msg "- param: ${param}"
 msg "- arguments: ${args[*]-}"
 
-function die(){
-    echo -e "ERROR: $@" >&2
-    exit -1
-}
+msg() { echo >&2 -e "==> ${1-}"; }
+die() { echo -e "ERROR: $*" >&2; exit 1; }
 
-function ensure_run(){
-    [ -x $(command -v "$1") ] || die "no such command: $1"
-    "$@"
-    [[ $? == 0 ]] || die "command exited with error: $@"
-}
+# check_cmd()  { [[ -x $(command -v "$1") ]]; } ## Avoids shell builtins
+check_cmd()  { command -v "$1" >/dev/null 2>&1; }  
+check_exe()  { [[ -x "$1" ]]; }
+check_dir()  { [[ -d "$1" ]]; }
+check_file() { [[ -f "$1" ]]; }
 
-function ensure_commands()
-{
-    for ARG in "$@"; do
-        [[ -x $(command -v "$ARG") ]] || die "no such command: ${ARG}"
-    done
-}
+ensure_cmd()  { check_cmd  "$1" || die "no such command: $1"; }
+ensure_exe()  { check_exe  "$1" || die "Executable not found: $1"; }
+ensure_dir()  { check_dir  "$1" || die "Dir not found: $1"; }
+ensure_file() { check_file "$1" || die "File not found: $1"; }
 
-function ensure_files()
-{
-    for ARG in "$@"; do
-        [[ -f "$ARG" ]] || die "File not found: $ARG"
-    done
-}
+check_cmds() { for a in "$@"; do check_cmd "$a" || return 1; done; }
+check_files() { for a in "$@"; do check_file "$a" || return 1; done; }
 
-function ensure_match()
-{
-    CMP_STR="$1"
-    shift
-    for ARG in "$@"; do
-        [[ "$ARG" =~ $CMP_STR ]] || die "$ARG doesn't match $CMP_STR"
-    done
-}
+ensure_cmds() { for a in "$@"; do ensure_cmd "$a"; done; }
+ensure_files() { for a in "$@"; do ensure_file "$a"; done; }
+ensure_dirs() { for a in "$@"; do ensure_dir "$a"; done; }
 
-function check_files()
-{
-    for ARG in "$@"; do
-        [[ -f "$ARG" ]] || return -1
-    done
-    return 0
-}
+ensure_run() { ensure_cmd "$1"; "$@" || die "Command exited with error: $*"; }
 
-function ensure_dirs()
-{
-    for ARG in "$@"; do
-        [[ -d "$ARG" ]] || die "Dir not found: $ARG"
-    done
-}
+ensure_match_all() { local re=$1; shift; for a in "$@"; do [[ "$a" =~ $re ]] || die "$a doesn't match $re"; done; }
 
-function check_commands()
-{
-    for ARG in "$@"; do
-        [[ -x $(command -v "$ARG") ]] || return -1
-    done
-    return 0
-}
+ensure_match_any() { local re=$1; shift; for a in "$@"; do [[ "$a" =~ $re ]] && return 0; done; return 1; }
 
-## Check if value exists in array, oneliner
-[[ " ${IGNORED_VOLUMES[@]} " =~ " ${PROJECT_NAME}_${vol} " ]] && continue
+# Membership: needle is $1, array elements are the rest -> check_in_array "$needle" "${arr[@]}"
+check_in_array()  { local needle=$1; shift; for a in "$@"; do [[ "$a" == "$needle" ]] && return 0; done; return 1; }
+ensure_in_array() { local needle=$1; check_in_array "$@" || die "not in array: $needle"; }
 
-function die() { echo -e "ERROR: $@" >&2; exit -1; }
-function ensure_command() { [[ -x $(command -v "$1") ]] || die "no such command: ${1}"; }
-function check_command() { [[ -x $(command -v "$1") ]] && return 0 || return -1; }
-function ensure_dir() { [[ -d "$1" ]] || die "Dir not found: $1"; }
-function ensure_file() { [[ -f "$1" ]] || die "File not found: $1"; }
+
 
 # POSITIONAL=()
 # while [[ $# -gt 0 ]]
@@ -162,3 +125,45 @@ function ensure_file() { [[ -f "$1" ]] || die "File not found: $1"; }
 #     esac
 # done
 # set -- "${POSITIONAL[@]}" # restore positional parameters
+
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+confirm() {
+    local prompt="${1:-Are you sure?}"
+    read -rp "$prompt [y/N] " response
+    [[ "$response" =~ ^[Yy]$ ]]
+}
+
+
+parse_params_2() {
+  POSITIONAL=()
+  while [[ $# -gt 0 ]] ; do
+    key="$1"
+    case $key in
+      -o|--opt-long) OPT="$2"; shift 2 ;;
+      -f|--flag-long) FLAG=true; shift ;;
+      *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+  done
+  set -- "${POSITIONAL[@]}" # restore positional parameters
+}
