@@ -20,3 +20,15 @@ zoxide = "latest"
 [tasks.install-zsh]
 description = "Install statically-linked zsh (romkatv/zsh-bin) into ~/.local/zsh-$(uname -m)"
 run = 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" -- -d "$HOME/.local/zsh-$(uname -m)" -e no'
+
+[tasks.install-tpm]
+description = "Install tmux plugin manager into ~/.tmux/plugins/tpm (idempotent)"
+run = '[ -d "$HOME/.tmux/plugins/tpm" ] || git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"'
+
+[tasks.get-dots]
+description = "Fetch dots.sh bootstrap script into $HOME (does not run it)"
+run = 'curl -fsSL https://raw.githubusercontent.com/jayghoshrao/dotfiles/master/dots.sh -o "$HOME/dots.sh" && chmod +x "$HOME/dots.sh"'
+
+[tasks.install-dots]
+description = "Bootstrap dotfiles (jayghoshrao/dotfiles) unless already in place (idempotent)"
+run = '{ [ -d "$HOME/.dots" ] || [ -f "$HOME/.zshrc" ]; } || sh -c "$(curl -fsSL https://raw.githubusercontent.com/jayghoshrao/dotfiles/master/dots.sh)"'
