@@ -85,6 +85,7 @@ in
     nix-direnv
     cachix
     neovim
+    gnupg
     hello
     nix-info 
     autorandr
