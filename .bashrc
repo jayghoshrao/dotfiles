@@ -16,14 +16,23 @@ case $- in
 esac
 
 # Exec zsh: {{{
+# Shared $HOME: `command -v zsh` can resolve to the other arch's
+# ~/.local/zsh-*/bin/zsh left on PATH by `srun --export=ALL`, and [[ -x ]]
+# alone doesn't catch the wrong ELF arch (Exec format error). Skip
+# wrong-arch dirs and probe that the binary actually runs before exec.
 if [[ -z "$NO_ZSH" && -z "$ZSH_VERSION" ]]; then
-    for _z in "$HOME/.local/zsh-$(uname -m)/bin/zsh" "$(command -v zsh)"; do
-        if [[ -x "$_z" ]]; then
+    _arch="$(uname -m)"
+    for _z in "$HOME/.local/zsh-$_arch/bin/zsh" "$(command -v zsh)"; do
+        case "$_z" in
+            "$HOME/.local/zsh-$_arch/"*) ;;
+            "$HOME/.local/zsh-"*) continue ;;
+        esac
+        if [[ -x "$_z" ]] && "$_z" -fc 'exit' 2>/dev/null; then
             export SHELL="$_z"
             exec "$_z" -l
         fi
     done
-    unset _z
+    unset _z _arch
 fi
 # Exec zsh: }}}
 
