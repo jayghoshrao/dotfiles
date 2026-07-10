@@ -16,13 +16,27 @@ FILES=(
     .config/mise/config.toml
     .config/mise/config.x86_64.toml
     .config/nvim
+    .config/git/config
     bin/bootstrap-mise.sh
+    .ssh/id_gitlab
+    .ssh/config
     # add e.g. .config/nvim if wanted on clusters
 )
 
 BOOTSTRAP=1
-[[ "${1-}" == "--sync-only" ]] && { BOOTSTRAP=0; shift; }
-[[ $# -ge 1 ]] || { echo "usage: ${0##*/} [--sync-only] <ssh-host>..." >&2; exit 1; }
+
+POSITIONAL=()
+while [[ $# -gt 0 ]] ; do
+    key="$1"
+    case $key in
+        -s|--sync-only) BOOTSTRAP=0; shift ;;
+        *)    # unknown option
+            POSITIONAL+=("$1") # save it in an array for later
+            shift # past argument
+            ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
 
 # mise hits GitHub's unauthenticated API (60 req/hr) for every ubi/vfox tool;
 # forward a token so remote installs don't get rate-limited. Same lookup
