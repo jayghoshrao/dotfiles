@@ -318,7 +318,7 @@ fzf-locate-widget() {
 }
 zle -N fzf-locate-widget
 # bindkey '\ei' fzf-locate-widget
-bindkey '^o' fzf-locate-widget
+# bindkey '^o' fzf-locate-widget
 
 #}}}
 

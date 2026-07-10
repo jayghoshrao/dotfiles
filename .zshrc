@@ -82,6 +82,7 @@ if [[ $LOAD_ZINIT != false ]] ; then
     # OMZP::git-extras
 
     # Theme and Colors {{{
+    zstyle ':prompt:pure:context' show yes
     zinit light-mode for pick"async.zsh" src"pure.zsh" @sindresorhus/pure
 
     # For GNU ls (the binaries can be gls, gdircolors, e.g. on OS X when installing the
@@ -121,6 +122,10 @@ if [[ $LOAD_ZINIT != false ]] ; then
     # Load scripts directly from repo
     zinit from"gh" as"command" light-mode for \
         if'[[ -z "$commands[cb]" ]]' pick"cb" @niedzielski/cb
+
+    # gitlab-master: https URL is rewritten to ssh:12051 by git url.insteadOf
+    zinit from"gitlab-master.nvidia.com" as"command" light-mode for \
+        pick"jrun" @jayghoshrao/jrun
 
     # mv"tmux*->tmux" atclone"cd tmux && ./configure && make" atpull"%atclone" pick"tmux/tmux" @tmux/tmux
 
@@ -472,7 +477,7 @@ ring() {
     if [[ $dtime =~ ":" ]]; then
         time=$dtime
     else
-        time=$(pdd --add $(toseconds $dtime) | head -n 1)
+        time=$(pdd --add $(to-seconds $dtime) | head -n 1)
     fi
     # echo $time
     time=$(echo $time | tr -d ':')
@@ -702,6 +707,17 @@ _vg_prompt() {
 zle -N _vg_prompt
 bindkey '^[s' _vg_prompt
 
+# Ctrl+O: Open editor if command line is empty
+_open_editor_if_empty() {
+    if [[ -z "$BUFFER" ]]; then
+        zle reset-prompt
+        [[ $EDITOR =~ nvim ]] && nvim +"Telescope find_files"  || $EDITOR
+        zle reset-prompt
+    fi
+}
+zle -N _open_editor_if_empty
+bindkey '^O' _open_editor_if_empty
+
 # Show available functions
 fzf-functions-help() {
     cat << 'EOF'
@@ -876,6 +892,7 @@ alias ,awk="awk -F ',' -v OFS=','"
 # good to have this when working on multiple servers
 # for a quick and easy setup.
 [[ -d "$HOME/bin" ]] && appendToEnv PATH "$HOME/bin"
+prependToEnv PATH "$HOME/.local/bin"
 
 # Auto-quote special chars (?, &, etc.) in URLs as typed/pasted.
 # url-quote-magic: typed input (self-insert); bracketed-paste-magic: pastes.
@@ -883,3 +900,6 @@ autoload -Uz url-quote-magic bracketed-paste-magic
 zle -N self-insert url-quote-magic
 zle -N bracketed-paste bracketed-paste-magic
 
+## clipboard copy without xclip! Requires OSC52 support in terminal, and some tmux config.
+clip() { printf '\033]52;c;%s\007' "$(base64 -w0)"; } ## clip without xclip
+alias -g CC="| clip"
