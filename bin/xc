@@ -2,6 +2,7 @@
 
 MODE="OPEN"
 FILENAME_PREFIX=
+PICKER="fzf"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -11,11 +12,15 @@ do
     case $key in
         -p|--paste)
             MODE="PASTE"
-            shift 
+            shift
             ;;
         -fp|--filename-prefix)
             FILENAME_PREFIX="$2"
             shift; shift
+            ;;
+        -r|--rofi)
+            PICKER="rofi"
+            shift
             ;;
         *)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
@@ -61,6 +66,43 @@ function process()
 
 mapfile -t SSH_HOSTS < <(awk '/^[Hh]ost / { for (i=2;i<=NF;i++) if ($i != "*") print $i }' ~/.ssh/config 2>/dev/null)
 
+MRU_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/xc_hosts_mru"
+
+function load_mru() {
+    declare -gA MRU_MAP
+    if [[ -f "$MRU_FILE" ]]; then
+        while IFS= read -r host; do
+            MRU_MAP["$host"]=1
+        done < "$MRU_FILE"
+    fi
+}
+
+function reorder_by_mru() {
+    local mru_hosts=() other_hosts=()
+    for host in "${SSH_HOSTS[@]}"; do
+        if [[ -n "${MRU_MAP[$host]}" ]]; then
+            mru_hosts+=("$host")
+        else
+            other_hosts+=("$host")
+        fi
+    done
+    SSH_HOSTS=("${mru_hosts[@]}" "${other_hosts[@]}")
+}
+
+function update_mru() {
+    local selected_host="$1"
+    local new_mru=("$selected_host")
+    if [[ -f "$MRU_FILE" ]]; then
+        while IFS= read -r host; do
+            [[ "$host" != "$selected_host" ]] && new_mru+=("$host")
+        done < "$MRU_FILE"
+    fi
+    printf '%s\n' "${new_mru[@]:0:20}" > "$MRU_FILE"
+}
+
+load_mru
+reorder_by_mru
+
 FILEPATHS=$(xclip -selection c -o)
 [[ -z "${FILEPATHS}" ]] && exit
 
@@ -71,11 +113,16 @@ for FILEPATH in "${FILEPATHS[@]}"; do
     echo "PROCESSING $FILEPATH"
     if [[ ! -f ${FILEPATH} ]] ; then
         echo "No such file: ${FILEPATH}"
-        host=$(printf '%s\n' "${SSH_HOSTS[@]}" | fzf -0 -1 --prompt="Fetch from host> ")
+        if [[ "$PICKER" == "rofi" ]]; then
+            host=$(printf '%s\n' "${SSH_HOSTS[@]}" | rofi -dmenu -p "Fetch from host> ")
+        else
+            host=$(printf '%s\n' "${SSH_HOSTS[@]}" | fzf -0 -1 --prompt="Fetch from host> ")
+        fi
         if [[ -z "$host" ]]; then
             echo "No host selected, skipping $FILEPATH"
             continue
         fi
+        update_mru "$host"
         echo "Looking in ${host}..."
         if ssh "$host" test -e "'${FILEPATH}'"; then
             echo "FOUND in $host"
